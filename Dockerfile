@@ -2,9 +2,11 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY .npmrc package*.json ./
+ARG NODE_AUTH_TOKEN
+ENV NODE_AUTH_TOKEN=${NODE_AUTH_TOKEN}
 RUN npm ci
 COPY . .
-RUN npm run generate:api && npm run build:prod
+RUN npm run build:prod
 
 # Stage 2: Serve
 FROM nginx:stable-alpine AS runtime

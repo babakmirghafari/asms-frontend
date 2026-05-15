@@ -23,7 +23,9 @@
       "@core/*": ["src/app/core/*"],
       "@shared/*": ["src/app/shared/*"],
       "@features/*": ["src/app/features/*"],
-      "@api/*": ["src/app/api/*"]
+      "@api/*": ["src/app/api/*"],
+      "@babakmirghafari/asms-api-client": ["node_modules/@babakmirghafari/asms-api-client/index.ts"],
+      "@babakmirghafari/asms-api-client/*": ["node_modules/@babakmirghafari/asms-api-client/*"]
     }
   },
   "angularCompilerOptions": {
