@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 export interface ColumnDef<T> {
   key: keyof T;
@@ -10,7 +9,7 @@ export interface ColumnDef<T> {
 @Component({
   selector: 'asms-data-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -20,7 +20,7 @@ export const AccessControlStore = signalStore(
   withComputed((store) => ({
     selected: computed(() =>
       // TODO(angular-logic-implementer): replace unknown[] with generated Dto type
-      (store.items() as Array<{ id: string }>).find(item => item.id === store.selectedId()) ?? null
+      (store.items() as ({ id: string })[]).find(item => item.id === store.selectedId()) ?? null
     ),
   })),
   withMethods((store) => ({

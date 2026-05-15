@@ -1,14 +1,24 @@
-<div *ngIf="loading">Loading...</div>
-<table *ngIf="!loading">
-  <thead>
-    <tr>
-      <th *ngFor="let col of columns">{{ col.label }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let row of data">
-      <td *ngFor="let col of columns">{{ row[col.key] }}</td>
-    </tr>
-  </tbody>
-</table>
+@if (loading) {
+  <div>Loading...</div>
+}
+@if (!loading) {
+  <table>
+    <thead>
+      <tr>
+        @for (col of columns; track col.key) {
+          <th>{{ col.label }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of data; track row.id) {
+        <tr>
+          @for (col of columns; track col.key) {
+            <td>{{ row[col.key] }}</td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+}
 <!-- TODO(angular-logic-implementer): replace with MatTable, MatPaginator, MatSort from DESIGN_SYSTEM -->

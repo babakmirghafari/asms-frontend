@@ -1,10 +1,9 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'asms-page-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './page-header.component.html',
   styleUrl: './page-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
