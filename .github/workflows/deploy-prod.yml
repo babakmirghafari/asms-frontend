@@ -1,0 +1,54 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag to deploy (e.g. sha-abc1234 or v1.2.3)'
+        required: true
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  deploy-prod:
+    name: Deploy Frontend to Production
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: latest
+
+      - name: Resolve image tag
+        id: resolve-tag
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.event.inputs.image_tag }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure kubectl
+        run: echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > /tmp/kubeconfig.yaml
+
+      - name: Deploy frontend to production
+        env:
+          KUBECONFIG: /tmp/kubeconfig.yaml
+          IMAGE_TAG: ${{ steps.resolve-tag.outputs.tag }}
+        run: |
+          helm upgrade --install asms-frontend ./helm/asms-frontend \
+            --namespace asms-prod \
+            --create-namespace \
+            -f helm/asms-frontend/values-prod.yaml \
+            --set image.tag=$IMAGE_TAG \
+            --wait \
+            --timeout 10m
+
+      - name: Verify deployment
+        env:
+          KUBECONFIG: /tmp/kubeconfig.yaml
+        run: kubectl rollout status deployment/asms-frontend -n asms-prod --timeout=5m

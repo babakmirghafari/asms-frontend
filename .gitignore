@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.angular/
+coverage/
+*.env
+.env.local
+src/app/api/
+test-results/
+playwright-report/
+.nyc_output/
+*.log
+.DS_Store

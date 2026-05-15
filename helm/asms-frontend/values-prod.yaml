@@ -1,0 +1,28 @@
+replicaCount: 3
+
+image:
+  tag: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: asms.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: asms-frontend-prod-tls
+      hosts:
+        - asms.example.com
+
+env:
+  API_BASE_URL: "http://asms-backend-prod:8080"
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "100m"

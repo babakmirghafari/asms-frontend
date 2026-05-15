@@ -1,0 +1,31 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/babakmirghafari/asms-frontend
+  pullPolicy: IfNotPresent
+  tag: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: asms.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+env:
+  API_BASE_URL: "http://asms-backend:8080"
+  NODE_AUTH_TOKEN: ""
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "100m"

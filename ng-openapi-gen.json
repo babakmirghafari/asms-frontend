@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/ng-openapi-gen/ng-openapi-gen-schema.json",
+  "input": "node_modules/@babakmirghafari/asms-api-client/openapi/api.bundled.yaml",
+  "output": "src/app/api",
+  "indexFile": true,
+  "module": "ApiModule",
+  "configuration": "ApiConfiguration",
+  "ignoreUnusedModels": false,
+  "removeStaleFiles": true,
+  "servicePrefix": "",
+  "serviceSuffix": "Service",
+  "modelPrefix": "",
+  "modelSuffix": "",
+  "enumStyle": "upper-camel"
+}
