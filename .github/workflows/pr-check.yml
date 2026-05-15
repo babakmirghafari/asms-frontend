@@ -20,9 +20,10 @@ jobs:
           scope: '@babakmirghafari'
 
       - name: Install dependencies
+        # NPM_TOKEN must be a GitHub PAT with read:packages scope stored as a repo secret.
         run: npm install
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Lint
         run: npm run lint
