@@ -24,7 +24,7 @@ jobs:
           scope: '@babakmirghafari'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -133,7 +133,7 @@ jobs:
           scope: '@babakmirghafari'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
