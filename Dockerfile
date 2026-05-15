@@ -1,10 +1,11 @@
 # Stage 1: Build
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 COPY .npmrc package*.json ./
 ARG NODE_AUTH_TOKEN
 ENV NODE_AUTH_TOKEN=${NODE_AUTH_TOKEN}
-RUN npm ci
+# Use npm install (not npm ci) to handle platform-specific optional deps on Linux
+RUN npm install
 COPY . .
 RUN npm run build:prod
 
