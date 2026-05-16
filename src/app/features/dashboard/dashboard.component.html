@@ -49,19 +49,19 @@
       <h3 class="card-title">Alerts by Severity</h3>
       <div class="severity-row">
         <div class="severity-item critical">
-          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.critical }}</span>
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity?.critical ?? 0 }}</span>
           <span class="sev-label">Critical</span>
         </div>
         <div class="severity-item high">
-          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.high }}</span>
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity?.high ?? 0 }}</span>
           <span class="sev-label">High</span>
         </div>
         <div class="severity-item medium">
-          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.medium }}</span>
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity?.medium ?? 0 }}</span>
           <span class="sev-label">Medium</span>
         </div>
         <div class="severity-item low">
-          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.low }}</span>
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity?.low ?? 0 }}</span>
           <span class="sev-label">Low</span>
         </div>
       </div>

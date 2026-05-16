@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,6 +12,7 @@ import { DashboardStore } from './dashboard.store';
   selector: 'asms-dashboard',
   standalone: true,
   imports: [
+    DatePipe,
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
