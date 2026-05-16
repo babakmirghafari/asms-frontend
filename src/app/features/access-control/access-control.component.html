@@ -1,2 +1,47 @@
-<p>access-control — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Access Control" subtitle="Effective permissions and authorization simulator" />
+  <div class="ac-grid">
+    <mat-card class="ac-card">
+      <h3>Effective Permissions Lookup</h3>
+      <form [formGroup]="lookupForm" (ngSubmit)="lookup()">
+        <mat-form-field appearance="outline"><mat-label>User ID</mat-label><input matInput formControlName="userId"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Organization ID</mat-label><input matInput formControlName="organizationId"></mat-form-field>
+        <button mat-flat-button color="primary" type="submit" [disabled]="store.loading()">
+          @if (store.loading()) { <mat-spinner diameter="18" /> } @else { Lookup }
+        </button>
+      </form>
+      @if (store.effective()) {
+        <div class="results">
+          <h4>Permissions ({{ store.effective()!.permissions.length }})</h4>
+          <mat-chip-set>
+            @for (p of store.effective()!.permissions; track p) { <mat-chip>{{ p }}</mat-chip> }
+          </mat-chip-set>
+        </div>
+      }
+    </mat-card>
+
+    <mat-card class="ac-card">
+      <h3>Authorization Simulator</h3>
+      <form [formGroup]="simForm" (ngSubmit)="simulate()">
+        <mat-form-field appearance="outline"><mat-label>User ID</mat-label><input matInput formControlName="userId"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Organization ID</mat-label><input matInput formControlName="organizationId"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Resource</mat-label><input matInput formControlName="resource"></mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Action</mat-label>
+          <mat-select formControlName="action">
+            @for (a of actionOptions; track a) { <mat-option [value]="a">{{ a }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
+        <button mat-flat-button color="accent" type="submit" [disabled]="store.simulating()">
+          @if (store.simulating()) { <mat-spinner diameter="18" /> } @else { Simulate }
+        </button>
+      </form>
+      @if (store.simulateResult()) {
+        <div class="results" [class.allow]="store.simulateResult()!.decision === 'ALLOW'" [class.deny]="store.simulateResult()!.decision === 'DENY'">
+          <p>Decision: <strong>{{ store.simulateResult()!.decision }}</strong></p>
+          @for (r of store.simulateResult()!.reasons ?? []; track r) { <p class="text-secondary">{{ r }}</p> }
+        </div>
+      }
+    </mat-card>
+  </div>
+</div>

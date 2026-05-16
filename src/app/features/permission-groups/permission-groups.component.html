@@ -1,2 +1,4 @@
-<p>permission-groups — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Permission Groups" subtitle="Manage named permission collections" actionLabel="New Group" (actionClick)="openCreate()" />
+  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No permission groups found" emptyIcon="folder_shared" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+</div>

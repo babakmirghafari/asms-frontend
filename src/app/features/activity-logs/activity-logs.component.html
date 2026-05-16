@@ -1,2 +1,4 @@
-<p>activity-logs — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Activity Logs" subtitle="User behavior monitoring" />
+  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" emptyMessage="No activity logs" emptyIcon="history" (pageChange)="onPage($event)" />
+</div>

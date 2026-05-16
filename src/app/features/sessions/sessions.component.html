@@ -1,2 +1,4 @@
-<p>sessions — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Sessions" subtitle="Live session monitoring" />
+  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No active sessions" emptyIcon="devices" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+</div>

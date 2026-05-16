@@ -1,34 +1,49 @@
 import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
-import { computed } from '@angular/core';
+import { inject, computed } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { AlertsService, AlertDto, AcknowledgeAlertRequestDto, ResolveAlertRequestDto, EscalateAlertRequestDto } from '@babakmirghafari/asms-api-client';
 
-interface AlertsState {
-  items: unknown[];
-  selectedId: string | null;
-  loading: boolean;
-  error: string | null;
-}
+interface AlertsState { items: AlertDto[]; totalElements: number; page: number; size: number; severityFilter: string; statusFilter: string; loading: boolean; saving: boolean; error: string | null; }
+const init: AlertsState = { items: [], totalElements: 0, page: 0, size: 20, severityFilter: '', statusFilter: '', loading: false, saving: false, error: null };
+function msg(e: unknown, fb = 'Operation failed.'): string { if (e && typeof e === 'object') { const x = e as Record<string, unknown>; const o = x['error'] as Record<string, unknown> | undefined; if (o && typeof o['detail'] === 'string') return o['detail']; if (typeof x['message'] === 'string') return x['message']; } return fb; }
 
-const initialAlertsState: AlertsState = {
-  items: [],
-  selectedId: null,
-  loading: false,
-  error: null,
-};
+type AlertSev = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+type AlertStatus = 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED' | 'SUPPRESSED';
 
 export const AlertsStore = signalStore(
-  withState(initialAlertsState),
-  withComputed((store) => ({
-    selected: computed(() =>
-      // TODO(angular-logic-implementer): replace unknown[] with generated Dto type
-      (store.items() as ({ id: string })[]).find(item => item.id === store.selectedId()) ?? null
-    ),
+  withState(init),
+  withComputed((s) => ({
+    criticalCount: computed(() => s.items().filter(a => a.severity === 'CRITICAL').length),
+    openCount:     computed(() => s.items().filter(a => a.status === 'OPEN').length),
   })),
-  withMethods((store) => ({
-    // TODO(angular-logic-implementer): inject generated AlertsService and implement real API calls
+  withMethods((store, svc = inject(AlertsService)) => ({
     async load(): Promise<void> {
       patchState(store, { loading: true, error: null });
-      // TODO(angular-logic-implementer): call service.listAlertss() and patchState with response
-      patchState(store, { loading: false });
+      try {
+        const sev    = store.severityFilter() as AlertSev || undefined;
+        const status = store.statusFilter() as AlertStatus || undefined;
+        const res = await firstValueFrom(svc.listAlerts(store.page(), store.size(), undefined, sev, status)) as AlertDto[] extends never ? never : { content: AlertDto[]; totalElements: number };
+        patchState(store, { items: (res as any).content as AlertDto[], totalElements: (res as any).totalElements, loading: false });
+      } catch (e) { patchState(store, { loading: false, error: msg(e, 'Failed to load alerts.') }); }
     },
+    setPage(page: number, size: number) { patchState(store, { page, size }); },
+    setSeverityFilter(v: string) { patchState(store, { severityFilter: v, page: 0 }); },
+    setStatusFilter(v: string)   { patchState(store, { statusFilter: v, page: 0 }); },
+    async acknowledge(id: string, dto: AcknowledgeAlertRequestDto): Promise<boolean> {
+      patchState(store, { saving: true, error: null });
+      try { const r = await firstValueFrom(svc.acknowledgeAlert(id, dto)); patchState(store, { saving: false, items: store.items().map(a => a.id === id ? r : a) }); return true; }
+      catch (e) { patchState(store, { saving: false, error: msg(e) }); return false; }
+    },
+    async resolve(id: string, dto: ResolveAlertRequestDto): Promise<boolean> {
+      patchState(store, { saving: true, error: null });
+      try { const r = await firstValueFrom(svc.resolveAlert(id, dto)); patchState(store, { saving: false, items: store.items().map(a => a.id === id ? r : a) }); return true; }
+      catch (e) { patchState(store, { saving: false, error: msg(e) }); return false; }
+    },
+    async escalate(id: string, dto: EscalateAlertRequestDto): Promise<boolean> {
+      patchState(store, { saving: true, error: null });
+      try { const r = await firstValueFrom(svc.escalateAlert(id, dto)); patchState(store, { saving: false, items: store.items().map(a => a.id === id ? r : a) }); return true; }
+      catch (e) { patchState(store, { saving: false, error: msg(e) }); return false; }
+    },
+    clearError() { patchState(store, { error: null }); },
   }))
 );

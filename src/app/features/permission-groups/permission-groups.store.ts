@@ -1,34 +1,36 @@
-import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
-import { computed } from '@angular/core';
+import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
+import { inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { PermissionGroupsService, PermissionGroupDto, CreatePermissionGroupRequestDto, UpdatePermissionGroupRequestDto } from '@babakmirghafari/asms-api-client';
 
-interface PermissionGroupsState {
-  items: unknown[];
-  selectedId: string | null;
-  loading: boolean;
-  error: string | null;
-}
-
-const initialPermissionGroupsState: PermissionGroupsState = {
-  items: [],
-  selectedId: null,
-  loading: false,
-  error: null,
-};
+interface PGState { items: PermissionGroupDto[]; totalElements: number; page: number; size: number; loading: boolean; saving: boolean; error: string | null; }
+const init: PGState = { items: [], totalElements: 0, page: 0, size: 20, loading: false, saving: false, error: null };
+function msg(e: unknown, fb = 'Operation failed.'): string { if (e && typeof e === 'object') { const x = e as Record<string, unknown>; const o = x['error'] as Record<string, unknown> | undefined; if (o && typeof o['detail'] === 'string') return o['detail']; if (typeof x['message'] === 'string') return x['message']; } return fb; }
 
 export const PermissionGroupsStore = signalStore(
-  withState(initialPermissionGroupsState),
-  withComputed((store) => ({
-    selected: computed(() =>
-      // TODO(angular-logic-implementer): replace unknown[] with generated Dto type
-      (store.items() as ({ id: string })[]).find(item => item.id === store.selectedId()) ?? null
-    ),
-  })),
-  withMethods((store) => ({
-    // TODO(angular-logic-implementer): inject generated PermissionGroupsService and implement real API calls
+  withState(init),
+  withMethods((store, svc = inject(PermissionGroupsService)) => ({
     async load(): Promise<void> {
       patchState(store, { loading: true, error: null });
-      // TODO(angular-logic-implementer): call service.listPermissionGroupss() and patchState with response
-      patchState(store, { loading: false });
+      try { const res = await firstValueFrom(svc.listPermissionGroups(store.page(), store.size())); patchState(store, { items: res.content as PermissionGroupDto[], totalElements: res.totalElements, loading: false }); }
+      catch (e) { patchState(store, { loading: false, error: msg(e, 'Failed to load permission groups.') }); }
     },
+    setPage(page: number, size: number) { patchState(store, { page, size }); },
+    async create(dto: CreatePermissionGroupRequestDto): Promise<PermissionGroupDto | null> {
+      patchState(store, { saving: true, error: null });
+      try { const r = await firstValueFrom(svc.createPermissionGroup(dto)); patchState(store, { saving: false }); return r; }
+      catch (e) { patchState(store, { saving: false, error: msg(e) }); return null; }
+    },
+    async update(id: string, dto: UpdatePermissionGroupRequestDto): Promise<PermissionGroupDto | null> {
+      patchState(store, { saving: true, error: null });
+      try { const r = await firstValueFrom(svc.updatePermissionGroup(id, dto)); patchState(store, { saving: false, items: store.items().map(i => i.id === id ? r : i) }); return r; }
+      catch (e) { patchState(store, { saving: false, error: msg(e) }); return null; }
+    },
+    async remove(id: string): Promise<boolean> {
+      patchState(store, { saving: true, error: null });
+      try { await firstValueFrom(svc.deletePermissionGroup(id)); patchState(store, { saving: false, items: store.items().filter(i => i.id !== id), totalElements: store.totalElements() - 1 }); return true; }
+      catch (e) { patchState(store, { saving: false, error: msg(e) }); return false; }
+    },
+    clearError() { patchState(store, { error: null }); },
   }))
 );

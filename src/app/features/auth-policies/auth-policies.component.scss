@@ -1,1 +1,5 @@
-/* TODO(angular-logic-implementer): add auth-policies styles */
+.policy-card { max-width: 640px; padding: var(--space-xl); }
+.section-title { font-size: var(--font-lg); font-weight: 600; margin: var(--space-lg) 0 var(--space-sm); color: var(--color-text-primary); }
+.checks { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-md); }
+mat-form-field { width: 100%; margin-bottom: var(--space-sm); }
+.actions { margin-top: var(--space-lg); }

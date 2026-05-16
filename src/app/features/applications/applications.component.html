@@ -1,2 +1,4 @@
-<p>applications — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Applications" subtitle="Registered application integrations" actionLabel="Register App" actionIcon="add" (actionClick)="openCreate()" />
+  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No applications registered" emptyIcon="apps" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+</div>
