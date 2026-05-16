@@ -1,3 +1,16 @@
-<div>
-  <!-- TODO(angular-logic-implementer): implement form dialog wrapper from DESIGN_SYSTEM -->
-</div>
+<h2 mat-dialog-title class="dialog-title">{{ data.title }}</h2>
+<mat-dialog-content>
+  <ng-content />
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="cancel()" [disabled]="loading">
+    {{ data.cancelLabel ?? 'Cancel' }}
+  </button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="loading">
+    @if (loading) {
+      <mat-spinner diameter="18" />
+    } @else {
+      {{ data.submitLabel ?? 'Save' }}
+    }
+  </button>
+</mat-dialog-actions>

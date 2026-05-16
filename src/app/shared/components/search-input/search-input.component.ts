@@ -1,12 +1,14 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'asms-search-input',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatIconModule],
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,6 +23,4 @@ export class SearchInputComponent {
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(v => this.searchChange.emit(v ?? ''));
   }
-
-  // TODO(angular-logic-implementer): add MatFormFieldModule, MatInputModule, MatIconModule imports
 }

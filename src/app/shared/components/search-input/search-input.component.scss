@@ -1,1 +1,6 @@
-/* TODO(angular-logic-implementer): add search input styles from DESIGN_SYSTEM */
+.search-field {
+  width: 280px;
+  font-size: var(--font-md);
+
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+}

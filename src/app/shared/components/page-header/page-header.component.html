@@ -1,7 +1,14 @@
-<header>
-  <h1>{{ title }}</h1>
-  @if (subtitle) {
-    <p>{{ subtitle }}</p>
+<div class="page-header">
+  <div class="header-text">
+    <h1 class="header-title">{{ title }}</h1>
+    @if (subtitle) {
+      <p class="header-subtitle">{{ subtitle }}</p>
+    }
+  </div>
+  @if (actionLabel) {
+    <button mat-flat-button color="primary" (click)="actionClick.emit()">
+      <mat-icon>{{ actionIcon }}</mat-icon>
+      {{ actionLabel }}
+    </button>
   }
-  <!-- TODO(angular-logic-implementer): implement full page header with action button from DESIGN_SYSTEM -->
-</header>
+</div>

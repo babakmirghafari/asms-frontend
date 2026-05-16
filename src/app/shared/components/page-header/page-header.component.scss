@@ -1,1 +1,20 @@
-/* TODO(angular-logic-implementer): add page header styles from DESIGN_SYSTEM */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  gap: var(--space-md);
+}
+
+.header-title {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.header-subtitle {
+  font-size: var(--font-base);
+  color: var(--color-text-secondary);
+  margin: 0;
+}

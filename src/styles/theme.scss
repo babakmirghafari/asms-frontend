@@ -1,16 +1,64 @@
-// TODO(angular-logic-implementer): replace with theme derived from extracted DESIGN_SYSTEM
-// Default Angular Material neutral theme placeholder
+// ASMS Design System — Light enterprise SaaS theme
+// Source: Confluence §4.1 + §8.4 (design spec confirmed ASMS_Figma_Product_UI_Prompt.md)
+// Theme: Light primary, modern enterprise SaaS — minimal, information-rich, soft shadows, rounded corners
+// Synced: 2026-05-16
 
 @use '@angular/material' as mat;
 
-// Emit Angular Material core styles
 @include mat.core();
 
-// Placeholder palette — will be replaced by angular-logic-implementer
-// after design token extraction from DESIGN_SYSTEM
-$asms-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
-$asms-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+// Primary: Deep blue-indigo — enterprise trust, security context
+$asms-primary: mat.m2-define-palette((
+  50:  #e8eaf6,
+  100: #c5cae9,
+  200: #9fa8da,
+  300: #7986cb,
+  400: #5c6bc0,
+  500: #3f4db3,
+  600: #3949ab,
+  700: #303f9f,
+  800: #283593,
+  900: #1a237e,
+  A100: #8c9eff,
+  A200: #536dfe,
+  A400: #3d5afe,
+  A700: #304ffe,
+  contrast: (
+    50: rgba(0,0,0,.87),
+    100: rgba(0,0,0,.87),
+    200: rgba(0,0,0,.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(0,0,0,.87),
+    A200: white,
+    A400: white,
+    A700: white,
+  )
+), 600, 300, 900);
+
+// Accent: Teal — action highlights
+$asms-accent: mat.m2-define-palette(mat.$m2-teal-palette, 600, 300, 800);
+
+// Warn: Standard red
 $asms-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+// Typography — Inter (enterprise SaaS standard)
+$asms-typography: mat.m2-define-typography-config(
+  $font-family: '"Inter", "Segoe UI", Roboto, sans-serif',
+  $headline-5: mat.m2-define-typography-level(24px, 32px, 600),
+  $headline-6: mat.m2-define-typography-level(20px, 28px, 600),
+  $subtitle-1: mat.m2-define-typography-level(16px, 24px, 500),
+  $subtitle-2: mat.m2-define-typography-level(14px, 20px, 500),
+  $body-1: mat.m2-define-typography-level(14px, 20px, 400),
+  $body-2: mat.m2-define-typography-level(13px, 18px, 400),
+  $caption: mat.m2-define-typography-level(12px, 16px, 400),
+  $button: mat.m2-define-typography-level(14px, 14px, 500),
+);
 
 $asms-theme: mat.m2-define-light-theme((
   color: (
@@ -18,8 +66,8 @@ $asms-theme: mat.m2-define-light-theme((
     accent: $asms-accent,
     warn: $asms-warn,
   ),
-  typography: mat.m2-define-typography-config(),
-  density: 0,
+  typography: $asms-typography,
+  density: -1,
 ));
 
 @include mat.all-component-themes($asms-theme);

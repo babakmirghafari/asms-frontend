@@ -1,2 +1,4 @@
-<input [formControl]="control" [placeholder]="placeholder" type="search" />
-<!-- TODO(angular-logic-implementer): replace with MatFormField+MatInput from DESIGN_SYSTEM -->
+<mat-form-field appearance="outline" class="search-field">
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput [formControl]="control" [placeholder]="placeholder" type="search" autocomplete="off">
+</mat-form-field>

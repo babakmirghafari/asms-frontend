@@ -1,2 +1,41 @@
-<p>users — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header
+    title="User Directory"
+    subtitle="Manage user accounts and access"
+    actionLabel="New User"
+    actionIcon="person_add"
+    (actionClick)="openCreateDialog()" />
+
+  <div class="toolbar">
+    <asms-search-input
+      placeholder="Search by name or email..."
+      (searchChange)="onSearch($event)" />
+
+    <mat-form-field appearance="outline" class="status-filter">
+      <mat-label>Status</mat-label>
+      <mat-select (selectionChange)="onStatusFilter($event.value)">
+        <mat-option value="">All</mat-option>
+        @for (s of statusOptions; track s) {
+          <mat-option [value]="s">{{ s.replace('_', ' ') }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (store.error()) {
+    <div class="error-banner">{{ store.error() }}</div>
+  }
+
+  <asms-data-table
+    [columns]="columns"
+    [data]="store.users()"
+    [loading]="store.loading()"
+    [totalCount]="store.totalElements()"
+    [pageSize]="store.size()"
+    [pageIndex]="store.page()"
+    [actions]="actions"
+    emptyMessage="No users found"
+    emptyIcon="people_outline"
+    (pageChange)="onPageChange($event)"
+    (actionClick)="onAction($event)" />
+</div>
