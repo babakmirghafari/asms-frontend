@@ -1,47 +1,111 @@
 <div class="page-container">
-  <asms-page-header title="Access Control" subtitle="Effective permissions and authorization simulator" />
+  <asms-page-header
+    title="Access Control"
+    subtitle="Effective permissions lookup and authorization simulator" />
+
   <div class="ac-grid">
+
+    <!-- Effective Permissions Lookup -->
     <mat-card class="ac-card">
-      <h3>Effective Permissions Lookup</h3>
-      <form [formGroup]="lookupForm" (ngSubmit)="lookup()">
-        <mat-form-field appearance="outline"><mat-label>User ID</mat-label><input matInput formControlName="userId"></mat-form-field>
-        <mat-form-field appearance="outline"><mat-label>Organization ID</mat-label><input matInput formControlName="organizationId"></mat-form-field>
-        <button mat-flat-button color="primary" type="submit" [disabled]="store.loading()">
-          @if (store.loading()) { <mat-spinner diameter="18" /> } @else { Lookup }
+      <div class="card-header">
+        <mat-icon class="card-icon">manage_accounts</mat-icon>
+        <h3>Effective Permissions</h3>
+      </div>
+      <p class="card-sub">Look up the resolved permissions for a user in an organization.</p>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Username</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput [(ngModel)]="lookupUserId" placeholder="e.g. alice.morgan">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Organization ID</mat-label>
+          <mat-icon matPrefix>business</mat-icon>
+          <input matInput [(ngModel)]="lookupOrgId" placeholder="default">
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="lookup()" [disabled]="lookupLoading()" class="full">
+          @if (lookupLoading()) {
+            <ng-container><mat-icon class="spin">sync</mat-icon> Looking up...</ng-container>
+          } @else {
+            <ng-container><mat-icon>search</mat-icon> Lookup Permissions</ng-container>
+          }
         </button>
-      </form>
-      @if (store.effective()) {
-        <div class="results">
-          <h4>Permissions ({{ store.effective()!.permissions.length }})</h4>
-          <mat-chip-set>
-            @for (p of store.effective()!.permissions; track p) { <mat-chip>{{ p }}</mat-chip> }
-          </mat-chip-set>
+      </div>
+
+      @if (effectiveResult()) {
+        <mat-divider class="divider" />
+        <div class="result-block">
+          <div class="result-header">
+            <mat-icon class="success-icon">check_circle</mat-icon>
+            <span>Found {{ effectiveResult()!.permissions.length }} permissions for <strong>{{ effectiveResult()!.userId }}</strong></span>
+          </div>
+          <div class="groups-row">
+            @for (g of effectiveResult()!.groups; track g) {
+              <span class="group-chip">{{ g }}</span>
+            }
+          </div>
+          <div class="perm-chips">
+            @for (p of effectiveResult()!.permissions; track p) {
+              <span class="perm-chip">{{ p }}</span>
+            }
+          </div>
         </div>
       }
     </mat-card>
 
+    <!-- Authorization Simulator -->
     <mat-card class="ac-card">
-      <h3>Authorization Simulator</h3>
-      <form [formGroup]="simForm" (ngSubmit)="simulate()">
-        <mat-form-field appearance="outline"><mat-label>User ID</mat-label><input matInput formControlName="userId"></mat-form-field>
-        <mat-form-field appearance="outline"><mat-label>Organization ID</mat-label><input matInput formControlName="organizationId"></mat-form-field>
-        <mat-form-field appearance="outline"><mat-label>Resource</mat-label><input matInput formControlName="resource"></mat-form-field>
-        <mat-form-field appearance="outline">
+      <div class="card-header">
+        <mat-icon class="card-icon sim">policy</mat-icon>
+        <h3>Authorization Simulator</h3>
+      </div>
+      <p class="card-sub">Check if a user would be allowed to perform an action on a resource.</p>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Username</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput [(ngModel)]="simUserId" placeholder="e.g. alice.morgan">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Resource</mat-label>
+          <mat-icon matPrefix>inventory_2</mat-icon>
+          <input matInput [(ngModel)]="simResource" placeholder="e.g. users">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
           <mat-label>Action</mat-label>
-          <mat-select formControlName="action">
-            @for (a of actionOptions; track a) { <mat-option [value]="a">{{ a }}</mat-option> }
+          <mat-select [(value)]="simAction">
+            @for (a of actionOptions; track a) {
+              <mat-option [value]="a">{{ a }}</mat-option>
+            }
           </mat-select>
         </mat-form-field>
-        <button mat-flat-button color="accent" type="submit" [disabled]="store.simulating()">
-          @if (store.simulating()) { <mat-spinner diameter="18" /> } @else { Simulate }
+        <button mat-flat-button color="accent" (click)="simulate()" [disabled]="simLoading()" class="full">
+          @if (simLoading()) {
+            <ng-container><mat-icon class="spin">sync</mat-icon> Simulating...</ng-container>
+          } @else {
+            <ng-container><mat-icon>play_arrow</mat-icon> Run Simulation</ng-container>
+          }
         </button>
-      </form>
-      @if (store.simulateResult()) {
-        <div class="results" [class.allow]="store.simulateResult()!.decision === 'ALLOW'" [class.deny]="store.simulateResult()!.decision === 'DENY'">
-          <p>Decision: <strong>{{ store.simulateResult()!.decision }}</strong></p>
-          @for (r of store.simulateResult()!.reasons ?? []; track r) { <p class="text-secondary">{{ r }}</p> }
+      </div>
+
+      @if (simResult()) {
+        <mat-divider class="divider" />
+        <div class="sim-result" [class.allow]="simResult()!.decision === 'ALLOW'" [class.deny]="simResult()!.decision === 'DENY'">
+          <div class="sim-decision">
+            <mat-icon>{{ simResult()!.decision === 'ALLOW' ? 'check_circle' : 'cancel' }}</mat-icon>
+            <span>{{ simResult()!.decision }}</span>
+          </div>
+          <div class="sim-context">{{ simResult()!.action }} on <strong>{{ simResult()!.resource }}</strong></div>
+          <ul class="sim-reasons">
+            @for (r of simResult()!.reasons; track r) {
+              <li>{{ r }}</li>
+            }
+          </ul>
         </div>
       }
     </mat-card>
+
   </div>
 </div>

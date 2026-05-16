@@ -1,4 +1,76 @@
 <div class="page-container">
-  <asms-page-header title="Applications" subtitle="Registered application integrations" actionLabel="Register App" actionIcon="add" (actionClick)="openCreate()" />
-  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No applications registered" emptyIcon="apps" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+  <asms-page-header
+    title="Applications"
+    subtitle="{{ total() }} registered application integrations"
+    actionLabel="Register App"
+    actionIcon="add" />
+
+  <div class="toolbar">
+    <asms-search-input placeholder="Search applications..." (searchChange)="onSearch($event)" />
+  </div>
+
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="paged()">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Application</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="app-cell">
+            <div class="app-icon"><mat-icon>apps</mat-icon></div>
+            <span class="app-name">{{ row.name }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="connectorType">
+        <th mat-header-cell *matHeaderCellDef>Protocol</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="connector-badge" [style.color]="connectorColor(row.connectorType)" [style.background]="connectorColor(row.connectorType) + '18'">
+            {{ row.connectorType }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="organization">
+        <th mat-header-cell *matHeaderCellDef>Organization</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.organization }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <asms-status-chip [status]="row.status" [statusMap]="statusMap" />
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="clientId">
+        <th mat-header-cell *matHeaderCellDef>Client ID</th>
+        <td mat-cell *matCellDef="let row" class="client-id">{{ row.clientId }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="lastUsedAt">
+        <th mat-header-cell *matHeaderCellDef>Last Used</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.lastUsedAt | date:'dd MMM, HH:mm' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item><mat-icon>edit</mat-icon> Edit</button>
+            <button mat-menu-item><mat-icon>vpn_key</mat-icon> Rotate Secret</button>
+            <button mat-menu-item class="danger-item"><mat-icon>delete</mat-icon> Delete</button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [length]="total()" [pageSize]="pageSize()" [pageIndex]="pageIndex()" [pageSizeOptions]="[10, 25]" showFirstLastButtons (page)="onPage($event)" />
+  </mat-card>
 </div>

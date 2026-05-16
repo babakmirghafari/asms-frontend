@@ -1,59 +1,82 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
+import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { PermissionDto, CreatePermissionRequestDto } from '@babakmirghafari/asms-api-client';
-import { PermissionsStore } from './permissions.store';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { DataTableComponent, ColumnDef, TableAction } from '../../shared/components/data-table/data-table.component';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
+import { SearchInputComponent } from '../../shared/components/search-input/search-input.component';
 
-const COLS: ColumnDef<PermissionDto>[] = [
-  { key: 'name', label: 'Name', sortable: true },
-  { key: 'resource', label: 'Resource', sortable: true },
-  { key: 'action', label: 'Action' },
-  { key: 'status', label: 'Status', type: 'status', statusMap: { ACTIVE: 'success', INACTIVE: 'neutral', DEPRECATED: 'danger' } },
-  { key: 'createdAt', label: 'Created', type: 'date', sortable: true },
+interface MockPermission {
+  id: string;
+  name: string;
+  resource: string;
+  action: string;
+  scope: string;
+  status: string;
+  createdAt: Date;
+}
+
+const MOCK: MockPermission[] = [
+  { id: '1',  name: 'users:read',         resource: 'users',           action: 'READ',   scope: 'GLOBAL',  status: 'ACTIVE',     createdAt: new Date('2024-01-01') },
+  { id: '2',  name: 'users:write',        resource: 'users',           action: 'WRITE',  scope: 'GLOBAL',  status: 'ACTIVE',     createdAt: new Date('2024-01-01') },
+  { id: '3',  name: 'users:delete',       resource: 'users',           action: 'DELETE', scope: 'GLOBAL',  status: 'ACTIVE',     createdAt: new Date('2024-01-01') },
+  { id: '4',  name: 'orgs:read',          resource: 'organizations',   action: 'READ',   scope: 'ORG',     status: 'ACTIVE',     createdAt: new Date('2024-01-05') },
+  { id: '5',  name: 'orgs:write',         resource: 'organizations',   action: 'WRITE',  scope: 'ORG',     status: 'ACTIVE',     createdAt: new Date('2024-01-05') },
+  { id: '6',  name: 'sessions:revoke',    resource: 'sessions',        action: 'ADMIN',  scope: 'GLOBAL',  status: 'ACTIVE',     createdAt: new Date('2024-01-10') },
+  { id: '7',  name: 'alerts:manage',      resource: 'alerts',          action: 'WRITE',  scope: 'GLOBAL',  status: 'ACTIVE',     createdAt: new Date('2024-01-10') },
+  { id: '8',  name: 'audit:export',       resource: 'audit-logs',      action: 'READ',   scope: 'ORG',     status: 'ACTIVE',     createdAt: new Date('2024-01-15') },
+  { id: '9',  name: 'policy:update',      resource: 'auth-policies',   action: 'WRITE',  scope: 'ORG',     status: 'ACTIVE',     createdAt: new Date('2024-01-20') },
+  { id: '10', name: 'apps:manage',        resource: 'applications',    action: 'ADMIN',  scope: 'ORG',     status: 'ACTIVE',     createdAt: new Date('2024-01-25') },
+  { id: '11', name: 'reports:view',       resource: 'reports',         action: 'READ',   scope: 'ORG',     status: 'ACTIVE',     createdAt: new Date('2024-02-01') },
+  { id: '12', name: 'legacy:access',      resource: 'legacy-api',      action: 'READ',   scope: 'GLOBAL',  status: 'DEPRECATED', createdAt: new Date('2023-06-01') },
 ];
-const ACTIONS: TableAction[] = [{ action: 'delete', label: 'Delete', icon: 'delete', color: 'var(--color-danger)' }];
+
+const STATUS_MAP: Record<string, 'success' | 'neutral' | 'danger'> = { ACTIVE: 'success', INACTIVE: 'neutral', DEPRECATED: 'danger' };
+const ACTION_COLORS: Record<string, string> = { READ: '#10b981', WRITE: '#3b82f6', DELETE: '#ef4444', ADMIN: '#8b5cf6' };
 
 @Component({
   selector: 'asms-permissions',
   standalone: true,
-  imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatSnackBarModule, PageHeaderComponent, DataTableComponent],
-  providers: [PermissionsStore],
+  imports: [
+    DatePipe, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatSelectModule, MatFormFieldModule,
+    PageHeaderComponent, StatusChipComponent, SearchInputComponent,
+  ],
   templateUrl: './permissions.component.html',
   styleUrl: './permissions.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PermissionsComponent implements OnInit {
-  readonly store = inject(PermissionsStore);
-  private dialog = inject(MatDialog);
-  private snack  = inject(MatSnackBar);
-  private fb     = inject(FormBuilder);
-  readonly columns = COLS; readonly actions = ACTIONS;
-  form = this.fb.group({ name: ['', Validators.required], resource: ['', Validators.required], action: ['READ', Validators.required], organizationId: ['default'] });
+export class PermissionsComponent {
+  readonly displayedColumns = ['name', 'resource', 'action', 'scope', 'status', 'createdAt', 'actions'];
+  readonly statusMap = STATUS_MAP;
 
-  async ngOnInit() { await this.store.load(); this.showErr(); }
-  async onPage(e: PageEvent) { this.store.setPage(e.pageIndex, e.pageSize); await this.store.load(); }
+  readonly searchTerm = signal('');
+  readonly resourceFilter = signal('');
+  readonly pageIndex = signal(0);
+  readonly pageSize = signal(10);
+  readonly all = signal<MockPermission[]>(MOCK);
 
-  async onAction(ev: { action: string; row: PermissionDto }) {
-    if (ev.action === 'delete') {
-      const ref = this.dialog.open(ConfirmDialogComponent, { data: { title: 'Delete Permission', message: `Delete "${ev.row.name}"?`, confirmLabel: 'Delete', danger: true } as ConfirmDialogData, width: '400px' });
-      ref.afterClosed().subscribe(async (ok) => { if (ok) { const r = await this.store.remove(ev.row.id); if (r) this.snack.open('Deleted', 'Close', { duration: 3000 }); else this.showErr(); } });
-    }
-  }
+  readonly resources = computed(() => [...new Set(this.all().map(p => p.resource))]);
 
-  openCreate() {
-    this.form.reset({ action: 'READ', organizationId: 'default' });
-    import('../../shared/components/form-dialog/form-dialog.component').then(({ FormDialogComponent }) => {
-      const ref = this.dialog.open(FormDialogComponent, { data: { title: 'New Permission' }, width: '480px' });
-      ref.afterClosed().subscribe(async (r) => { if (r === 'submit' && this.form.valid) { const ok = await this.store.create(this.form.value as CreatePermissionRequestDto); if (ok) { this.snack.open('Created', 'Close', { duration: 3000 }); await this.store.load(); } else this.showErr(); } });
-    });
-  }
+  readonly filtered = computed(() => {
+    const q = this.searchTerm().toLowerCase();
+    const r = this.resourceFilter();
+    return this.all().filter(p =>
+      (!q || p.name.includes(q) || p.resource.includes(q)) &&
+      (!r || p.resource === r)
+    );
+  });
 
-  private showErr() { const e = this.store.error(); if (e) { this.snack.open(e, 'Dismiss', { duration: 5000 }); this.store.clearError(); } }
+  readonly paged = computed(() => this.filtered().slice(this.pageIndex() * this.pageSize(), (this.pageIndex() + 1) * this.pageSize()));
+  readonly total = computed(() => this.filtered().length);
+
+  onSearch(q: string): void { this.searchTerm.set(q); this.pageIndex.set(0); }
+  onResourceFilter(r: string): void { this.resourceFilter.set(r); this.pageIndex.set(0); }
+  onPage(e: PageEvent): void { this.pageIndex.set(e.pageIndex); this.pageSize.set(e.pageSize); }
+  actionColor(a: string): string { return ACTION_COLORS[a] ?? '#6b7280'; }
 }

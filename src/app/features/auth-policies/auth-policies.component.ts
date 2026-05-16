@@ -1,54 +1,68 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { UpdateAuthPolicyRequestDto } from '@babakmirghafari/asms-api-client';
-import { AuthPoliciesStore } from './auth-policies.store';
+import { MatIconModule } from '@angular/material/icon';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+
+interface PolicyConfig {
+  mfaRequired: boolean;
+  passwordMinLength: number;
+  passwordRequiresUppercase: boolean;
+  passwordRequiresNumber: boolean;
+  passwordRequiresSpecial: boolean;
+  maxFailedLoginAttempts: number;
+  sessionTimeoutMinutes: number;
+  tokenExpiryMinutes: number;
+  rememberDeviceDays: number;
+  allowedIpRanges: string;
+  enforcePasswordHistory: number;
+}
 
 @Component({
   selector: 'asms-auth-policies',
   standalone: true,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatButtonModule, MatProgressSpinnerModule, MatSnackBarModule, PageHeaderComponent],
-  providers: [AuthPoliciesStore],
+  imports: [
+    FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatCheckboxModule,
+    MatButtonModule, MatIconModule,
+    PageHeaderComponent,
+  ],
   templateUrl: './auth-policies.component.html',
   styleUrl: './auth-policies.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthPoliciesComponent implements OnInit {
-  readonly store = inject(AuthPoliciesStore);
-  private snack  = inject(MatSnackBar);
-  private fb     = inject(FormBuilder);
-  readonly orgId = 'default';
+export class AuthPoliciesComponent {
 
-  form = this.fb.group({
-    mfaRequired: [false],
-    passwordMinLength: [8],
-    passwordRequiresUppercase: [true],
-    passwordRequiresNumber: [true],
-    passwordRequiresSpecial: [false],
-    maxFailedLoginAttempts: [5],
-    sessionTimeoutMinutes: [60],
+  readonly saving = signal(false);
+  readonly saved = signal(false);
+
+  policy = signal<PolicyConfig>({
+    mfaRequired: true,
+    passwordMinLength: 12,
+    passwordRequiresUppercase: true,
+    passwordRequiresNumber: true,
+    passwordRequiresSpecial: true,
+    maxFailedLoginAttempts: 5,
+    sessionTimeoutMinutes: 60,
+    tokenExpiryMinutes: 480,
+    rememberDeviceDays: 30,
+    allowedIpRanges: '0.0.0.0/0',
+    enforcePasswordHistory: 5,
   });
 
-  async ngOnInit() {
-    await this.store.loadByOrg(this.orgId);
-    const p = this.store.selected();
-    if (p) this.form.patchValue(p);
-    this.showErr();
+  updatePolicy(partial: Partial<PolicyConfig>): void {
+    this.policy.update(p => ({ ...p, ...partial }));
   }
 
-  async save() {
-    const p = this.store.selected();
-    if (!p) return;
-    const r = await this.store.update(p.id, this.form.value as UpdateAuthPolicyRequestDto);
-    if (r) this.snack.open('Policy saved', 'Close', { duration: 3000 }); else this.showErr();
+  save(): void {
+    this.saving.set(true);
+    setTimeout(() => {
+      this.saving.set(false);
+      this.saved.set(true);
+      setTimeout(() => this.saved.set(false), 3000);
+    }, 800);
   }
-
-  private showErr() { const e = this.store.error(); if (e) { this.snack.open(e, 'Dismiss', { duration: 5000 }); this.store.clearError(); } }
 }

@@ -1,1 +1,12 @@
-
+:host { display: block; }
+.toolbar { margin-bottom: var(--space-md); }
+.table-card { overflow: hidden; padding: 0 !important; }
+table { width: 100%; }
+.app-cell { display: flex; align-items: center; gap: var(--space-sm); }
+.app-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: #fff; display: flex; align-items: center; justify-content: center; mat-icon { font-size: 18px; width: 18px; height: 18px; } }
+.app-name { font-weight: 500; }
+.connector-badge { padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--font-xs); font-weight: 700; }
+.muted { color: var(--color-text-secondary); font-size: var(--font-sm); }
+.client-id { font-family: monospace; font-size: var(--font-xs); color: var(--color-text-secondary); }
+.actions-cell { text-align: right; width: 48px; padding-right: 8px !important; }
+.danger-item { color: var(--color-danger) !important; }

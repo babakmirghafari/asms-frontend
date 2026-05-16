@@ -1,1 +1,11 @@
-.toolbar { display: flex; gap: var(--space-md); margin-bottom: var(--space-md); }
+:host { display: block; }
+.toolbar { display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap; }
+.filter { width: 160px; }
+.table-card { overflow: hidden; padding: 0 !important; }
+.orgs-table { width: 100%; }
+.org-avatar { width: 36px; height: 36px; border-radius: var(--radius-sm); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--font-sm); }
+.org-name { font-weight: 500; }
+.muted { color: var(--color-text-secondary); font-size: var(--font-sm); }
+.plan-badge { padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--font-xs); font-weight: 600; }
+.actions-cell { text-align: right; width: 48px; padding-right: 8px !important; }
+.danger-item { color: var(--color-danger) !important; }

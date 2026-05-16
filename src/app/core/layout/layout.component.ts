@@ -12,27 +12,26 @@ import { MatDividerModule } from '@angular/material/divider';
 import { AuthStore } from '../store/auth.store';
 
 interface NavItem {
-  label: string;
-  icon: string;
-  route: string;
-  group?: string;
+  label: string; icon: string; route: string;
+  group?: string; badge?: number; badgeRed?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard',         icon: 'dashboard',          route: '/dashboard',          group: 'Overview' },
-  { label: 'Users',             icon: 'people',             route: '/users',              group: 'Identity' },
-  { label: 'Organizations',     icon: 'business',           route: '/organizations',      group: 'Identity' },
-  { label: 'Memberships',       icon: 'group_add',          route: '/memberships',        group: 'Identity' },
-  { label: 'Permission Groups', icon: 'folder_shared',      route: '/permission-groups',  group: 'Access Control' },
-  { label: 'Permissions',       icon: 'security',           route: '/permissions',        group: 'Access Control' },
-  { label: 'Access Control',    icon: 'admin_panel_settings', route: '/access-control',   group: 'Access Control' },
-  { label: 'Applications',      icon: 'apps',               route: '/applications',       group: 'Integration' },
-  { label: 'Auth Policies',     icon: 'policy',             route: '/auth-policies',      group: 'Policy' },
-  { label: 'Station Policies',  icon: 'location_on',        route: '/station-policies',   group: 'Policy' },
-  { label: 'Sessions',          icon: 'devices',            route: '/sessions',           group: 'Monitoring' },
-  { label: 'Activity Logs',     icon: 'history',            route: '/activity-logs',      group: 'Monitoring' },
-  { label: 'Audit Logs',        icon: 'fact_check',         route: '/audit-logs',         group: 'Compliance' },
-  { label: 'Alerts',            icon: 'notifications_active', route: '/alerts',           group: 'Compliance' },
+  { label: 'Dashboard',         icon: 'dashboard',            route: '/dashboard',         group: 'Overview' },
+  { label: 'Settings',          icon: 'settings',             route: '/settings',          group: 'Overview' },
+  { label: 'Users',             icon: 'people',               route: '/users',             group: 'Identity',  badge: 10 },
+  { label: 'Organizations',     icon: 'business',             route: '/organizations',     group: 'Identity',  badge: 5 },
+  { label: 'Memberships',       icon: 'group_add',            route: '/memberships',       group: 'Identity' },
+  { label: 'Applications',      icon: 'apps',                 route: '/applications',      group: 'Identity',  badge: 4 },
+  { label: 'Permission Groups', icon: 'folder_shared',        route: '/permission-groups', group: 'Access',    badge: 8 },
+  { label: 'Permissions',       icon: 'key',                  route: '/permissions',       group: 'Access' },
+  { label: 'Access Control',    icon: 'admin_panel_settings', route: '/access-control',    group: 'Access' },
+  { label: 'Auth Policies',     icon: 'policy',               route: '/auth-policies',     group: 'Policies' },
+  { label: 'Station Policies',  icon: 'location_on',          route: '/station-policies',  group: 'Policies' },
+  { label: 'Sessions',          icon: 'monitor',              route: '/sessions',          group: 'Monitoring', badge: 2, badgeRed: true },
+  { label: 'Activity Logs',     icon: 'history',              route: '/activity-logs',     group: 'Monitoring' },
+  { label: 'Audit & Compliance',icon: 'fact_check',           route: '/audit-logs',        group: 'Monitoring' },
+  { label: 'Alerts',            icon: 'notifications_active', route: '/alerts',            group: 'Monitoring', badge: 4, badgeRed: true },
 ];
 
 @Component({

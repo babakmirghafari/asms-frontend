@@ -1,4 +1,91 @@
 <div class="page-container">
-  <asms-page-header title="Sessions" subtitle="Live session monitoring" />
-  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No active sessions" emptyIcon="devices" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+  <asms-page-header
+    title="Active Sessions"
+    subtitle="{{ activeCount() }} active — {{ highRiskCount() }} high-risk" />
+
+  <div class="summary-bar">
+    <div class="summary-item">
+      <mat-icon>monitor</mat-icon>
+      <span><strong>{{ activeCount() }}</strong> Active</span>
+    </div>
+    <div class="summary-item warn">
+      <mat-icon>warning</mat-icon>
+      <span><strong>{{ highRiskCount() }}</strong> High Risk</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <asms-search-input placeholder="Search by user or IP address..." (searchChange)="onSearch($event)" />
+  </div>
+
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="paged()">
+
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef>User</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="user-cell">
+            <div class="user-avatar">{{ row.displayName.charAt(0) }}</div>
+            <div>
+              <div class="user-name">{{ row.displayName }}</div>
+              <div class="user-agent">{{ row.userAgent }}</div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="organization">
+        <th mat-header-cell *matHeaderCellDef>Organization</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.organizationName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ip">
+        <th mat-header-cell *matHeaderCellDef>IP / Location</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="ip-cell">
+            <span class="ip">{{ row.ipAddress }}</span>
+            <span class="location">{{ row.location }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <asms-status-chip [status]="row.status" [statusMap]="statusMap" />
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="riskScore">
+        <th mat-header-cell *matHeaderCellDef>Risk</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="risk-cell">
+            <span class="risk-score" [style.color]="riskColor(row.riskScore)">{{ row.riskScore }}</span>
+            <span class="risk-label" [style.color]="riskColor(row.riskScore)">{{ riskLabel(row.riskScore) }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="lastActivity">
+        <th mat-header-cell *matHeaderCellDef>Last Activity</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.lastActivityAt | date:'HH:mm:ss' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          @if (row.status === 'ACTIVE') {
+            <button mat-stroked-button color="warn" (click)="revokeSession(row)" class="revoke-btn">
+              <mat-icon>block</mat-icon> Revoke
+            </button>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.revoked-row]="row.status !== 'ACTIVE'"></tr>
+    </table>
+
+    <mat-paginator [length]="total()" [pageSize]="pageSize()" [pageIndex]="pageIndex()" [pageSizeOptions]="[10, 25]" showFirstLastButtons (page)="onPage($event)" />
+  </mat-card>
 </div>

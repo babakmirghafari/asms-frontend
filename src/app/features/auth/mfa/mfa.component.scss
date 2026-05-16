@@ -1,0 +1,125 @@
+@use '../../../../app/features/auth/login/login.component' as login;
+
+.auth-page { display: flex; min-height: 100vh; font-family: 'Inter','Segoe UI',sans-serif; }
+
+// ── Left form panel ───────────────────────────────────────────────────────────
+.auth-form-panel {
+  flex: 0 0 340px;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 28px;
+  box-shadow: 2px 0 24px rgba(0,0,0,.18);
+  z-index: 2;
+  @media (max-width: 700px) { flex: 1; padding: 32px 20px; }
+}
+
+.form-inner {
+  width: 100%; max-width: 300px;
+  display: flex; flex-direction: column; gap: 0;
+}
+
+.brand-mark { display:flex; align-items:center; gap:10px; margin-bottom:28px; }
+.brand-icon {
+  width:40px; height:40px; background:#0f1623; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.brand-text { display:flex; flex-direction:column; }
+.brand-name { font-size:17px; font-weight:700; color:#0f1623; letter-spacing:.5px; line-height:1.2; }
+.brand-sub  { font-size:9px; font-weight:500; color:#9ea8b4; letter-spacing:1.2px; }
+
+// MFA icon
+.mfa-icon-wrap { display:flex; justify-content:center; margin-bottom:20px; }
+.mfa-icon-ring {
+  width:60px; height:60px; border-radius:50%;
+  border:2px solid #ea580c;
+  display:flex; align-items:center; justify-content:center;
+  .mfa-icon { font-size:26px; color:#ea580c; }
+}
+
+.form-heading    { font-size:20px; font-weight:700; color:#0f1623; margin:0 0 6px; text-align:center; }
+.form-subheading { font-size:13px; color:#6b7280; margin:0 0 4px; text-align:center; }
+.form-context    { font-size:13px; color:#6b7280; margin:0 0 24px; text-align:center; strong { color:#0f1623; } }
+
+// OTP inputs
+.otp-row { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
+.otp-input {
+  width:44px; height:52px;
+  border:1.5px solid #e5e7eb; border-radius:8px;
+  font-size:22px; font-weight:700; color:#0f1623; text-align:center;
+  font-family:inherit; background:#fff; outline:none;
+  transition:border-color .15s;
+  &.filled  { border-color:#ea580c; color:#ea580c; }
+  &:focus   { border-color:#ea580c; box-shadow:0 0 0 3px rgba(234,88,12,.12); }
+}
+
+.attempt-warning {
+  display:flex; align-items:flex-start; gap:8px;
+  background:#fff7ed; border:1px solid #fed7aa; border-radius:8px;
+  padding:10px 12px; margin-bottom:16px;
+  .warn-icon { font-size:16px; width:16px; height:16px; color:#f59e0b; flex-shrink:0; margin-top:1px; }
+  span { font-size:12px; color:#92400e; line-height:1.5; }
+}
+
+.verify-btn {
+  width:100%; height:44px;
+  background:linear-gradient(135deg,#f97316,#ea580c); color:#fff;
+  border:none; border-radius:8px; font-size:14px; font-weight:700;
+  font-family:inherit; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  margin-bottom:20px; transition:opacity .15s;
+  &:hover:not(:disabled) { opacity:.9; }
+  &:disabled { opacity:.55; cursor:not-allowed; }
+  mat-spinner { flex-shrink:0; }
+}
+
+.alt-actions {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;
+}
+.back-link { font-size:13px; color:#374151; text-decoration:none; font-weight:500; &:hover { color:#0f1623; } }
+.alt-links {
+  display:flex; gap:12px;
+  a { font-size:12px; color:#ea580c; text-decoration:none; font-weight:500; &:hover { text-decoration:underline; } }
+}
+
+.compliance-row {
+  font-size:11px; color:#9ea8b4; display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+}
+.badge {
+  display:inline-flex; align-items:center; padding:2px 7px;
+  border-radius:4px; background:#f3f4f6; color:#6b7280; font-size:10px; font-weight:600; letter-spacing:.5px;
+}
+
+// ── Right brand panel ─────────────────────────────────────────────────────────
+.auth-brand-panel {
+  flex:1; background:radial-gradient(ellipse at 60% 40%,#1a2540 0%,#0a0d14 60%,#060810 100%);
+  display:flex; flex-direction:column; justify-content:space-between;
+  padding:32px 48px 28px; position:relative; overflow:hidden;
+  &::before {
+    content:''; position:absolute; inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);
+    background-size:28px 28px; pointer-events:none;
+  }
+  @media (max-width:700px) { display:none; }
+}
+
+.brand-tag { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:600; color:rgba(255,255,255,.45); letter-spacing:1.5px; z-index:1; }
+.brand-dot { width:8px; height:8px; border-radius:50%; background:#f59e0b; box-shadow:0 0 6px #f59e0b; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity:1; box-shadow:0 0 6px #f59e0b; } 50% { opacity:.6; box-shadow:0 0 14px #f59e0b; } }
+
+.brand-hero { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; z-index:1; gap:12px; }
+.shield-img { width:200px; height:auto; filter:drop-shadow(0 0 32px rgba(212,160,23,.5)) drop-shadow(0 0 8px rgba(212,160,23,.3)); }
+.hero-name { font-size:42px; font-weight:800; letter-spacing:8px; color:#f0d080; margin:0; text-shadow:0 0 30px rgba(212,160,23,.4); }
+.hero-sentinel { display:flex; align-items:center; gap:10px; font-size:12px; font-weight:600; letter-spacing:4px; color:rgba(212,160,23,.7); }
+.sl { flex:0 0 28px; height:1px; background:rgba(212,160,23,.4); }
+.hero-sub { font-size:11px; font-weight:500; letter-spacing:2px; color:rgba(255,255,255,.35); margin:0; text-align:center; }
+
+.brand-features { display:flex; justify-content:center; gap:64px; z-index:1; padding:16px 0; border-top:1px solid rgba(255,255,255,.06); }
+.feature-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.feature-icon { font-size:20px; width:20px; height:20px; color:rgba(212,160,23,.7); margin-bottom:4px; }
+.feature-title { font-size:13px; font-weight:600; color:rgba(255,255,255,.75); }
+.feature-desc  { font-size:11px; color:rgba(255,255,255,.35); }
+
+.brand-footer-row { display:flex; align-items:center; justify-content:space-between; z-index:1; }
+.brand-copy { font-size:11px; color:rgba(255,255,255,.3); }
+.systems-status { display:flex; align-items:center; gap:6px; font-size:11px; color:rgba(255,255,255,.4); }
+.status-dot { width:6px; height:6px; border-radius:50%; background:#22c55e; box-shadow:0 0 6px #22c55e; }
