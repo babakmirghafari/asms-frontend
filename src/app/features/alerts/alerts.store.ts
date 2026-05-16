@@ -1,7 +1,7 @@
 import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
 import { inject, computed } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AlertsService, AlertDto, AcknowledgeAlertRequestDto, ResolveAlertRequestDto, EscalateAlertRequestDto } from '@babakmirghafari/asms-api-client';
+import { AlertsService, AlertDto, AcknowledgeAlertRequestDto, ResolveAlertRequestDto, EscalateAlertRequestDto, PagedResponseDto } from '@babakmirghafari/asms-api-client';
 
 interface AlertsState { items: AlertDto[]; totalElements: number; page: number; size: number; severityFilter: string; statusFilter: string; loading: boolean; saving: boolean; error: string | null; }
 const init: AlertsState = { items: [], totalElements: 0, page: 0, size: 20, severityFilter: '', statusFilter: '', loading: false, saving: false, error: null };
@@ -22,8 +22,8 @@ export const AlertsStore = signalStore(
       try {
         const sev    = store.severityFilter() as AlertSev || undefined;
         const status = store.statusFilter() as AlertStatus || undefined;
-        const res = await firstValueFrom(svc.listAlerts(store.page(), store.size(), undefined, sev, status)) as AlertDto[] extends never ? never : { content: AlertDto[]; totalElements: number };
-        patchState(store, { items: (res as any).content as AlertDto[], totalElements: (res as any).totalElements, loading: false });
+        const res: PagedResponseDto = await firstValueFrom(svc.listAlerts(store.page(), store.size(), undefined, sev, status));
+        patchState(store, { items: res.content as AlertDto[], totalElements: res.totalElements, loading: false });
       } catch (e) { patchState(store, { loading: false, error: msg(e, 'Failed to load alerts.') }); }
     },
     setPage(page: number, size: number) { patchState(store, { page, size }); },

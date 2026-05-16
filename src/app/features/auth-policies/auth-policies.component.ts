@@ -7,6 +7,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { UpdateAuthPolicyRequestDto } from '@babakmirghafari/asms-api-client';
 import { AuthPoliciesStore } from './auth-policies.store';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
@@ -45,7 +46,7 @@ export class AuthPoliciesComponent implements OnInit {
   async save() {
     const p = this.store.selected();
     if (!p) return;
-    const r = await this.store.update(p.id, this.form.value as any);
+    const r = await this.store.update(p.id, this.form.value as UpdateAuthPolicyRequestDto);
     if (r) this.snack.open('Policy saved', 'Close', { duration: 3000 }); else this.showErr();
   }
 

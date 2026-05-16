@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { PageEvent } from '@angular/material/paginator';
-import { UserDto, CreateUserRequestDto } from '@babakmirghafari/asms-api-client';
+import { UserDto, CreateUserRequestDto, UpdateUserRequestDto, UserStatusUpdateRequestDto } from '@babakmirghafari/asms-api-client';
 import { UsersStore } from './users.store';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { DataTableComponent, ColumnDef, TableAction } from '../../shared/components/data-table/data-table.component';
@@ -141,7 +141,7 @@ export class UsersComponent implements OnInit {
       });
       ref.afterClosed().subscribe(async (result) => {
         if (result === 'submit' && this.userForm.valid) {
-          const updated = await this.store.updateUser(user.id, this.userForm.value as any);
+          const updated = await this.store.updateUser(user.id, this.userForm.value as UpdateUserRequestDto);
           if (updated) {
             this.snack.open('User updated', 'Close', { duration: 3000 });
           } else { this.showError(); }
@@ -170,7 +170,7 @@ export class UsersComponent implements OnInit {
   }
 
   private async updateStatus(userId: string, status: string): Promise<void> {
-    const ok = await this.store.updateStatus(userId, { status: status as any });
+    const ok = await this.store.updateStatus(userId, { status: status as UserStatusUpdateRequestDto.StatusEnum });
     if (ok) { this.snack.open(`User ${status.toLowerCase()}`, 'Close', { duration: 3000 }); }
     else { this.showError(); }
   }
