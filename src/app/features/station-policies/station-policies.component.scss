@@ -1,1 +1,16 @@
-
+:host { display: block; }
+.toolbar { margin-bottom: var(--space-md); }
+.table-card { overflow: hidden; padding: 0 !important; }
+table { width: 100%; }
+.policy-cell { display: flex; align-items: center; gap: var(--space-sm); }
+.policy-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); background: #10b98118; color: #10b981; display: flex; align-items: center; justify-content: center; mat-icon { font-size: 18px; width: 18px; height: 18px; } }
+.policy-name { font-weight: 500; font-size: var(--font-sm); }
+.schedule { display: flex; align-items: center; gap: var(--space-xs); }
+.time { font-size: var(--font-sm); font-weight: 500; }
+.tz { font-size: var(--font-xs); color: var(--color-text-secondary); }
+.days { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.day-chip { padding: 1px 6px; border-radius: var(--radius-sm); background: var(--color-info-bg); color: var(--color-info); font-size: var(--font-xs); font-weight: 600; }
+.muted { color: var(--color-text-secondary); font-size: var(--font-sm); }
+.center { text-align: center; }
+.actions-cell { text-align: right; width: 48px; padding-right: 8px !important; }
+.danger-item { color: var(--color-danger) !important; }

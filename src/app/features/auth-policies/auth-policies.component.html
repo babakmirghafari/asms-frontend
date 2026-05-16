@@ -1,36 +1,159 @@
 <div class="page-container">
-  <asms-page-header title="Authentication Policies" subtitle="Configure password rules, MFA, and lockout settings" />
-  @if (store.loading()) { <div class="loading-overlay"><mat-spinner diameter="48" /></div> }
-  @if (!store.loading() && store.selected()) {
-    <mat-card class="policy-card">
-      <form [formGroup]="form" (ngSubmit)="save()">
-        <h3 class="section-title">MFA Settings</h3>
-        <mat-checkbox formControlName="mfaRequired">Require MFA for all users</mat-checkbox>
-        <h3 class="section-title">Password Policy</h3>
-        <mat-form-field appearance="outline">
-          <mat-label>Minimum Length</mat-label>
-          <input matInput type="number" formControlName="passwordMinLength">
-        </mat-form-field>
-        <div class="checks">
-          <mat-checkbox formControlName="passwordRequiresUppercase">Require uppercase</mat-checkbox>
-          <mat-checkbox formControlName="passwordRequiresNumber">Require number</mat-checkbox>
-          <mat-checkbox formControlName="passwordRequiresSpecial">Require special character</mat-checkbox>
-        </div>
-        <h3 class="section-title">Session &amp; Lockout</h3>
-        <mat-form-field appearance="outline">
-          <mat-label>Max Failed Login Attempts</mat-label>
-          <input matInput type="number" formControlName="maxFailedLoginAttempts">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Session Timeout (minutes)</mat-label>
-          <input matInput type="number" formControlName="sessionTimeoutMinutes">
-        </mat-form-field>
-        <div class="actions">
-          <button mat-flat-button color="primary" type="submit" [disabled]="store.saving()">
-            @if (store.saving()) { <mat-spinner diameter="18" /> } @else { Save Policy }
-          </button>
-        </div>
-      </form>
-    </mat-card>
+  <asms-page-header
+    title="Authentication Policies"
+    subtitle="Configure password rules, MFA requirements, and session management" />
+
+  @if (saved()) {
+    <div class="save-banner">
+      <mat-icon>check_circle</mat-icon> Policy saved successfully
+    </div>
   }
+
+  <div class="policy-grid">
+
+    <!-- MFA Settings -->
+    <mat-card class="policy-card">
+      <div class="policy-card-header">
+        <div class="policy-icon mfa"><mat-icon>verified_user</mat-icon></div>
+        <div>
+          <h3>Multi-Factor Authentication</h3>
+          <p>Control MFA enforcement across the organization</p>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Require MFA for all users</span>
+          <span class="setting-desc">Users must enroll and use MFA on every login</span>
+        </div>
+        <mat-checkbox
+          [checked]="policy().mfaRequired"
+          (change)="updatePolicy({ mfaRequired: $event.checked })"
+          color="primary">
+        </mat-checkbox>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Remember device for (days)</span>
+          <span class="setting-desc">Skip MFA on trusted devices</span>
+        </div>
+        <mat-form-field appearance="outline" class="number-field">
+          <input matInput type="number" [value]="policy().rememberDeviceDays" (change)="updatePolicy({ rememberDeviceDays: +$any($event.target).value })" min="0" max="365">
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <!-- Password Policy -->
+    <mat-card class="policy-card">
+      <div class="policy-card-header">
+        <div class="policy-icon password"><mat-icon>lock</mat-icon></div>
+        <div>
+          <h3>Password Policy</h3>
+          <p>Set complexity and history requirements</p>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Minimum length</span>
+        </div>
+        <mat-form-field appearance="outline" class="number-field">
+          <input matInput type="number" [value]="policy().passwordMinLength" (change)="updatePolicy({ passwordMinLength: +$any($event.target).value })" min="6" max="128">
+        </mat-form-field>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Require uppercase letter</span>
+        </div>
+        <mat-checkbox [checked]="policy().passwordRequiresUppercase" (change)="updatePolicy({ passwordRequiresUppercase: $event.checked })" color="primary" />
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Require number</span>
+        </div>
+        <mat-checkbox [checked]="policy().passwordRequiresNumber" (change)="updatePolicy({ passwordRequiresNumber: $event.checked })" color="primary" />
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Require special character</span>
+        </div>
+        <mat-checkbox [checked]="policy().passwordRequiresSpecial" (change)="updatePolicy({ passwordRequiresSpecial: $event.checked })" color="primary" />
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Password history (count)</span>
+          <span class="setting-desc">Prevent reuse of recent passwords</span>
+        </div>
+        <mat-form-field appearance="outline" class="number-field">
+          <input matInput type="number" [value]="policy().enforcePasswordHistory" (change)="updatePolicy({ enforcePasswordHistory: +$any($event.target).value })" min="0" max="24">
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <!-- Session & Lockout -->
+    <mat-card class="policy-card">
+      <div class="policy-card-header">
+        <div class="policy-icon session"><mat-icon>timer</mat-icon></div>
+        <div>
+          <h3>Session &amp; Lockout</h3>
+          <p>Control session lifetimes and brute-force protection</p>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Max failed login attempts</span>
+          <span class="setting-desc">Account locks after this many failures</span>
+        </div>
+        <mat-form-field appearance="outline" class="number-field">
+          <input matInput type="number" [value]="policy().maxFailedLoginAttempts" (change)="updatePolicy({ maxFailedLoginAttempts: +$any($event.target).value })" min="1" max="20">
+        </mat-form-field>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Session timeout (minutes)</span>
+          <span class="setting-desc">Idle sessions are expired after this period</span>
+        </div>
+        <mat-form-field appearance="outline" class="number-field">
+          <input matInput type="number" [value]="policy().sessionTimeoutMinutes" (change)="updatePolicy({ sessionTimeoutMinutes: +$any($event.target).value })" min="5" max="1440">
+        </mat-form-field>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Token expiry (minutes)</span>
+        </div>
+        <mat-form-field appearance="outline" class="number-field">
+          <input matInput type="number" [value]="policy().tokenExpiryMinutes" (change)="updatePolicy({ tokenExpiryMinutes: +$any($event.target).value })" min="15" max="43200">
+        </mat-form-field>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Allowed IP ranges</span>
+          <span class="setting-desc">CIDR notation, comma-separated (0.0.0.0/0 = all)</span>
+        </div>
+        <mat-form-field appearance="outline" class="ip-field">
+          <input matInput [value]="policy().allowedIpRanges" (change)="updatePolicy({ allowedIpRanges: $any($event.target).value })">
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+  </div>
+
+  <div class="save-row">
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+      @if (saving()) {
+        <ng-container><mat-icon>sync</mat-icon> Saving...</ng-container>
+      } @else {
+        <ng-container><mat-icon>save</mat-icon> Save Policy</ng-container>
+      }
+    </button>
+  </div>
 </div>

@@ -1,41 +1,137 @@
 <div class="page-container">
   <asms-page-header
     title="User Directory"
-    subtitle="Manage user accounts and access"
+    subtitle="{{ totalCount() }} users across all organizations"
     actionLabel="New User"
-    actionIcon="person_add"
-    (actionClick)="openCreateDialog()" />
+    actionIcon="person_add" />
 
   <div class="toolbar">
     <asms-search-input
-      placeholder="Search by name or email..."
+      placeholder="Search by name, username or email..."
       (searchChange)="onSearch($event)" />
 
     <mat-form-field appearance="outline" class="status-filter">
       <mat-label>Status</mat-label>
-      <mat-select (selectionChange)="onStatusFilter($event.value)">
-        <mat-option value="">All</mat-option>
+      <mat-select [value]="statusFilter()" (selectionChange)="onStatusFilter($event.value)">
+        <mat-option value="">All Statuses</mat-option>
         @for (s of statusOptions; track s) {
-          <mat-option [value]="s">{{ s.replace('_', ' ') }}</mat-option>
+          <mat-option [value]="s">{{ statusLabel(s) }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
   </div>
 
-  @if (store.error()) {
-    <div class="error-banner">{{ store.error() }}</div>
-  }
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="pagedUsers()" class="users-table">
 
-  <asms-data-table
-    [columns]="columns"
-    [data]="store.users()"
-    [loading]="store.loading()"
-    [totalCount]="store.totalElements()"
-    [pageSize]="store.size()"
-    [pageIndex]="store.page()"
-    [actions]="actions"
-    emptyMessage="No users found"
-    emptyIcon="people_outline"
-    (pageChange)="onPageChange($event)"
-    (actionClick)="onAction($event)" />
+      <!-- Avatar + initials -->
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <div class="avatar" [style.background]="avatarColor(row.id)">
+            {{ getInitials(row.displayName) }}
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Username / display name -->
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef>User</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="user-cell">
+            <span class="user-display">{{ row.displayName }}</span>
+            <span class="user-username">&#64;{{ row.username }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let row" class="email-cell">{{ row.email }}</td>
+      </ng-container>
+
+      <!-- Organization -->
+      <ng-container matColumnDef="organization">
+        <th mat-header-cell *matHeaderCellDef>Organization</th>
+        <td mat-cell *matCellDef="let row" class="org-cell">{{ row.organization }}</td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <asms-status-chip [status]="row.status" [statusMap]="statusMapVariants" [label]="statusLabel(row.status)" />
+        </td>
+      </ng-container>
+
+      <!-- MFA -->
+      <ng-container matColumnDef="mfa">
+        <th mat-header-cell *matHeaderCellDef>MFA</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.mfaEnabled) {
+            <span class="mfa-badge enabled"><mat-icon>verified_user</mat-icon> On</span>
+          } @else {
+            <span class="mfa-badge disabled"><mat-icon>gpp_bad</mat-icon> Off</span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Last Login -->
+      <ng-container matColumnDef="lastLoginAt">
+        <th mat-header-cell *matHeaderCellDef>Last Login</th>
+        <td mat-cell *matCellDef="let row" class="date-cell">
+          {{ row.lastLoginAt | date:'dd MMM, HH:mm' }}
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>edit</mat-icon> Edit
+            </button>
+            @if (row.status === 'LOCKED') {
+              <button mat-menu-item (click)="unlockUser(row)">
+                <mat-icon>lock_open</mat-icon> Unlock
+              </button>
+            } @else {
+              <button mat-menu-item (click)="lockUser(row)">
+                <mat-icon>lock</mat-icon> Lock Account
+              </button>
+            }
+            <button mat-menu-item (click)="deleteUser(row)" class="danger-item">
+              <mat-icon>delete</mat-icon> Delete
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td [colSpan]="displayedColumns.length" class="empty-cell">
+          <div class="empty-state">
+            <mat-icon>people_outline</mat-icon>
+            <h3>No users found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 15, 25, 50]"
+      showFirstLastButtons
+      (page)="onPage($event)" />
+  </mat-card>
 </div>

@@ -1,1 +1,10 @@
-
+:host { display: block; }
+.toolbar { display: flex; gap: var(--space-md); margin-bottom: var(--space-md); flex-wrap: wrap; }
+.filter { width: 180px; }
+.table-card { overflow: hidden; padding: 0 !important; }
+table { width: 100%; }
+.perm-name { font-family: monospace; font-size: var(--font-sm); font-weight: 600; color: var(--color-text-primary); }
+.muted { color: var(--color-text-secondary); font-size: var(--font-sm); }
+.action-badge { padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--font-xs); font-weight: 700; }
+.actions-cell { text-align: right; width: 48px; padding-right: 8px !important; }
+.danger-item { color: var(--color-danger) !important; }

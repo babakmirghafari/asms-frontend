@@ -1,4 +1,84 @@
 <div class="page-container">
-  <asms-page-header title="Activity Logs" subtitle="User behavior monitoring" />
-  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" emptyMessage="No activity logs" emptyIcon="history" (pageChange)="onPage($event)" />
+  <asms-page-header
+    title="Activity Logs"
+    subtitle="{{ total() }} events — user behavior monitoring" />
+
+  <div class="toolbar">
+    <asms-search-input placeholder="Search by actor or event type..." (searchChange)="onSearch($event)" />
+    <mat-form-field appearance="outline" class="filter">
+      <mat-label>Category</mat-label>
+      <mat-select [value]="categoryFilter()" (selectionChange)="onCategoryFilter($event.value)">
+        <mat-option value="">All Categories</mat-option>
+        @for (c of categories; track c) {
+          <mat-option [value]="c">{{ c }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="paged()">
+
+      <ng-container matColumnDef="actor">
+        <th mat-header-cell *matHeaderCellDef>Actor</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="actor-cell">
+            <div class="actor-dot" [style.background]="row.actorUsername === 'SYSTEM' ? '#6b7280' : '#3b82f6'">
+              <mat-icon>{{ row.actorUsername === 'SYSTEM' ? 'computer' : 'person' }}</mat-icon>
+            </div>
+            <span class="actor-name">{{ row.actorUsername }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="eventType">
+        <th mat-header-cell *matHeaderCellDef>Event</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="event-cell">
+            <mat-icon class="event-icon">{{ eventIcon(row.eventType) }}</mat-icon>
+            <span>{{ row.eventType.replace(/_/g, ' ') }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="cat-badge" [style.color]="categoryColor(row.category)" [style.background]="categoryColor(row.category) + '18'">
+            {{ row.category }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="target">
+        <th mat-header-cell *matHeaderCellDef>Target</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.targetDisplayName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status-dot" [style.color]="statusColor(row.status)">
+            <mat-icon>{{ row.status === 'SUCCESS' || row.status === 'INFO' ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ row.status }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ip">
+        <th mat-header-cell *matHeaderCellDef>IP Address</th>
+        <td mat-cell *matCellDef="let row" class="ip-cell">{{ row.ipAddress }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="timestamp">
+        <th mat-header-cell *matHeaderCellDef>Time</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.timestamp | date:'dd MMM HH:mm:ss' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [length]="total()" [pageSize]="pageSize()" [pageIndex]="pageIndex()" [pageSizeOptions]="[15, 30, 50]" showFirstLastButtons (page)="onPage($event)" />
+  </mat-card>
 </div>

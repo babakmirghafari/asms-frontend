@@ -1,18 +1,122 @@
 <div class="page-container">
-  <asms-page-header title="Alerts" subtitle="Security monitoring and incident response" />
+  <asms-page-header
+    title="Alerts"
+    subtitle="{{ openCount() }} open — {{ criticalCount() }} critical" />
+
+  <!-- Summary badges -->
+  <div class="alert-summary">
+    <div class="summary-chip critical">
+      <mat-icon>emergency</mat-icon>
+      <strong>{{ criticalCount() }}</strong> Critical
+    </div>
+    <div class="summary-chip high">
+      <mat-icon>warning</mat-icon>
+      <strong>{{ all().filter(a => a.severity === 'HIGH' && a.status === 'OPEN').length }}</strong> High
+    </div>
+    <div class="summary-chip medium">
+      <mat-icon>info</mat-icon>
+      <strong>{{ all().filter(a => a.severity === 'MEDIUM' && a.status === 'OPEN').length }}</strong> Medium
+    </div>
+    <div class="summary-chip low">
+      <mat-icon>check_circle</mat-icon>
+      <strong>{{ all().filter(a => a.severity === 'LOW' && a.status === 'OPEN').length }}</strong> Low
+    </div>
+  </div>
+
   <div class="toolbar">
+    <asms-search-input placeholder="Search by type or actor..." (searchChange)="onSearch($event)" />
     <mat-form-field appearance="outline" class="filter">
       <mat-label>Severity</mat-label>
-      <mat-select (selectionChange)="onSeverityFilter($event.value)">
-        @for (s of severities; track s) { <mat-option [value]="s">{{ s || 'All' }}</mat-option> }
+      <mat-select [value]="severityFilter()" (selectionChange)="onSeverityFilter($event.value)">
+        <mat-option value="">All</mat-option>
+        @for (s of severities; track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="filter">
       <mat-label>Status</mat-label>
-      <mat-select (selectionChange)="onStatusFilter($event.value)">
-        @for (s of statuses; track s) { <mat-option [value]="s">{{ s || 'All' }}</mat-option> }
+      <mat-select [value]="statusFilter()" (selectionChange)="onStatusFilter($event.value)">
+        <mat-option value="">All</mat-option>
+        @for (s of statuses; track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
       </mat-select>
     </mat-form-field>
   </div>
-  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No alerts" emptyIcon="notifications_none" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="paged()">
+
+      <ng-container matColumnDef="severity">
+        <th mat-header-cell *matHeaderCellDef>Sev.</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="sev-indicator" [style.background]="sevBg(row.severity)" [style.color]="sevColor(row.severity)" [matTooltip]="row.severity">
+            {{ row.severity.charAt(0) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="alertType">
+        <th mat-header-cell *matHeaderCellDef>Alert Type</th>
+        <td mat-cell *matCellDef="let row" class="alert-type">{{ row.alertType.replace(/_/g, ' ') }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let row" class="description">{{ row.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actorUsername">
+        <th mat-header-cell *matHeaderCellDef>Actor</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.actorUsername }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="riskScore">
+        <th mat-header-cell *matHeaderCellDef>Risk</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="risk-pill" [style.color]="sevColor(row.severity)" [style.background]="sevBg(row.severity)">
+            {{ row.riskScore }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <asms-status-chip [status]="row.status" [statusMap]="statusMap" />
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Created</th>
+        <td mat-cell *matCellDef="let row" class="muted">{{ row.createdAt | date:'dd MMM HH:mm' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row" class="actions-cell">
+          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            @if (row.status === 'OPEN') {
+              <button mat-menu-item (click)="acknowledge(row)"><mat-icon>check_circle</mat-icon> Acknowledge</button>
+              <button mat-menu-item (click)="resolve(row)"><mat-icon>done_all</mat-icon> Resolve</button>
+              <button mat-menu-item (click)="dismiss(row)"><mat-icon>notifications_off</mat-icon> Suppress</button>
+            }
+            @if (row.status === 'ACKNOWLEDGED') {
+              <button mat-menu-item (click)="resolve(row)"><mat-icon>done_all</mat-icon> Resolve</button>
+            }
+            <button mat-menu-item><mat-icon>open_in_new</mat-icon> View Details</button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.critical-row]="row.severity === 'CRITICAL' && row.status === 'OPEN'"></tr>
+    </table>
+
+    <mat-paginator [length]="total()" [pageSize]="pageSize()" [pageIndex]="pageIndex()" [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons (page)="onPage($event)" />
+  </mat-card>
 </div>

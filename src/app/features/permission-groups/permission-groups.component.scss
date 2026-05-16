@@ -1,0 +1,12 @@
+:host { display: block; }
+.toolbar { margin-bottom: var(--space-md); }
+.table-card { overflow: hidden; padding: 0 !important; }
+table { width: 100%; }
+.group-cell { display: flex; align-items: center; gap: var(--space-sm); }
+.group-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); background: #8b5cf618; color: #8b5cf6; display: flex; align-items: center; justify-content: center; mat-icon { font-size: 20px; width: 20px; height: 20px; } }
+.group-name { font-weight: 500; font-size: var(--font-sm); }
+.group-desc { font-size: var(--font-xs); color: var(--color-text-secondary); }
+.muted { color: var(--color-text-secondary); font-size: var(--font-sm); }
+.count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--font-xs); font-weight: 700; background: var(--color-info-bg); color: var(--color-info); &.perm { background: #8b5cf618; color: #8b5cf6; } }
+.actions-cell { text-align: right; width: 48px; padding-right: 8px !important; }
+.danger-item { color: var(--color-danger) !important; }
