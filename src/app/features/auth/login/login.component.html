@@ -9,7 +9,7 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Username or Email</mat-label>
-        <input matInput formControlName="username" autocomplete="username" autofocus>
+        <input matInput formControlName="username" autocomplete="username">
         <mat-icon matPrefix>person_outline</mat-icon>
         @if (form.get('username')?.hasError('required') && form.get('username')?.touched) {
           <mat-error>Username is required</mat-error>

@@ -27,7 +27,7 @@
                   [statusMap]="col.statusMap ?? {}" />
               }
               @case ('date') {
-                {{ getCellValue(row, col) | date:'dd MMM yyyy HH:mm' }}
+                {{ $any(getCellValue(row, col)) | date:'dd MMM yyyy HH:mm' }}
               }
               @default {
                 {{ getCellValue(row, col) ?? '—' }}

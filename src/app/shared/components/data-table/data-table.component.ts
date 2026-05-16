@@ -1,8 +1,7 @@
 import {
   Component, Input, Output, EventEmitter, ChangeDetectionStrategy,
-  computed, signal
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -40,6 +39,7 @@ export interface TableAction {
     MatButtonModule,
     MatMenuModule,
     StatusChipComponent,
+    DatePipe,
   ],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss',
