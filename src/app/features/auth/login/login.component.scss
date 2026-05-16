@@ -1,56 +1,474 @@
+// ── Page layout ──────────────────────────────────────────────────────────────
 .login-page {
+  display: flex;
   min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+// ── LEFT: Form panel ─────────────────────────────────────────────────────────
+.login-form-panel {
+  flex: 0 0 340px;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-background);
-  padding: var(--space-lg);
+  padding: 40px 28px;
+  box-shadow: 2px 0 24px rgba(0,0,0,.18);
+  z-index: 2;
+
+  @media (max-width: 700px) {
+    flex: 1;
+    padding: 32px 20px;
+  }
 }
 
-.login-card {
+.form-inner {
   width: 100%;
-  max-width: 420px;
-  padding: var(--space-xl) var(--space-xl) var(--space-lg);
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-lg) !important;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.login-logo {
-  text-align: center;
-  margin-bottom: var(--space-xl);
+// Brand mark
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
 }
 
-.logo-icon {
-  font-size: 48px;
-  color: var(--color-primary);
-  display: block;
-  margin: 0 auto var(--space-sm);
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  background: #0f1623;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.logo-title {
-  font-size: var(--font-2xl);
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 17px;
   font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-xs);
+  color: #0f1623;
+  letter-spacing: .5px;
+  line-height: 1.2;
 }
 
-.logo-subtitle {
-  font-size: var(--font-sm);
-  color: var(--color-text-secondary);
-  margin: 0;
+.brand-sub {
+  font-size: 9px;
+  font-weight: 500;
+  color: #9ea8b4;
+  letter-spacing: 1.2px;
+  line-height: 1;
 }
 
-.full-width {
-  width: 100%;
-  margin-bottom: var(--space-sm);
+// Headings
+.form-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f1623;
+  margin: 0 0 4px;
+  line-height: 1.3;
 }
 
-.login-btn {
-  width: 100%;
-  margin-top: var(--space-md);
-  height: 44px;
-  font-size: var(--font-base);
+.form-subheading {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 24px;
+}
+
+// SSO buttons
+.sso-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sso-btn {
+  flex: 1;
+  height: 38px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1.5px solid #e5e7eb !important;
+  color: #374151 !important;
+  border-radius: 8px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+
+  &.sso-primary {
+    border-color: rgba(234,88,12,.3) !important;
+    color: #ea580c !important;
+    background: rgba(234,88,12,.04) !important;
+  }
+
+  .sso-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+// OR divider
+.or-divider {
+  position: relative;
+  text-align: center;
+  margin: 0 0 20px;
+
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 52px);
+    height: 1px;
+    background: #e5e7eb;
+  }
+  &::before { left: 0; }
+  &::after  { right: 0; }
+
+  span {
+    font-size: 10px;
+    font-weight: 600;
+    color: #9ea8b4;
+    letter-spacing: 1px;
+    background: #fff;
+    padding: 0 8px;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Custom fields (matching design's flat input style)
+.field-group {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  font-size: 12px;
   font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
 
-  mat-spinner { display: inline-block; }
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.field-input {
+  width: 100%;
+  height: 40px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #0f1623;
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .15s;
+
+  &::placeholder { color: #c0c7d0; }
+  &:focus { border-color: #ea580c; box-shadow: 0 0 0 3px rgba(234,88,12,.1); }
+}
+
+.password-wrap {
+  position: relative;
+  .field-input { padding-right: 42px; }
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ea8b4;
+  padding: 0;
+  display: flex;
+  align-items: center;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { color: #374151; }
+}
+
+.field-error {
+  font-size: 11px;
+  color: #dc2626;
+  margin-top: 4px;
+  display: block;
+}
+
+.forgot-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ea580c;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// Remember checkbox
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.remember-check {
+  width: 16px;
+  height: 16px;
+  accent-color: #ea580c;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.remember-label {
+  font-size: 12px;
+  color: #374151;
+}
+
+// Failed attempt warning
+.attempt-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+
+  .warn-icon { font-size: 16px; width: 16px; height: 16px; color: #f59e0b; flex-shrink: 0; margin-top: 1px; }
+  span { font-size: 12px; color: #92400e; line-height: 1.5; }
+}
+
+// Sign In button
+.signin-btn {
+  width: 100%;
+  height: 44px;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  letter-spacing: .3px;
+  transition: opacity .15s, transform .1s;
+  margin-bottom: 24px;
+
+  &:hover:not(:disabled) { opacity: .92; transform: translateY(-1px); }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { opacity: .6; cursor: not-allowed; }
+
+  mat-spinner { flex-shrink: 0; }
+}
+
+// Compliance badges
+.compliance-row {
+  font-size: 11px;
+  color: #9ea8b4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+
+// ── RIGHT: Brand hero panel ───────────────────────────────────────────────────
+.login-brand-panel {
+  flex: 1;
+  background: radial-gradient(ellipse at 60% 40%, #1a2540 0%, #0a0d14 60%, #060810 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 48px 28px;
+  position: relative;
+  overflow: hidden;
+
+  // Subtle dot grid texture
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+
+  @media (max-width: 700px) { display: none; }
+}
+
+// Tag top-left
+.brand-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,.45);
+  letter-spacing: 1.5px;
+  z-index: 1;
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px #f59e0b;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px #f59e0b; }
+  50%       { opacity: .6; box-shadow: 0 0 14px #f59e0b; }
+}
+
+// Hero center
+.brand-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  z-index: 1;
+  gap: 12px;
+}
+
+.shield-img {
+  width: 200px;
+  height: auto;
+  filter: drop-shadow(0 0 32px rgba(212,160,23,.5)) drop-shadow(0 0 8px rgba(212,160,23,.3));
+}
+
+.hero-name {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 8px;
+  color: #f0d080;
+  margin: 0;
+  text-shadow: 0 0 30px rgba(212,160,23,.4);
+  font-family: 'Inter', sans-serif;
+}
+
+.hero-sentinel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: rgba(212,160,23,.7);
+}
+
+.sentinel-line {
+  flex: 0 0 28px;
+  height: 1px;
+  background: rgba(212,160,23,.4);
+}
+
+.hero-sub {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.35);
+  margin: 0;
+  text-align: center;
+}
+
+// Bottom features
+.brand-features {
+  display: flex;
+  justify-content: center;
+  gap: 64px;
+  z-index: 1;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.feature-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: rgba(212,160,23,.7);
+  margin-bottom: 4px;
+}
+
+.feature-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,.75);
+}
+
+.feature-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,.35);
+}
+
+// Footer row
+.brand-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1;
+}
+
+.brand-copy {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+}
+
+.systems-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
 }

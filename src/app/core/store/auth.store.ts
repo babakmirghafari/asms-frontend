@@ -7,7 +7,6 @@ interface AuthState {
   token: string | null;
   userId: string | null;
   sessionToken: string | null;
-  isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
   step: 'login' | 'mfa' | 'org-select' | 'temp-password' | 'authenticated';
@@ -17,7 +16,6 @@ const initialState: AuthState = {
   token: localStorage.getItem('auth_token'),
   userId: localStorage.getItem('auth_user_id'),
   sessionToken: null,
-  isAuthenticated: !!localStorage.getItem('auth_token'),
   loading: false,
   error: null,
   step: localStorage.getItem('auth_token') ? 'authenticated' : 'login',
@@ -47,7 +45,7 @@ export const AuthStore = signalStore(
         switch (res.status) {
           case 'SUCCESS':
             localStorage.setItem('auth_token', res.accessToken!);
-            patchState(store, { token: res.accessToken!, isAuthenticated: true, step: 'authenticated', loading: false });
+            patchState(store, { token: res.accessToken!, step: 'authenticated', loading: false });
             break;
           case 'MFA_REQUIRED':
             patchState(store, { sessionToken: res.sessionToken!, step: 'mfa', loading: false });
@@ -68,19 +66,19 @@ export const AuthStore = signalStore(
       try { await firstValueFrom(authService.logout()); } catch { /* ignore */ }
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user_id');
-      patchState(store, { token: null, userId: null, isAuthenticated: false, step: 'login', sessionToken: null });
+      patchState(store, { token: null, userId: null, step: 'login', sessionToken: null });
     },
 
     setToken(token: string, userId: string): void {
       localStorage.setItem('auth_token', token);
       localStorage.setItem('auth_user_id', userId);
-      patchState(store, { token, userId, isAuthenticated: true, step: 'authenticated' });
+      patchState(store, { token, userId, step: 'authenticated' });
     },
 
     clearToken(): void {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user_id');
-      patchState(store, { token: null, userId: null, isAuthenticated: false, step: 'login' });
+      patchState(store, { token: null, userId: null, step: 'login' });
     },
 
     clearError(): void {

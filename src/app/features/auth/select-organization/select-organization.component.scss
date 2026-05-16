@@ -1,0 +1,140 @@
+.org-page {
+  min-height: 100vh;
+  background: #f3f4f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Inter','Segoe UI',sans-serif;
+}
+
+// Top logo bar
+.org-topbar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 28px 24px 20px;
+}
+
+.org-logo { display:flex; align-items:center; gap:12px; }
+.org-logo-icon {
+  width:48px; height:48px; background:#0f1623; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+}
+.org-logo-text { display:flex; flex-direction:column; }
+.org-logo-name { font-size:20px; font-weight:800; color:#0f1623; letter-spacing:.5px; }
+.org-logo-sub  { font-size:10px; font-weight:600; color:#ea580c; letter-spacing:1.5px; }
+
+// Main card wrapper
+.org-card-wrap { width:100%; max-width:1000px; padding:0 24px 48px; }
+
+.org-card {
+  background:#fff; border-radius:16px;
+  box-shadow:0 4px 24px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
+  overflow:hidden;
+}
+
+// Card header
+.card-header {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:28px 32px 20px; gap:16px;
+}
+
+.header-left { flex:1; }
+
+.auth-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:700; letter-spacing:1px;
+  color:#16a34a; margin-bottom:10px;
+}
+.auth-badge-icon { font-size:14px; width:14px; height:14px; }
+
+.card-title { font-size:24px; font-weight:700; color:#0f1623; margin:0 0 8px; }
+.card-desc  { font-size:13px; color:#6b7280; margin:0; line-height:1.6; max-width:520px; }
+
+.header-right { flex-shrink:0; }
+.user-chip {
+  display:flex; align-items:center; gap:10px;
+  background:#f9fafb; border:1px solid #e5e7eb;
+  border-radius:12px; padding:10px 14px;
+}
+.user-avatar {
+  width:36px; height:36px; border-radius:50%; background:#7c3aed;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.user-info { display:flex; flex-direction:column; }
+.user-email  { font-size:13px; font-weight:600; color:#0f1623; }
+.sign-out-link { font-size:12px; color:#ea580c; text-decoration:none; font-weight:500; &:hover { text-decoration:underline; } }
+
+// Search
+.org-search-wrap {
+  display:flex; align-items:center; gap:10px;
+  margin:0 32px 20px; padding:10px 16px;
+  background:#f9fafb; border:1.5px solid #e5e7eb; border-radius:10px;
+}
+.search-icon { font-size:20px; color:#9ca3af; flex-shrink:0; }
+.org-search {
+  flex:1; border:none; background:transparent; outline:none;
+  font-size:14px; color:#0f1623; font-family:inherit;
+  &::placeholder { color:#9ca3af; }
+}
+
+// Org grid
+.org-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:16px; padding:0 32px 24px;
+  @media (max-width:640px) { grid-template-columns:1fr; }
+}
+
+.org-card-item {
+  border:1.5px solid #e5e7eb; border-radius:12px;
+  padding:20px; cursor:pointer; transition:border-color .15s, box-shadow .15s;
+  &:hover { border-color:#d1d5db; box-shadow:0 2px 12px rgba(0,0,0,.07); }
+  &.selected { border-color:#ea580c; box-shadow:0 0 0 3px rgba(234,88,12,.1); }
+}
+
+.org-card-top { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+.org-avatar {
+  width:40px; height:40px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.org-title-wrap { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.org-name  { font-size:16px; font-weight:700; color:#0f1623; }
+.org-badge {
+  font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px;
+  &.badge-primary { background:#fce7f3; color:#be185d; }
+  &.badge-sandbox { background:#ede9fe; color:#6d28d9; }
+}
+
+.org-domain { font-size:12px; color:#9ca3af; display:block; margin-bottom:12px; }
+.org-divider { height:1px; background:#f3f4f6; margin-bottom:12px; }
+
+.org-meta { display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin-bottom:12px; }
+.org-meta-item { display:flex; flex-direction:column; gap:2px; }
+.meta-label { font-size:10px; font-weight:600; color:#9ca3af; letter-spacing:.8px; }
+.meta-value { font-size:13px; font-weight:500; color:#374151; }
+
+.org-tags { display:flex; gap:6px; flex-wrap:wrap; }
+.org-tag {
+  font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px;
+  border:1px solid #d1fae5; background:#ecfdf5; color:#059669; letter-spacing:.3px;
+}
+
+// Card footer
+.card-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 32px; border-top:1px solid #f3f4f6;
+}
+.footer-hint { display:flex; align-items:center; gap:6px; font-size:13px; color:#9ca3af; }
+.hint-icon  { font-size:16px; width:16px; height:16px; }
+.footer-actions { display:flex; gap:10px; align-items:center; }
+.request-btn {
+  font-size:13px; font-weight:500; border-radius:8px !important;
+  border-color:#e5e7eb !important; color:#374151 !important;
+}
+.continue-btn {
+  font-size:13px; font-weight:600; border-radius:8px !important;
+  background:#ea580c !important; min-width:120px;
+  &:disabled { background:#f3f4f6 !important; color:#9ca3af !important; }
+}

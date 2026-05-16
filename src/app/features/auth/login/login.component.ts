@@ -1,23 +1,17 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { AuthStore } from '../../../core/store/auth.store';
+import { AuthStore } from '@core/store/auth.store';
 
 @Component({
   selector: 'asms-login',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -28,14 +22,17 @@ import { AuthStore } from '../../../core/store/auth.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
-  private fb      = inject(FormBuilder);
-  private router  = inject(Router);
-  private snack   = inject(MatSnackBar);
+  private fb     = inject(FormBuilder);
+  private router = inject(Router);
+  private snack  = inject(MatSnackBar);
   readonly authStore = inject(AuthStore);
 
+  readonly year = new Date().getFullYear();
+
   form: FormGroup = this.fb.group({
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    username:       ['', [Validators.required, Validators.minLength(3)]],
+    password:       ['', [Validators.required, Validators.minLength(6)]],
+    rememberDevice: [false],
   });
 
   hidePassword = true;
@@ -46,19 +43,21 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  onForgotPassword(event: Event): void {
+    event.preventDefault();
+    this.snack.open('Password reset link will be sent to your registered email.', 'OK', { duration: 4000 });
+  }
+
   async onSubmit(): Promise<void> {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    await this.authStore.login(this.form.value);
+    const { username, password } = this.form.value;
+    await this.authStore.login({ username, password });
     const step  = this.authStore.step();
     const error = this.authStore.error();
-    if (error) {
-      this.snack.open(error, 'Dismiss', { duration: 5000, panelClass: 'snack-error' });
-      this.authStore.clearError();
-      return;
-    }
-    if (step === 'authenticated')  this.router.navigate(['/dashboard']);
-    else if (step === 'mfa')       this.router.navigate(['/auth/mfa']);
-    else if (step === 'org-select') this.router.navigate(['/auth/select-organization']);
+    if (error) { return; } // error shown inline via authStore.error()
+    if (step === 'authenticated')      this.router.navigate(['/dashboard']);
+    else if (step === 'mfa')           this.router.navigate(['/auth/mfa']);
+    else if (step === 'org-select')    this.router.navigate(['/auth/select-organization']);
     else if (step === 'temp-password') this.router.navigate(['/auth/change-password']);
   }
 }

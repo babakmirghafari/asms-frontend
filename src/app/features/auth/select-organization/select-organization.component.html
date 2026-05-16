@@ -1,0 +1,104 @@
+<div class="org-page">
+
+  <!-- Top logo bar -->
+  <div class="org-topbar">
+    <div class="org-logo">
+      <div class="org-logo-icon">
+        <img src="app-logo.png" width="38" height="38" alt="ASMS">
+      </div>
+      <div class="org-logo-text">
+        <span class="org-logo-name">ASMS</span>
+        <span class="org-logo-sub">SENTINEL CONSOLE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main card -->
+  <div class="org-card-wrap">
+    <div class="org-card">
+
+      <!-- Card header -->
+      <div class="card-header">
+        <div class="header-left">
+          <span class="auth-badge">
+            <mat-icon class="auth-badge-icon">check_circle</mat-icon>
+            AUTHENTICATED
+          </span>
+          <h1 class="card-title">Choose your workspace</h1>
+          <p class="card-desc">
+            You belong to {{ orgs.length }} organizations — pick one to continue.
+            You can switch any time from the top bar.
+          </p>
+        </div>
+        <div class="header-right">
+          <div class="user-chip">
+            <div class="user-avatar">{{ userInitial }}</div>
+            <div class="user-info">
+              <span class="user-email">{{ userEmail }}</span>
+              <a class="sign-out-link" href="#" (click)="signOut($event)">Sign out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="org-search-wrap">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input class="org-search" type="text" placeholder="Search organizations by name, plan, region…"
+               [(ngModel)]="searchQuery">
+      </div>
+
+      <!-- Org grid -->
+      <div class="org-grid">
+        @for (org of filteredOrgs(); track org.id) {
+          <div class="org-card-item" [class.selected]="selectedOrg === org.id"
+               role="button" tabindex="0"
+               (click)="selectOrg(org.id)"
+               (keydown.enter)="selectOrg(org.id)"
+               (keydown.space)="selectOrg(org.id)">
+            <div class="org-card-top">
+              <div class="org-avatar" [style.background]="org.color">{{ org.initials }}</div>
+              <div class="org-title-wrap">
+                <span class="org-name">{{ org.name }}</span>
+                @if (org.badge) {
+                  <span class="org-badge" [class]="'badge-' + org.badge.toLowerCase()">{{ org.badge }}</span>
+                }
+              </div>
+            </div>
+            <span class="org-domain">{{ org.domain }}</span>
+            <div class="org-divider"></div>
+            <div class="org-meta">
+              <div class="org-meta-item"><span class="meta-label">MEMBERS</span><span class="meta-value">{{ org.members }}</span></div>
+              <div class="org-meta-item"><span class="meta-label">PLAN</span><span class="meta-value">{{ org.plan }}</span></div>
+              <div class="org-meta-item"><span class="meta-label">REGION</span><span class="meta-value">{{ org.region }}</span></div>
+              <div class="org-meta-item"><span class="meta-label">LAST ACCESS</span><span class="meta-value">{{ org.lastAccess }}</span></div>
+            </div>
+            @if (org.tags.length) {
+              <div class="org-tags">
+                @for (tag of org.tags; track tag) {
+                  <span class="org-tag">{{ tag }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Card footer -->
+      <div class="card-footer">
+        <span class="footer-hint">
+          <mat-icon class="hint-icon">touch_app</mat-icon>
+          Click a workspace card above to continue
+        </span>
+        <div class="footer-actions">
+          <button mat-stroked-button class="request-btn" type="button">+ Request new</button>
+          <button mat-flat-button color="primary" class="continue-btn"
+                  [disabled]="!selectedOrg" (click)="onContinue()">
+            Continue →
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

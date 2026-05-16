@@ -1,17 +1,27 @@
 <div class="app-shell">
-  <!-- Sidebar -->
+
+  <!-- ── Sidebar ── -->
   <nav class="sidebar" [class.collapsed]="sidebarCollapsed()">
+
+    <!-- Brand -->
     <div class="sidebar-header">
-      @if (!sidebarCollapsed()) {
-        <div class="brand">
-          <mat-icon class="brand-icon">shield</mat-icon>
-          <span class="brand-name">ASMS</span>
+      <div class="brand" [class.hidden]="sidebarCollapsed()">
+        <div class="brand-logo-icon">
+          <img src="app-logo.png" width="28" height="28" alt="ASMS">
         </div>
-      } @else {
-        <mat-icon class="brand-icon" style="margin: 0 auto">shield</mat-icon>
+        <div class="brand-text">
+          <span class="brand-name">ASMS</span>
+          <span class="brand-sub">SECURITY MGMT</span>
+        </div>
+      </div>
+      @if (sidebarCollapsed()) {
+        <div class="brand-logo-icon" style="margin:0 auto">
+          <img src="app-logo.png" width="28" height="28" alt="ASMS">
+        </div>
       }
     </div>
 
+    <!-- Nav -->
     <div class="sidebar-nav">
       @for (group of groups(); track group) {
         @if (!sidebarCollapsed()) {
@@ -26,41 +36,83 @@
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
             @if (!sidebarCollapsed()) {
               <span class="nav-label">{{ item.label }}</span>
+              @if (item.badge) {
+                <span class="nav-badge" [class.red]="item.badgeRed">{{ item.badge }}</span>
+              }
             }
           </a>
         }
       }
     </div>
 
+    <!-- User + collapse -->
     <div class="sidebar-footer">
-      <button mat-icon-button (click)="toggleSidebar()" class="collapse-btn"
-              [matTooltip]="sidebarCollapsed() ? 'Expand' : 'Collapse'" matTooltipPosition="right">
-        <mat-icon>{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      @if (!sidebarCollapsed()) {
+        <div class="user-row">
+          <div class="user-avatar-sm">MJ</div>
+          <div class="user-info">
+            <span class="user-name">Marcus Johnson</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+          <button mat-icon-button class="user-menu-btn" [matMenuTriggerFor]="userMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon><span>Sign Out</span>
+            </button>
+          </mat-menu>
+        </div>
+      }
+      <button class="collapse-btn" (click)="toggleSidebar()"
+              [matTooltip]="sidebarCollapsed() ? 'Expand' : ''" matTooltipPosition="right">
+        @if (!sidebarCollapsed()) {
+          <mat-icon>chevron_left</mat-icon>
+          <span>Collapse</span>
+        } @else {
+          <mat-icon>chevron_right</mat-icon>
+        }
       </button>
     </div>
   </nav>
 
-  <!-- Main content -->
+  <!-- ── Main area ── -->
   <div class="main-area">
+
     <!-- Topbar -->
     <header class="topbar">
       <div class="topbar-left">
-        <span class="topbar-title">Advance Security Management</span>
+        <span class="breadcrumb">ASMS</span>
+        <mat-icon class="breadcrumb-sep">chevron_right</mat-icon>
+        <span class="breadcrumb-current">Dashboard</span>
+      </div>
+      <div class="topbar-center">
+        <div class="search-box">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input class="search-input" type="text" placeholder="Search users, orgs, groups…">
+        </div>
       </div>
       <div class="topbar-right">
-        <button mat-icon-button matTooltip="Notifications">
-          <mat-icon>notifications_none</mat-icon>
-        </button>
-        <button mat-icon-button matTooltip="Help">
+        <button mat-icon-button class="topbar-btn" matTooltip="Help">
           <mat-icon>help_outline</mat-icon>
         </button>
-        <button mat-icon-button [matMenuTriggerFor]="profileMenu">
-          <mat-icon>account_circle</mat-icon>
+        <button mat-icon-button class="topbar-btn" matTooltip="Dark mode">
+          <mat-icon>dark_mode</mat-icon>
+        </button>
+        <button mat-icon-button class="topbar-btn notif-btn" matTooltip="Notifications">
+          <mat-icon>notifications</mat-icon>
+          <span class="notif-badge">4</span>
+        </button>
+        <button class="user-chip-btn" [matMenuTriggerFor]="profileMenu">
+          <div class="user-chip-avatar">MJ</div>
+          <div class="user-chip-info">
+            <span class="user-chip-name">Marcus Johnson</span>
+            <span class="user-chip-role">Super Admin · Northwind Bank</span>
+          </div>
         </button>
         <mat-menu #profileMenu="matMenu">
           <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            <span>Sign Out</span>
+            <mat-icon>logout</mat-icon><span>Sign Out</span>
           </button>
         </mat-menu>
       </div>
