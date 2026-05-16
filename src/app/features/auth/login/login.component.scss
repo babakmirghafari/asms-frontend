@@ -1,1 +1,56 @@
-/* TODO(angular-logic-implementer): add login screen styles */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background);
+  padding: var(--space-lg);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--space-xl) var(--space-xl) var(--space-lg);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.logo-icon {
+  font-size: 48px;
+  color: var(--color-primary);
+  display: block;
+  margin: 0 auto var(--space-sm);
+}
+
+.logo-title {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.logo-subtitle {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: var(--space-sm);
+}
+
+.login-btn {
+  width: 100%;
+  margin-top: var(--space-md);
+  height: 44px;
+  font-size: var(--font-base);
+  font-weight: 600;
+
+  mat-spinner { display: inline-block; }
+}

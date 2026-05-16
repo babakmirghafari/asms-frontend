@@ -1,20 +1,26 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
+export type ChipVariant = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'critical';
 
 @Component({
   selector: 'asms-status-chip',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './status-chip.component.html',
   styleUrl: './status-chip.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusChipComponent {
   @Input() status = '';
-  @Input() statusMap: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {};
+  @Input() label?: string;
+  /** Map from status value to variant. Falls back to 'neutral'. */
+  @Input() statusMap: Record<string, ChipVariant> = {};
 
-  // TODO(angular-logic-implementer): add MatChipsModule, implement full badge system from §8.3
-  get variant(): string {
+  get variant(): ChipVariant {
     return this.statusMap[this.status] ?? 'neutral';
+  }
+
+  get displayLabel(): string {
+    return this.label ?? this.status.replace(/_/g, ' ');
   }
 }

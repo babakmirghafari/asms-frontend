@@ -1,2 +1,36 @@
-<p>auth-policies — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Authentication Policies" subtitle="Configure password rules, MFA, and lockout settings" />
+  @if (store.loading()) { <div class="loading-overlay"><mat-spinner diameter="48" /></div> }
+  @if (!store.loading() && store.selected()) {
+    <mat-card class="policy-card">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <h3 class="section-title">MFA Settings</h3>
+        <mat-checkbox formControlName="mfaRequired">Require MFA for all users</mat-checkbox>
+        <h3 class="section-title">Password Policy</h3>
+        <mat-form-field appearance="outline">
+          <mat-label>Minimum Length</mat-label>
+          <input matInput type="number" formControlName="passwordMinLength">
+        </mat-form-field>
+        <div class="checks">
+          <mat-checkbox formControlName="passwordRequiresUppercase">Require uppercase</mat-checkbox>
+          <mat-checkbox formControlName="passwordRequiresNumber">Require number</mat-checkbox>
+          <mat-checkbox formControlName="passwordRequiresSpecial">Require special character</mat-checkbox>
+        </div>
+        <h3 class="section-title">Session &amp; Lockout</h3>
+        <mat-form-field appearance="outline">
+          <mat-label>Max Failed Login Attempts</mat-label>
+          <input matInput type="number" formControlName="maxFailedLoginAttempts">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Session Timeout (minutes)</mat-label>
+          <input matInput type="number" formControlName="sessionTimeoutMinutes">
+        </mat-form-field>
+        <div class="actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="store.saving()">
+            @if (store.saving()) { <mat-spinner diameter="18" /> } @else { Save Policy }
+          </button>
+        </div>
+      </form>
+    </mat-card>
+  }
+</div>

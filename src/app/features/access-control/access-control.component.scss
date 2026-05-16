@@ -1,1 +1,4 @@
-/* TODO(angular-logic-implementer): add access-control styles */
+.ac-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: var(--space-lg); }
+.ac-card { padding: var(--space-lg); h3 { font-size: var(--font-xl); font-weight: 600; margin: 0 0 var(--space-md); } }
+mat-form-field { width: 100%; margin-bottom: var(--space-sm); }
+.results { margin-top: var(--space-lg); h4 { font-weight: 600; margin: 0 0 var(--space-sm); } }

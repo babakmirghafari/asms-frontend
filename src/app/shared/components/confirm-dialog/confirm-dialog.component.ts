@@ -1,21 +1,28 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface ConfirmDialogData {
   title: string;
   message: string;
   confirmLabel?: string;
+  cancelLabel?: string;
+  danger?: boolean;
 }
 
 @Component({
   selector: 'asms-confirm-dialog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialogComponent {
-  // TODO(angular-logic-implementer): inject MAT_DIALOG_DATA and MatDialogRef,
-  // add MatDialogModule + MatButtonModule imports, implement full dialog
-  data: ConfirmDialogData = { title: '', message: '' };
+  data: ConfirmDialogData = inject(MAT_DIALOG_DATA);
+  private dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);
+
+  confirm(): void { this.dialogRef.close(true); }
+  cancel(): void  { this.dialogRef.close(false); }
 }

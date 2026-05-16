@@ -1,2 +1,5 @@
-<p>organizations — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Organizations" subtitle="Manage your organization hierarchy" actionLabel="New Organization" actionIcon="add_business" (actionClick)="openCreate()" />
+  <div class="toolbar"><asms-search-input placeholder="Search organizations..." (searchChange)="onSearch($event)" /></div>
+  <asms-data-table [columns]="columns" [data]="store.orgs()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No organizations found" emptyIcon="business" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+</div>

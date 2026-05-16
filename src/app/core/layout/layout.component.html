@@ -1,0 +1,74 @@
+<div class="app-shell">
+  <!-- Sidebar -->
+  <nav class="sidebar" [class.collapsed]="sidebarCollapsed()">
+    <div class="sidebar-header">
+      @if (!sidebarCollapsed()) {
+        <div class="brand">
+          <mat-icon class="brand-icon">shield</mat-icon>
+          <span class="brand-name">ASMS</span>
+        </div>
+      } @else {
+        <mat-icon class="brand-icon" style="margin: 0 auto">shield</mat-icon>
+      }
+    </div>
+
+    <div class="sidebar-nav">
+      @for (group of groups(); track group) {
+        @if (!sidebarCollapsed()) {
+          <div class="nav-group-label">{{ group }}</div>
+        }
+        @for (item of itemsByGroup(group); track item.route) {
+          <a class="nav-item"
+             [routerLink]="item.route"
+             routerLinkActive="active"
+             [matTooltip]="sidebarCollapsed() ? item.label : ''"
+             matTooltipPosition="right">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            @if (!sidebarCollapsed()) {
+              <span class="nav-label">{{ item.label }}</span>
+            }
+          </a>
+        }
+      }
+    </div>
+
+    <div class="sidebar-footer">
+      <button mat-icon-button (click)="toggleSidebar()" class="collapse-btn"
+              [matTooltip]="sidebarCollapsed() ? 'Expand' : 'Collapse'" matTooltipPosition="right">
+        <mat-icon>{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="main-area">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="topbar-title">Advance Security Management</span>
+      </div>
+      <div class="topbar-right">
+        <button mat-icon-button matTooltip="Notifications">
+          <mat-icon>notifications_none</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Help">
+          <mat-icon>help_outline</mat-icon>
+        </button>
+        <button mat-icon-button [matMenuTriggerFor]="profileMenu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #profileMenu="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Sign Out</span>
+          </button>
+        </mat-menu>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

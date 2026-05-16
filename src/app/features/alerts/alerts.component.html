@@ -1,2 +1,18 @@
-<p>alerts — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Alerts" subtitle="Security monitoring and incident response" />
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="filter">
+      <mat-label>Severity</mat-label>
+      <mat-select (selectionChange)="onSeverityFilter($event.value)">
+        @for (s of severities; track s) { <mat-option [value]="s">{{ s || 'All' }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter">
+      <mat-label>Status</mat-label>
+      <mat-select (selectionChange)="onStatusFilter($event.value)">
+        @for (s of statuses; track s) { <mat-option [value]="s">{{ s || 'All' }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No alerts" emptyIcon="notifications_none" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+</div>

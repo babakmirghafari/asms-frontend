@@ -1,2 +1,4 @@
-<p>station-policies — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Station Policies" subtitle="IP range and time-based access restrictions" actionLabel="New Policy" (actionClick)="openCreate()" />
+  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" [actions]="actions" emptyMessage="No station policies" emptyIcon="location_on" (pageChange)="onPage($event)" (actionClick)="onAction($event)" />
+</div>

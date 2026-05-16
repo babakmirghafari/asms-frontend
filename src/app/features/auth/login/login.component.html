@@ -1,2 +1,44 @@
-<p>login — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real login template from DESIGN_SYSTEM -->
+<div class="login-page">
+  <mat-card class="login-card">
+    <div class="login-logo">
+      <span class="logo-icon material-icons">shield</span>
+      <h1 class="logo-title">ASMS</h1>
+      <p class="logo-subtitle">Advance Security Management System</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username or Email</mat-label>
+        <input matInput formControlName="username" autocomplete="username" autofocus>
+        <mat-icon matPrefix>person_outline</mat-icon>
+        @if (form.get('username')?.hasError('required') && form.get('username')?.touched) {
+          <mat-error>Username is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" autocomplete="current-password">
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+          <mat-error>Password is required</mat-error>
+        }
+        @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+          <mat-error>Password must be at least 6 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" type="submit"
+              class="login-btn" [disabled]="authStore.loading()">
+        @if (authStore.loading()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+  </mat-card>
+</div>

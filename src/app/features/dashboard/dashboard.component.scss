@@ -1,1 +1,111 @@
-/* TODO(angular-logic-implementer): add dashboard styles */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.kpi-card {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  position: relative;
+  overflow: hidden;
+
+  &.alert-critical { border-left: 4px solid var(--color-critical); }
+}
+
+.kpi-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  margin-bottom: var(--space-sm);
+  &.users    { color: var(--color-primary); }
+  &.sessions { color: var(--color-accent); }
+  &.activity { color: var(--color-info); }
+  &.alerts   { color: var(--color-warning); }
+}
+
+.kpi-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.kpi-label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.kpi-sub {
+  font-size: var(--font-sm);
+  color: var(--color-text-disabled);
+  &.critical { color: var(--color-critical); font-weight: 600; }
+}
+
+.alerts-card {
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.card-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-primary);
+}
+
+.severity-row {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.severity-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 80px;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+
+  &.critical { background: var(--color-critical-bg); }
+  &.high     { background: var(--color-danger-bg); }
+  &.medium   { background: var(--color-warning-bg); }
+  &.low      { background: var(--color-success-bg); }
+}
+
+.sev-count {
+  font-size: 28px;
+  font-weight: 700;
+  .critical & { color: var(--color-critical); }
+  .high &     { color: var(--color-high); }
+  .medium &   { color: var(--color-medium); }
+  .low &      { color: var(--color-low); }
+}
+
+.sev-label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.meta-row {
+  margin-top: var(--space-sm);
+  text-align: right;
+}

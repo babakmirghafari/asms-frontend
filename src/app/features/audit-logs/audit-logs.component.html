@@ -1,2 +1,4 @@
-<p>audit-logs — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Audit Logs" subtitle="Tamper-resistant compliance audit trail" actionLabel="Export CSV" actionIcon="download" (actionClick)="requestExport()" />
+  <asms-data-table [columns]="columns" [data]="store.items()" [loading]="store.loading()" [totalCount]="store.totalElements()" [pageSize]="store.size()" [pageIndex]="store.page()" emptyMessage="No audit log entries" emptyIcon="fact_check" (pageChange)="onPage($event)" />
+</div>

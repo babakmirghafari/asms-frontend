@@ -1,34 +1,148 @@
 import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
-import { computed } from '@angular/core';
+import { inject, computed } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import {
+  UsersService, UserDto, CreateUserRequestDto, UpdateUserRequestDto, UserStatusUpdateRequestDto
+} from '@babakmirghafari/asms-api-client';
 
 interface UsersState {
-  items: unknown[];
-  selectedId: string | null;
+  users: UserDto[];
+  totalElements: number;
+  page: number;
+  size: number;
+  search: string;
+  statusFilter: string;
   loading: boolean;
+  saving: boolean;
   error: string | null;
+  selectedUser: UserDto | null;
 }
 
-const initialUsersState: UsersState = {
-  items: [],
-  selectedId: null,
+const initialState: UsersState = {
+  users: [],
+  totalElements: 0,
+  page: 0,
+  size: 20,
+  search: '',
+  statusFilter: '',
   loading: false,
+  saving: false,
   error: null,
+  selectedUser: null,
 };
 
+function extractMessage(err: unknown, fallback = 'Operation failed.'): string {
+  if (err && typeof err === 'object') {
+    const e = err as Record<string, unknown>;
+    const errObj = e['error'] as Record<string, unknown> | undefined;
+    if (errObj && typeof errObj['detail'] === 'string') return errObj['detail'];
+    if (typeof e['message'] === 'string') return e['message'];
+  }
+  return fallback;
+}
+
 export const UsersStore = signalStore(
-  withState(initialUsersState),
+  withState(initialState),
   withComputed((store) => ({
-    selected: computed(() =>
-      // TODO(angular-logic-implementer): replace unknown[] with generated Dto type
-      (store.items() as ({ id: string })[]).find(item => item.id === store.selectedId()) ?? null
-    ),
+    activeCount: computed(() => store.users().filter(u => u.status === 'ACTIVE').length),
+    lockedCount: computed(() => store.users().filter(u => u.status === 'LOCKED').length),
   })),
-  withMethods((store) => ({
-    // TODO(angular-logic-implementer): inject generated UsersService and implement real API calls
-    async load(): Promise<void> {
+  withMethods((store, svc = inject(UsersService)) => ({
+    async loadUsers(): Promise<void> {
       patchState(store, { loading: true, error: null });
-      // TODO(angular-logic-implementer): call service.listUserss() and patchState with response
-      patchState(store, { loading: false });
+      try {
+        const status = store.statusFilter() as UserDto.StatusEnum | undefined;
+        const res = await firstValueFrom(svc.listUsers(
+          store.page(), store.size(),
+          status || undefined,
+          store.search() || undefined
+        ));
+        patchState(store, {
+          users: (res.content as UserDto[]),
+          totalElements: res.totalElements,
+          loading: false,
+        });
+      } catch (err: unknown) {
+        patchState(store, { loading: false, error: extractMessage(err, 'Failed to load users.') });
+      }
+    },
+
+    setSearch(search: string): void {
+      patchState(store, { search, page: 0 });
+    },
+
+    setStatusFilter(statusFilter: string): void {
+      patchState(store, { statusFilter, page: 0 });
+    },
+
+    setPage(page: number, size: number): void {
+      patchState(store, { page, size });
+    },
+
+    selectUser(user: UserDto | null): void {
+      patchState(store, { selectedUser: user });
+    },
+
+    async createUser(dto: CreateUserRequestDto): Promise<UserDto | null> {
+      patchState(store, { saving: true, error: null });
+      try {
+        const user = await firstValueFrom(svc.createUser(dto));
+        patchState(store, { saving: false });
+        return user;
+      } catch (err: unknown) {
+        patchState(store, { saving: false, error: extractMessage(err, 'Failed to create user.') });
+        return null;
+      }
+    },
+
+    async updateUser(userId: string, dto: UpdateUserRequestDto): Promise<UserDto | null> {
+      patchState(store, { saving: true, error: null });
+      try {
+        const user = await firstValueFrom(svc.updateUser(userId, dto));
+        patchState(store, {
+          saving: false,
+          users: store.users().map(u => u.id === userId ? user : u),
+        });
+        return user;
+      } catch (err: unknown) {
+        patchState(store, { saving: false, error: extractMessage(err, 'Failed to update user.') });
+        return null;
+      }
+    },
+
+    async updateStatus(userId: string, dto: UserStatusUpdateRequestDto): Promise<boolean> {
+      patchState(store, { saving: true, error: null });
+      try {
+        const user = await firstValueFrom(svc.updateUserStatus(userId, dto));
+        patchState(store, {
+          saving: false,
+          users: store.users().map(u => u.id === userId ? user : u),
+        });
+        return true;
+      } catch (err: unknown) {
+        patchState(store, { saving: false, error: extractMessage(err, 'Failed to update status.') });
+        return false;
+      }
+    },
+
+    async deleteUser(userId: string): Promise<boolean> {
+      patchState(store, { saving: true, error: null });
+      try {
+        await firstValueFrom(svc.deleteUser(userId));
+        patchState(store, {
+          saving: false,
+          users: store.users().filter(u => u.id !== userId),
+          totalElements: store.totalElements() - 1,
+        });
+        return true;
+      } catch (err: unknown) {
+        patchState(store, { saving: false, error: extractMessage(err, 'Failed to delete user.') });
+        return false;
+      }
+    },
+
+    clearError(): void {
+      patchState(store, { error: null });
     },
   }))
 );

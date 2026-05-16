@@ -1,1 +1,4 @@
-/* TODO(angular-logic-implementer): add form dialog styles from DESIGN_SYSTEM */
+.dialog-title { font-size: var(--font-xl); font-weight: 600; margin: 0; }
+mat-dialog-content { min-width: 480px; padding-top: var(--space-md) !important; }
+mat-dialog-actions { gap: var(--space-sm); padding: var(--space-md) var(--space-lg); }
+mat-spinner { display: inline-block; }

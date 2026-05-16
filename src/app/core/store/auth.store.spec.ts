@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthStore } from './auth.store';
 
 describe('AuthStore', () => {
@@ -6,7 +8,9 @@ describe('AuthStore', () => {
 
   beforeEach(() => {
     localStorage.clear();
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     store = TestBed.inject(AuthStore);
   });
 
@@ -28,5 +32,10 @@ describe('AuthStore', () => {
     expect(store.isAuthenticated()).toBe(false);
     expect(store.token()).toBeNull();
     expect(localStorage.getItem('auth_token')).toBeNull();
+  });
+
+  it('should clear error', () => {
+    store.clearError();
+    expect(store.error()).toBeNull();
   });
 });

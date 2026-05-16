@@ -1,2 +1,74 @@
-<p>dashboard — pending implementation</p>
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
+<div class="page-container">
+  <asms-page-header title="Dashboard" subtitle="Security overview for your organization" />
+
+  @if (store.loading()) {
+    <div class="loading-overlay"><mat-spinner diameter="48" /></div>
+  }
+
+  @if (store.error() && !store.loading()) {
+    <div class="error-state card">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <p>{{ store.error() }}</p>
+      <button mat-stroked-button (click)="reload()">Retry</button>
+    </div>
+  }
+
+  @if (store.hasData() && !store.loading()) {
+    <div class="kpi-grid">
+      <mat-card class="kpi-card">
+        <mat-icon class="kpi-icon users">people</mat-icon>
+        <div class="kpi-value">{{ store.summary()?.totalUsers ?? 0 }}</div>
+        <div class="kpi-label">Total Users</div>
+        <div class="kpi-sub">{{ store.summary()?.activeUsers ?? 0 }} active</div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-icon class="kpi-icon sessions">devices</mat-icon>
+        <div class="kpi-value">{{ store.summary()?.activeSessions ?? 0 }}</div>
+        <div class="kpi-label">Active Sessions</div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-icon class="kpi-icon activity">timeline</mat-icon>
+        <div class="kpi-value">{{ store.summary()?.recentActivityCount ?? 0 }}</div>
+        <div class="kpi-label">Events (24h)</div>
+      </mat-card>
+
+      <mat-card class="kpi-card" [class.alert-critical]="(store.criticalAlerts()) > 0">
+        <mat-icon class="kpi-icon alerts">notifications_active</mat-icon>
+        <div class="kpi-value">{{ store.totalAlerts() }}</div>
+        <div class="kpi-label">Open Alerts</div>
+        @if (store.criticalAlerts() > 0) {
+          <div class="kpi-sub critical">{{ store.criticalAlerts() }} critical</div>
+        }
+      </mat-card>
+    </div>
+
+    <!-- Alerts breakdown -->
+    <mat-card class="alerts-card">
+      <h3 class="card-title">Alerts by Severity</h3>
+      <div class="severity-row">
+        <div class="severity-item critical">
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.critical }}</span>
+          <span class="sev-label">Critical</span>
+        </div>
+        <div class="severity-item high">
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.high }}</span>
+          <span class="sev-label">High</span>
+        </div>
+        <div class="severity-item medium">
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.medium }}</span>
+          <span class="sev-label">Medium</span>
+        </div>
+        <div class="severity-item low">
+          <span class="sev-count">{{ store.summary()?.openAlertsBySeverity.low }}</span>
+          <span class="sev-label">Low</span>
+        </div>
+      </div>
+    </mat-card>
+
+    <div class="meta-row">
+      <small class="text-muted">Last updated: {{ store.summary()?.generatedAt | date:'dd MMM yyyy HH:mm:ss' }}</small>
+    </div>
+  }
+</div>
