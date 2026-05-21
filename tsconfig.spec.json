@@ -6,6 +6,11 @@
   },
   "include": [
     "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "node_modules/@babakmirghafari/asms-api-client/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules/@babakmirghafari/asms-api-client/node_modules",
+    "node_modules/@babakmirghafari/asms-api-client/dist"
   ]
 }

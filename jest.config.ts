@@ -2,6 +2,7 @@ import type { Config } from 'jest';
 
 const config: Config = {
   preset: 'jest-preset-angular',
+  testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   testMatch: ['<rootDir>/src/**/*.spec.ts'],
   collectCoverage: false,
@@ -28,7 +29,7 @@ const config: Config = {
     ]
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@angular|@ngrx|@ngx-translate)/)'
+    'node_modules/(?!(@angular|@ngrx|@ngx-translate|@babakmirghafari)/)'
   ],
   moduleFileExtensions: ['ts', 'html', 'js', 'json', 'mjs']
 };
