@@ -1,0 +1,23 @@
+replicaCount: 3
+
+image:
+  tag: "latest"
+
+env:
+  API_BASE_URL: "http://asms-backend.asms-prod.svc.cluster.local:8080"
+
+ingress:
+  enabled: true
+  hosts:
+    - host: asms.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 128Mi

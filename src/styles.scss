@@ -1,0 +1,15 @@
+// Global styles — placeholder
+// TODO(angular-logic-implementer): replace with real global styles extracted from DESIGN_SYSTEM
+
+@use './styles/theme' as *;
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

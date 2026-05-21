@@ -1,0 +1,13 @@
+<!-- TODO(angular-logic-implementer): implement Material button group / select -->
+<div class="language-switcher">
+  @for (lang of languages; track lang.code) {
+    <button
+      type="button"
+      [class.active]="languageStore.language() === lang.code"
+      (click)="switchLanguage(lang.code)"
+      [attr.aria-label]="'Switch to ' + lang.label"
+      [attr.aria-pressed]="languageStore.language() === lang.code">
+      {{ lang.label }}
+    </button>
+  }
+</div>

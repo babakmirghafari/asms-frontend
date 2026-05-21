@@ -1,0 +1,6 @@
+apiVersion: v2
+name: asms-frontend
+description: Helm chart for Advance Security Management System Angular frontend
+type: application
+version: 0.1.0
+appVersion: "latest"

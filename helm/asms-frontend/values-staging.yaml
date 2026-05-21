@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  tag: "staging"
+
+env:
+  API_BASE_URL: "http://asms-backend.asms-staging.svc.cluster.local:8080"
+
+ingress:
+  enabled: true
+  hosts:
+    - host: asms-staging.example.com
+      paths:
+        - path: /
+          pathType: Prefix
