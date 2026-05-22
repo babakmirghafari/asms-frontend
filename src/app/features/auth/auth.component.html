@@ -1,294 +1,437 @@
-<div class="auth-wrapper">
+<!-- ===== SELECT ORG — full-page layout (replaces split-screen) ===== -->
+@if (store.currentStep() === 'select-org') {
+  <div class="select-org-page">
 
-  <!-- ===== LEFT PANEL: form ===== -->
-  <div class="auth-left">
-
-    <!-- Header: logo + tagline -->
-    <div class="auth-header">
-      <div class="auth-logo-sm">
-        <img src="assets/login-logo.png" alt="ASMS" height="40" />
+    <!-- Top header -->
+    <div class="select-org-header">
+      <div class="select-org-logo-wrap">
+        <img src="assets/login-logo.png" alt="ASMS" class="select-org-logo-img" />
+        <div class="select-org-logo-text">
+          <span class="select-org-app-name">ASMS</span>
+          <span class="select-org-app-tag">SENTINEL CONSOLE</span>
+        </div>
       </div>
-      <span class="auth-portal-tag">{{ 'AUTH.PORTAL_TAG' | translate }}</span>
     </div>
 
-    <!-- Body: form steps -->
-    <div class="auth-body">
+    <!-- Main card -->
+    <div class="select-org-card">
 
-      @switch (store.currentStep()) {
-
-        <!-- ===== LOGIN STEP ===== -->
-        @case ('login') {
-          <h1 class="auth-heading">{{ 'AUTH.SIGN_IN_HEADING' | translate }}</h1>
-          <p class="auth-subheading">{{ 'AUTH.SIGN_IN_SUB' | translate }}</p>
-
-          @if (store.errorMessage()) {
-            <div class="auth-alert auth-alert--error">
-              <mat-icon>error_outline</mat-icon>
-              <span>{{ store.errorMessage()! | translate }}</span>
-            </div>
-          }
-
-          <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" autocomplete="on" class="auth-form">
-
-            <div class="auth-field-group">
-              <label class="auth-label" for="auth-username">{{ 'AUTH.USERNAME' | translate }}</label>
-              <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-                <mat-icon class="auth-input-icon">person</mat-icon>
-                <input
-                  id="auth-username"
-                  class="auth-input"
-                  formControlName="username"
-                  autocomplete="username"
-                  [placeholder]="'AUTH.USERNAME' | translate"
-                  type="text" />
-              </div>
-            </div>
-
-            <div class="auth-field-group">
-              <label class="auth-label" for="auth-password">{{ 'AUTH.PASSWORD' | translate }}</label>
-              <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-                <mat-icon class="auth-input-icon">lock</mat-icon>
-                <input
-                  id="auth-password"
-                  class="auth-input"
-                  formControlName="password"
-                  [type]="showPassword ? 'text' : 'password'"
-                  autocomplete="current-password"
-                  [placeholder]="'AUTH.PASSWORD' | translate" />
-                <button type="button" class="auth-input-toggle" (click)="showPassword = !showPassword">
-                  <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-                </button>
-              </div>
-            </div>
-
-            <div class="auth-row">
-              <label class="auth-checkbox-label" for="auth-remember-me">
-                <input id="auth-remember-me" type="checkbox" class="auth-checkbox" />
-                <span>{{ 'AUTH.REMEMBER_ME' | translate }}</span>
-              </label>
-              <a href="#" class="auth-link">{{ 'AUTH.FORGOT_PASSWORD' | translate }}</a>
-            </div>
-
-            <button
-              type="submit"
-              class="auth-btn auth-btn--primary auth-submit-btn"
-              [disabled]="loginForm.invalid || store.isLoading()">
-              @if (store.isLoading()) {
-                <mat-spinner diameter="18" class="auth-spinner" />
-                <span>{{ 'AUTH.SIGNING_IN' | translate }}</span>
-              } @else {
-                <span>{{ 'AUTH.LOGIN' | translate }}</span>
-                <mat-icon>arrow_forward</mat-icon>
-              }
-            </button>
-
-            <div class="auth-divider">
-              <span>{{ 'AUTH.OR' | translate }}</span>
-            </div>
-
-            <button type="button" class="auth-btn auth-btn--outline">
-              <mat-icon>corporate_fare</mat-icon>
-              <span>{{ 'AUTH.SSO_LOGIN' | translate }}</span>
-            </button>
-          </form>
-        }
-
-        <!-- ===== MFA STEP ===== -->
-        @case ('mfa') {
-          <div class="auth-step-icon-wrap">
-            <div class="auth-step-icon auth-step-icon--amber">
-              <mat-icon>security</mat-icon>
-            </div>
+      <!-- Card header -->
+      <div class="select-org-card-header">
+        <div class="select-org-card-header-left">
+          <div class="select-org-auth-badge">
+            <mat-icon class="select-org-check-icon">check_circle</mat-icon>
           </div>
-          <h1 class="auth-heading">{{ 'AUTH.MFA_TITLE' | translate }}</h1>
-          <p class="auth-subheading">{{ 'AUTH.MFA_SUBTITLE' | translate }}</p>
+          <div class="select-org-card-title-block">
+            <span class="select-org-auth-label">AUTHENTICATED</span>
+            <h2 class="select-org-title">Choose your workspace</h2>
+            <p class="select-org-subtitle">You belong to {{ sampleOrgs.length }} organizations — pick one to continue.</p>
+          </div>
+        </div>
+        <div class="select-org-user-info">
+          <div class="select-org-user-avatar">A</div>
+          <div class="select-org-user-details">
+            <span class="select-org-user-email">admin&#64;northwind.com</span>
+            <button type="button" class="select-org-signout" (click)="backToLogin()">Sign out</button>
+          </div>
+        </div>
+      </div>
 
-          @if (store.errorMessage()) {
-            <div class="auth-alert auth-alert--error">
-              <mat-icon>error_outline</mat-icon>
-              <span>{{ store.errorMessage()! | translate }}</span>
+      <!-- Search bar -->
+      <div class="select-org-search-bar">
+        <mat-icon class="select-org-search-icon">search</mat-icon>
+        <input
+          class="select-org-search-input"
+          type="text"
+          [(ngModel)]="orgSearchQuery"
+          placeholder="Search organizations by name, plan, region..." />
+      </div>
+
+      <!-- Org grid -->
+      <div class="select-org-grid">
+        @for (org of filteredOrgs(); track org.id) {
+          <button type="button" class="select-org-item"
+               [class.select-org-item--selected]="selectedOrgId === org.id"
+               (click)="selectedOrgId = org.id">
+
+            <div class="soi-top-row">
+              <div class="soi-avatar" [style.background]="org.color">
+                {{ org.initials }}
+              </div>
+              <div class="soi-name-block">
+                <span class="soi-name">{{ org.name }}</span>
+                <span class="soi-domain">{{ org.domain }}</span>
+              </div>
+              @if (org.badge === 'Primary') {
+                <span class="soi-badge soi-badge--primary">Primary</span>
+              } @else if (org.badge === 'Sandbox') {
+                <span class="soi-badge soi-badge--sandbox">Sandbox</span>
+              }
             </div>
-          }
 
-          <form [formGroup]="mfaForm" (ngSubmit)="submitMfa()" class="auth-form">
-            <div class="auth-field-group">
-              <label class="auth-label" for="auth-mfa-code">{{ 'AUTH.MFA_CODE' | translate }}</label>
-              <div class="auth-input-wrapper">
-                <mat-icon class="auth-input-icon">pin</mat-icon>
-                <input
-                  id="auth-mfa-code"
-                  class="auth-input auth-input--code"
-                  formControlName="code"
-                  autocomplete="one-time-code"
-                  maxlength="6"
-                  placeholder="000000"
-                  type="text" />
+            <div class="soi-divider"></div>
+
+            <div class="soi-stats-grid">
+              <div class="soi-stat">
+                <span class="soi-stat-label">MEMBERS</span>
+                <span class="soi-stat-value">{{ org.members }}</span>
+              </div>
+              <div class="soi-stat">
+                <span class="soi-stat-label">PLAN</span>
+                <span class="soi-stat-value">{{ org.plan }}</span>
+              </div>
+              <div class="soi-stat">
+                <span class="soi-stat-label">REGION</span>
+                <span class="soi-stat-value">{{ org.region }}</span>
+              </div>
+              <div class="soi-stat">
+                <span class="soi-stat-label">LAST ACCESS</span>
+                <span class="soi-stat-value">{{ org.lastAccess }}</span>
               </div>
             </div>
 
-            <button
-              type="submit"
-              class="auth-btn auth-btn--primary auth-submit-btn"
-              [disabled]="mfaForm.invalid || store.isLoading()">
-              @if (store.isLoading()) {
-                <mat-spinner diameter="18" class="auth-spinner" />
+            <div class="soi-compliance-tags">
+              @for (tag of org.complianceTags; track tag) {
+                <span class="soi-compliance-chip">{{ tag }}</span>
               }
-              <span>{{ 'AUTH.CONTINUE' | translate }}</span>
-            </button>
-
-            <div class="auth-secondary-actions">
-              <button type="button" class="auth-link-btn" (click)="backToLogin()">
-                <mat-icon>arrow_back</mat-icon>
-                {{ 'AUTH.BACK_TO_LOGIN' | translate }}
-              </button>
-              <button type="button" class="auth-link-btn">
-                {{ 'AUTH.RESEND_CODE' | translate }}
-              </button>
             </div>
-          </form>
+
+          </button>
         }
+      </div>
 
-        <!-- ===== SELECT ORG STEP ===== -->
-        @case ('select-org') {
-          <h1 class="auth-heading">{{ 'AUTH.SELECT_ORG' | translate }}</h1>
-          <p class="auth-subheading">{{ 'AUTH.SELECT_ORG_SUBTITLE' | translate }}</p>
-
-          <div class="auth-org-card-list">
-            @for (org of sampleOrgs; track org.id) {
-              <button class="auth-org-card"
-                      [class.auth-org-card--selected]="selectedOrgId === org.id"
-                      (click)="selectedOrgId = org.id">
-
-                <div class="auth-org-card-avatar" [style.background]="org.color">
-                  {{ org.name[0] }}
-                </div>
-
-                <div class="auth-org-card-body">
-                  <div class="auth-org-card-top">
-                    <span class="auth-org-card-name">{{ org.name }}</span>
-                    @if (org.isPrimary) {
-                      <span class="auth-org-card-badge auth-org-card-badge--primary">Primary</span>
-                    }
-                    @if (selectedOrgId === org.id) {
-                      <mat-icon class="auth-org-card-check">check_circle</mat-icon>
-                    }
-                  </div>
-                  <span class="auth-org-card-members">{{ org.members | number }} members &middot; {{ org.status }}</span>
-                  <div class="auth-org-card-tags">
-                    @for (tag of org.complianceTags; track tag) {
-                      <span class="auth-org-tag">{{ tag }}</span>
-                    }
-                  </div>
-                </div>
-              </button>
-            }
-          </div>
-
+      <!-- Card footer -->
+      <div class="select-org-card-footer">
+        <span class="select-org-footer-hint">
+          <mat-icon class="footer-hint-icon">touch_app</mat-icon>
+          Click a workspace card above to continue
+        </span>
+        <div class="select-org-footer-actions">
+          <button type="button" class="select-org-btn-request">+ Request new</button>
           <button
-            class="auth-btn auth-btn--primary auth-submit-btn"
+            type="button"
+            class="select-org-btn-continue"
             [disabled]="!selectedOrgId"
             (click)="selectOrg(selectedOrgId!)">
-            <span>{{ 'AUTH.SELECT_BUTTON' | translate }}</span>
+            Continue
             <mat-icon>arrow_forward</mat-icon>
           </button>
+        </div>
+      </div>
 
-          <div class="auth-secondary-actions">
-            <button type="button" class="auth-link-btn" (click)="backToLogin()">
-              <mat-icon>arrow_back</mat-icon>
-              {{ 'AUTH.BACK_TO_LOGIN' | translate }}
-            </button>
-          </div>
-        }
+    </div>
+  </div>
 
-        <!-- ===== CHANGE PASSWORD STEP ===== -->
-        @case ('change-password') {
-          <div class="auth-step-icon-wrap">
-            <div class="auth-step-icon auth-step-icon--amber">
-              <mat-icon>lock_reset</mat-icon>
+} @else {
+
+  <!-- ===== SPLIT-SCREEN LAYOUT (login, mfa, change-password) ===== -->
+  <div class="auth-wrapper">
+
+    <!-- ===== LEFT PANEL ===== -->
+    <div class="auth-left">
+
+      <!-- Top: app icon + name -->
+      <div class="auth-app-header">
+        <div class="auth-app-icon">
+          <img src="assets/login-logo.png" alt="ASMS" />
+        </div>
+        <div class="auth-app-identity">
+          <span class="auth-app-name">ASMS</span>
+          <span class="auth-app-tag">SECURITY · MGMT · CONSOLE</span>
+        </div>
+      </div>
+
+      <!-- Middle: step content -->
+      <div class="auth-body">
+
+        @switch (store.currentStep()) {
+
+          <!-- ===== LOGIN STEP ===== -->
+          @case ('login') {
+            <h1 class="auth-heading">Sign in to your account</h1>
+            <p class="auth-subheading">Enter your credentials to continue</p>
+
+            <!-- SSO + AD buttons -->
+            <div class="auth-sso-row">
+              <button type="button" class="auth-sso-btn">
+                <mat-icon>business</mat-icon>
+                <span>SSO</span>
+              </button>
+              <button type="button" class="auth-sso-btn">
+                <mat-icon>domain</mat-icon>
+                <span>Active Directory</span>
+              </button>
             </div>
-          </div>
-          <h1 class="auth-heading">{{ 'AUTH.FIRST_LOGIN_TITLE' | translate }}</h1>
-          <p class="auth-subheading">{{ 'AUTH.FIRST_LOGIN_SUBTITLE' | translate }}</p>
 
-          @if (store.errorMessage()) {
-            <div class="auth-alert auth-alert--error">
-              <mat-icon>error_outline</mat-icon>
-              <span>{{ store.errorMessage()! | translate }}</span>
+            <!-- Divider -->
+            <div class="auth-divider">
+              <span class="auth-divider-line"></span>
+              <span class="auth-divider-text">OR WITH EMAIL</span>
+              <span class="auth-divider-line"></span>
             </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" autocomplete="on" class="auth-form">
+
+              <!-- Username -->
+              <div class="auth-field-group">
+                <label class="auth-label" for="auth-username">Username or email</label>
+                <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+                  <input
+                    id="auth-username"
+                    class="auth-input"
+                    formControlName="username"
+                    autocomplete="username"
+                    placeholder="admin@northwind.com"
+                    type="text" />
+                </div>
+              </div>
+
+              <!-- Password row: label + forgot link -->
+              <div class="auth-field-group">
+                <div class="auth-label-row">
+                  <label class="auth-label" for="auth-password">Password</label>
+                  <a href="#" class="auth-forgot-link">Forgot password?</a>
+                </div>
+                <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                  <input
+                    id="auth-password"
+                    class="auth-input"
+                    formControlName="password"
+                    [type]="showPassword ? 'text' : 'password'"
+                    autocomplete="current-password"
+                    placeholder="••••••••" />
+                  <button type="button" class="auth-input-toggle" (click)="showPassword = !showPassword">
+                    <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Remember device -->
+              <div class="auth-remember-row">
+                <label class="auth-checkbox-label" for="auth-remember-me">
+                  <input id="auth-remember-me" type="checkbox" class="auth-checkbox" />
+                  <span>Remember this device for 30 days</span>
+                </label>
+              </div>
+
+              <!-- Warning banner: attempts -->
+              @if (store.errorMessage()) {
+                <div class="auth-warning-banner">
+                  <mat-icon class="auth-warning-icon">warning_amber</mat-icon>
+                  <span>{{ store.errorMessage()! | translate }}</span>
+                </div>
+              }
+
+              <!-- Sign In button -->
+              <button
+                type="submit"
+                class="auth-submit-btn"
+                [disabled]="loginForm.invalid || store.isLoading()">
+                @if (store.isLoading()) {
+                  <mat-spinner diameter="18" class="auth-spinner" />
+                  <span>Signing in...</span>
+                } @else {
+                  <span>Sign In</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                }
+              </button>
+
+            </form>
           }
 
-          <form [formGroup]="changePasswordForm" (ngSubmit)="submitChangePassword()" class="auth-form">
-            <div class="auth-field-group">
-              <label class="auth-label" for="auth-new-password">{{ 'AUTH.NEW_PASSWORD' | translate }}</label>
-              <div class="auth-input-wrapper">
-                <mat-icon class="auth-input-icon">lock</mat-icon>
-                <input
-                  id="auth-new-password"
-                  class="auth-input"
-                  formControlName="newPassword"
-                  type="password"
-                  autocomplete="new-password"
-                  [placeholder]="'AUTH.NEW_PASSWORD' | translate" />
+          <!-- ===== MFA STEP ===== -->
+          @case ('mfa') {
+            <div class="auth-mfa-icon-wrap">
+              <mat-icon class="auth-mfa-phone-icon">smartphone</mat-icon>
+            </div>
+
+            <h1 class="auth-heading auth-heading--center">Two-Factor Authentication</h1>
+            <p class="auth-subheading auth-subheading--center">Enter the 6-digit code from your authenticator app</p>
+            <p class="auth-mfa-account">
+              Signing in as <strong>admin&#64;northwind.com</strong>
+            </p>
+
+            @if (store.errorMessage()) {
+              <div class="auth-warning-banner">
+                <mat-icon class="auth-warning-icon">warning_amber</mat-icon>
+                <span>{{ store.errorMessage()! | translate }}</span>
               </div>
-              @if (changePasswordForm.get('newPassword')?.value) {
-                <div class="auth-strength-bar">
-                  <div class="auth-strength-fill" [class]="passwordStrengthClass()"></div>
+            }
+
+            <form [formGroup]="mfaForm" (ngSubmit)="submitMfa()" class="auth-form">
+
+              <!-- 6-digit boxes -->
+              <div class="auth-mfa-digits">
+                @for (box of mfaDigitBoxes; track box.index) {
+                  <input
+                    class="auth-mfa-digit"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="1"
+                    [value]="getMfaDigit(box.index)"
+                    (input)="onMfaDigitInput($event, box.index)"
+                    (keydown)="onMfaDigitKeydown($event, box.index)"
+                    (paste)="onMfaPaste($event)"
+                    [attr.data-mfa-index]="box.index" />
+                }
+              </div>
+
+              <button
+                type="submit"
+                class="auth-submit-btn"
+                [disabled]="mfaCodeValue.length < 6 || store.isLoading()">
+                @if (store.isLoading()) {
+                  <mat-spinner diameter="18" class="auth-spinner" />
+                }
+                <span>Verify &amp; Continue</span>
+              </button>
+
+              <div class="auth-mfa-secondary">
+                <button type="button" class="auth-back-link" (click)="backToLogin()">
+                  &#8592; Back
+                </button>
+                <div class="auth-mfa-alt-links">
+                  <button type="button" class="auth-orange-link">Use SMS code</button>
+                  <span class="auth-link-sep">·</span>
+                  <button type="button" class="auth-orange-link">Use recovery code</button>
                 </div>
-                <span class="auth-strength-label">{{ 'AUTH.PASSWORD_STRENGTH' | translate }}: {{ passwordStrengthLabel() | translate }}</span>
-              }
-            </div>
+              </div>
 
-            <div class="auth-field-group">
-              <label class="auth-label" for="auth-confirm-password">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
-              <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="changePasswordForm.hasError('mismatch') && changePasswordForm.get('confirmPassword')?.touched">
-                <mat-icon class="auth-input-icon">lock</mat-icon>
-                <input
-                  id="auth-confirm-password"
-                  class="auth-input"
-                  formControlName="confirmPassword"
-                  type="password"
-                  autocomplete="new-password"
-                  [placeholder]="'AUTH.CONFIRM_PASSWORD' | translate" />
+            </form>
+          }
+
+          <!-- ===== CHANGE PASSWORD STEP ===== -->
+          @case ('change-password') {
+            <div class="auth-step-icon-wrap">
+              <div class="auth-step-icon auth-step-icon--amber">
+                <mat-icon>lock_reset</mat-icon>
               </div>
             </div>
+            <h1 class="auth-heading">{{ 'AUTH.FIRST_LOGIN_TITLE' | translate }}</h1>
+            <p class="auth-subheading">{{ 'AUTH.FIRST_LOGIN_SUBTITLE' | translate }}</p>
 
-            <div class="auth-requirements">
-              <p class="auth-requirements-text">{{ 'AUTH.PASSWORD_REQUIREMENTS' | translate }}</p>
-            </div>
+            @if (store.errorMessage()) {
+              <div class="auth-warning-banner">
+                <mat-icon class="auth-warning-icon">warning_amber</mat-icon>
+                <span>{{ store.errorMessage()! | translate }}</span>
+              </div>
+            }
 
-            <button
-              type="submit"
-              class="auth-btn auth-btn--primary auth-submit-btn"
-              [disabled]="changePasswordForm.invalid || store.isLoading()">
-              @if (store.isLoading()) {
-                <mat-spinner diameter="18" class="auth-spinner" />
-              }
-              <span>{{ 'COMMON.SAVE' | translate }}</span>
-            </button>
-          </form>
+            <form [formGroup]="changePasswordForm" (ngSubmit)="submitChangePassword()" class="auth-form">
+              <div class="auth-field-group">
+                <label class="auth-label" for="auth-new-password">{{ 'AUTH.NEW_PASSWORD' | translate }}</label>
+                <div class="auth-input-wrapper">
+                  <input
+                    id="auth-new-password"
+                    class="auth-input"
+                    formControlName="newPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    [placeholder]="'AUTH.NEW_PASSWORD' | translate" />
+                </div>
+                @if (changePasswordForm.get('newPassword')?.value) {
+                  <div class="auth-strength-bar">
+                    <div class="auth-strength-fill" [class]="passwordStrengthClass()"></div>
+                  </div>
+                  <span class="auth-strength-label">{{ 'AUTH.PASSWORD_STRENGTH' | translate }}: {{ passwordStrengthLabel() | translate }}</span>
+                }
+              </div>
+
+              <div class="auth-field-group">
+                <label class="auth-label" for="auth-confirm-password">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
+                <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="changePasswordForm.hasError('mismatch') && changePasswordForm.get('confirmPassword')?.touched">
+                  <input
+                    id="auth-confirm-password"
+                    class="auth-input"
+                    formControlName="confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    [placeholder]="'AUTH.CONFIRM_PASSWORD' | translate" />
+                </div>
+              </div>
+
+              <div class="auth-requirements">
+                <p class="auth-requirements-text">{{ 'AUTH.PASSWORD_REQUIREMENTS' | translate }}</p>
+              </div>
+
+              <button
+                type="submit"
+                class="auth-submit-btn"
+                [disabled]="changePasswordForm.invalid || store.isLoading()">
+                @if (store.isLoading()) {
+                  <mat-spinner diameter="18" class="auth-spinner" />
+                }
+                <span>{{ 'COMMON.SAVE' | translate }}</span>
+              </button>
+            </form>
+          }
+
         }
 
-      }
+      </div>
+
+      <!-- Footer -->
+      <p class="auth-footer">
+        Protected by ASMS &nbsp;·&nbsp;
+        <span class="auth-footer-soc2">SOC2</span>
+        &nbsp;·&nbsp;
+        <span class="auth-footer-iso">ISO 27001</span>
+        &nbsp;·&nbsp;
+        <span class="auth-footer-gdpr">GDPR</span>
+      </p>
+    </div>
+
+    <!-- ===== RIGHT PANEL ===== -->
+    <div class="auth-right">
+
+      <!-- Top-left portal badge -->
+      <div class="right-portal-badge">
+        <span class="right-portal-dot"></span>
+        <span class="right-portal-text">SECURE ACCESS PORTAL</span>
+      </div>
+
+      <!-- Center branding -->
+      <div class="right-brand-center">
+        <img src="assets/login-logo.png" alt="ASMS" class="right-brand-logo" width="200" />
+        <h1 class="right-brand-name">A S M S</h1>
+        <div class="right-brand-sentinel">
+          <span class="right-sentinel-line"></span>
+          <span class="right-sentinel-text">— SENTINEL —</span>
+          <span class="right-sentinel-line"></span>
+        </div>
+        <p class="right-brand-tagline">ADVANCE SECURITY &amp; THREAT MANAGEMENT</p>
+      </div>
+
+      <!-- Feature blocks -->
+      <div class="right-features">
+        <div class="right-feature-block">
+          <mat-icon class="right-feature-icon">shield</mat-icon>
+          <span class="right-feature-title">Zero-Trust</span>
+          <span class="right-feature-desc">Identity-aware access</span>
+        </div>
+        <div class="right-feature-block">
+          <mat-icon class="right-feature-icon">visibility</mat-icon>
+          <span class="right-feature-title">24/7 Audit</span>
+          <span class="right-feature-desc">Forensic-grade logs</span>
+        </div>
+        <div class="right-feature-block">
+          <mat-icon class="right-feature-icon">fingerprint</mat-icon>
+          <span class="right-feature-title">MFA · SSO</span>
+          <span class="right-feature-desc">WebAuthn · TOTP · OIDC</span>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="right-bottom-bar">
+        <span class="right-bottom-copy">&copy; 2026 ASMS · v4.2.1</span>
+        <span class="right-bottom-status">
+          <span class="right-status-dot"></span>
+          All systems operational
+        </span>
+      </div>
 
     </div>
 
-    <p class="auth-footer">
-      &copy; 2026 ASMS &mdash; Advanced Security Management System
-    </p>
   </div>
 
-  <!-- ===== RIGHT PANEL: branding ===== -->
-  <div class="auth-right">
-    <div class="brand-glow"></div>
-    <img src="assets/login-logo.png" alt="ASMS Eagle Shield" class="brand-shield" />
-    <h1 class="brand-name">ASMS</h1>
-    <p class="brand-sub">SENTINEL</p>
-    <p class="brand-tagline">{{ 'AUTH.BRAND_TAGLINE' | translate }}</p>
-    <div class="brand-stats">
-      <span class="stat-pill">{{ 'AUTH.STAT_ZERO_TRUST' | translate }}</span>
-      <span class="stat-pill">{{ 'AUTH.STAT_AUDIT' | translate }}</span>
-      <span class="stat-pill">{{ 'AUTH.STAT_MFA' | translate }}</span>
-    </div>
-  </div>
-
-</div>
+}

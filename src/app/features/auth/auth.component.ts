@@ -1,8 +1,7 @@
-import { Component, OnInit, inject, computed } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Component, OnInit, inject, computed, signal } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { AuthFeatureStore } from './auth.store';
@@ -14,6 +13,20 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   return pw && confirm && pw !== confirm ? { mismatch: true } : null;
 }
 
+interface OrgItem {
+  id: string;
+  name: string;
+  initials: string;
+  domain: string;
+  badge: 'Primary' | 'Sandbox' | '';
+  color: string;
+  members: number;
+  plan: string;
+  region: string;
+  lastAccess: string;
+  complianceTags: string[];
+}
+
 @Component({
   selector: 'asms-auth',
   templateUrl: './auth.component.html',
@@ -21,7 +34,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    DecimalPipe,
+    FormsModule,
     MatIconModule,
     MatProgressSpinnerModule,
     TranslateModule
@@ -52,40 +65,123 @@ export class AuthComponent implements OnInit {
 
   showPassword = false;
 
-  // Org selection state
-  selectedOrgId: string | null = null;
+  // ── MFA digit boxes ──────────────────────────────────────────
+  readonly mfaDigitBoxes = Array.from({ length: 6 }, (_, i) => ({ index: i }));
+  private mfaDigits = signal<string[]>(['', '', '', '', '', '']);
 
-  // Sample org data for the select-org step
-  readonly sampleOrgs = [
-    {
-      id: 'org-northwind',
-      name: 'Northwind Bank',
-      members: 1284,
-      status: 'Active',
-      color: '#3f51b5',
-      isPrimary: true,
-      complianceTags: ['SOC2', 'ISO 27001']
-    },
-    {
-      id: 'org-globex',
-      name: 'Globex Europe',
-      members: 642,
-      status: 'Active',
-      color: '#009688',
-      isPrimary: false,
-      complianceTags: ['ISO 27001']
-    },
+  get mfaCodeValue(): string {
+    return this.mfaDigits().join('');
+  }
+
+  getMfaDigit(index: number): string {
+    return this.mfaDigits()[index];
+  }
+
+  onMfaDigitInput(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    const val = input.value.replace(/\D/g, '').slice(-1);
+    const digits = [...this.mfaDigits()];
+    digits[index] = val;
+    this.mfaDigits.set(digits);
+    this.mfaForm.get('code')?.setValue(digits.join(''));
+
+    if (val && index < 5) {
+      this.focusMfaBox(index + 1);
+    }
+    if (this.mfaCodeValue.length === 6) {
+      this.submitMfa();
+    }
+  }
+
+  onMfaDigitKeydown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Backspace') {
+      const digits = [...this.mfaDigits()];
+      if (digits[index]) {
+        digits[index] = '';
+        this.mfaDigits.set(digits);
+        this.mfaForm.get('code')?.setValue(digits.join(''));
+      } else if (index > 0) {
+        this.focusMfaBox(index - 1);
+      }
+    }
+  }
+
+  onMfaPaste(event: ClipboardEvent): void {
+    const pasted = event.clipboardData?.getData('text').replace(/\D/g, '').slice(0, 6) ?? '';
+    if (pasted.length === 0) return;
+    event.preventDefault();
+    const digits = pasted.split('').concat(Array(6).fill('')).slice(0, 6);
+    this.mfaDigits.set(digits);
+    this.mfaForm.get('code')?.setValue(digits.join(''));
+    const lastFilled = Math.min(pasted.length, 5);
+    this.focusMfaBox(lastFilled);
+    if (pasted.length === 6) {
+      setTimeout(() => this.submitMfa(), 50);
+    }
+  }
+
+  private focusMfaBox(index: number): void {
+    const el = document.querySelector<HTMLInputElement>(`[data-mfa-index="${index}"]`);
+    el?.focus();
+  }
+
+  // ── Org selection ─────────────────────────────────────────────
+  selectedOrgId: string | null = null;
+  orgSearchQuery = '';
+
+  readonly sampleOrgs: OrgItem[] = [
     {
       id: 'org-acme',
-      name: 'Acme Retail',
-      members: 328,
-      status: 'Active',
-      color: '#f57c00',
-      isPrimary: false,
+      name: 'Acme Corp',
+      initials: 'AC',
+      domain: 'acmecorp.com',
+      badge: 'Primary',
+      color: '#10B981',
+      members: 6,
+      plan: 'Enterprise',
+      region: 'USA',
+      lastAccess: 'Active now',
+      complianceTags: ['SOC2', 'ISO27001', 'GDPR']
+    },
+    {
+      id: 'org-beta',
+      name: 'Beta LLC',
+      initials: 'BL',
+      domain: 'betallc.com',
+      badge: 'Sandbox',
+      color: '#F97316',
+      members: 3,
+      plan: 'Business',
+      region: 'UK',
+      lastAccess: '2 hours ago',
       complianceTags: ['GDPR']
+    },
+    {
+      id: 'org-gamma',
+      name: 'Gamma Inc',
+      initials: 'GI',
+      domain: 'gammainc.com',
+      badge: '',
+      color: '#8B5CF6',
+      members: 2,
+      plan: 'Business',
+      region: 'Japan',
+      lastAccess: 'Yesterday',
+      complianceTags: ['ISO27001']
     }
   ];
 
+  readonly filteredOrgs = computed(() => {
+    const q = this.orgSearchQuery.toLowerCase();
+    if (!q) return this.sampleOrgs;
+    return this.sampleOrgs.filter(o =>
+      o.name.toLowerCase().includes(q) ||
+      o.domain.toLowerCase().includes(q) ||
+      o.region.toLowerCase().includes(q)
+    );
+  });
+
+  // ── Password strength ─────────────────────────────────────────
   readonly passwordStrengthClass = computed(() => {
     const pw: string = this.changePasswordForm.get('newPassword')?.value ?? '';
     const score = this.calcPasswordScore(pw);
@@ -126,8 +222,9 @@ export class AuthComponent implements OnInit {
   }
 
   submitMfa(): void {
-    if (this.mfaForm.invalid) return;
-    this.store.verifyMfa(this.mfaForm.value.code!);
+    const code = this.mfaCodeValue;
+    if (code.length < 6) return;
+    this.store.verifyMfa(code);
   }
 
   submitChangePassword(): void {
