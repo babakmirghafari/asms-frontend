@@ -452,24 +452,8 @@ body {
 }
 
 // ============================================================
-// User wizard stepper
+// User dialog edit-mode content area
 // ============================================================
-
-.user-stepper {
-  .mat-stepper-horizontal-line { display: none; }
-
-  .mat-horizontal-stepper-header-container {
-    padding: 0 var(--asms-space-sm);
-    margin-bottom: var(--asms-space-md);
-    overflow-x: auto;
-    flex-shrink: 0;
-  }
-
-  .mat-step-header {
-    padding: 0 8px;
-    min-width: 80px;
-  }
-}
 
 .user-dialog-content {
   width: 100%;
@@ -479,48 +463,6 @@ body {
   @media (max-width: 600px) {
     padding: var(--asms-space-sm) var(--asms-space-md) !important;
   }
-}
-
-.user-wizard-content {
-  width: 100%;
-  box-sizing: border-box;
-  max-height: 65vh !important;
-  padding: 0 var(--asms-space-lg) var(--asms-space-md) !important;
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  @media (max-width: 600px) {
-    padding: 0 var(--asms-space-sm) var(--asms-space-sm) !important;
-    max-height: 60vh !important;
-  }
-}
-
-.wizard-dialog-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .wizard-step-counter {
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--asms-text-secondary);
-    background: var(--asms-surface-variant);
-    border-radius: var(--asms-radius-full);
-    padding: 2px 12px;
-  }
-}
-
-.step-content {
-  padding-top: var(--asms-space-md);
-}
-
-.step-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--asms-space-md);
-  padding-top: var(--asms-space-sm);
-  border-top: 1px solid var(--asms-border-light);
 }
 
 // ============================================================
@@ -1226,185 +1168,11 @@ body {
 }
 
 // ============================================================
-// User wizard — custom step indicator (Screen 4)
+// Wizard step content area (used by user-form-dialog steps)
 // ============================================================
 
-// Hide material stepper header entirely — we render our own
-.hidden-stepper {
-  .mat-horizontal-stepper-header-container {
-    display: none !important;
-  }
-}
-
-// Wizard dialog header
-.wizard-dialog-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 0;
-  flex-shrink: 0;
-
-  .wizard-dialog-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--asms-text-primary);
-    margin: 0;
-  }
-
-  .wizard-close-btn {
-    color: var(--asms-text-secondary);
-  }
-
-  @media (max-width: 600px) {
-    padding: 14px 16px 0;
-    .wizard-dialog-title { font-size: 16px; }
-  }
-}
-
-// Custom step indicator row
-.wizard-step-indicator {
-  display: flex;
-  align-items: center;
-  padding: 20px 24px 16px;
-  overflow-x: auto;
-  flex-shrink: 0;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar { display: none; }
-
-  @media (max-width: 600px) {
-    padding: 12px 16px 10px;
-  }
-}
-
-// Compact step circles on mobile — hide labels, shrink circles
-@media (max-width: 600px) {
-  .wsi-label { display: none; }
-  .wsi-circle { width: 28px; height: 28px; }
-  .wsi-circle .wsi-step-icon,
-  .wsi-circle .wsi-check-icon { font-size: 14px; height: 14px; width: 14px; }
-  .wsi-connector { margin-bottom: 0; }
-}
-
-.wsi-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  cursor: default;
-}
-
-.wsi-circle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #F3F4F6;
-  transition: background 0.2s ease;
-
-  .wsi-step-icon,
-  .wsi-check-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-    color: #9CA3AF;
-  }
-
-  .wsi-step--active & {
-    background: #F97316;
-
-    .wsi-step-icon {
-      color: #fff;
-    }
-  }
-
-  .wsi-step--done & {
-    background: #D1FAE5;
-
-    .wsi-check-icon {
-      color: #059669;
-    }
-  }
-}
-
-.wsi-label {
-  font-size: 11px;
-  font-weight: 500;
-  color: #9CA3AF;
-  white-space: nowrap;
-  text-align: center;
-
-  .wsi-step--active & {
-    color: #F97316;
-    font-weight: 600;
-  }
-
-  .wsi-step--done & {
-    color: #374151;
-  }
-}
-
-.wsi-connector {
-  flex: 1;
-  height: 1px;
-  background: #E5E7EB;
-  margin: 0 4px;
-  margin-bottom: 18px; // align with circles
-
-  &--done {
-    background: #F97316;
-  }
-}
-
-// Wizard step content area
 .wizard-step-content {
   padding: 8px 0;
-}
-
-// Wizard footer
-.wizard-dialog-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  border-top: 1px solid var(--asms-border);
-  flex-shrink: 0;
-  gap: 12px;
-
-  @media (max-width: 600px) {
-    padding: 12px 16px;
-    .wizard-step-counter { font-size: 12px; }
-  }
-}
-
-.wizard-cancel-btn {
-  color: var(--asms-text-secondary) !important;
-}
-
-.wizard-step-counter {
-  font-size: 14px;
-  color: var(--asms-text-secondary);
-  flex: 1;
-  text-align: center;
-}
-
-.wizard-footer-nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.wizard-nav-back {
-  color: var(--asms-text-secondary) !important;
-}
-
-.wizard-nav-next {
-  background: linear-gradient(135deg, #F97316, #EA580C) !important;
-  color: #fff !important;
-  border: none !important;
 }
 
 // ============================================================

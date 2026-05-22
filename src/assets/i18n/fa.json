@@ -75,7 +75,13 @@
     "SUCCESS_CREATED": "رکورد با موفقیت ایجاد شد",
     "SUCCESS_UPDATED": "رکورد با موفقیت به‌روزرسانی شد",
     "SUCCESS_DELETED": "رکورد با موفقیت حذف شد",
-    "SUCCESS_SAVED": "تغییرات با موفقیت ذخیره شد"
+    "SUCCESS_SAVED": "تغییرات با موفقیت ذخیره شد",
+    "CREATE": "ایجاد",
+    "STEP": "مرحله",
+    "OF": "از"
+  },
+  "MODAL": {
+    "STEP_COUNTER": "مرحله {{current}} از {{total}}"
   },
   "AUTH": {
     "LOGIN": "ورود",

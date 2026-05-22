@@ -75,7 +75,13 @@
     "SUCCESS_CREATED": "Record created successfully",
     "SUCCESS_UPDATED": "Record updated successfully",
     "SUCCESS_DELETED": "Record deleted successfully",
-    "SUCCESS_SAVED": "Changes saved successfully"
+    "SUCCESS_SAVED": "Changes saved successfully",
+    "CREATE": "Create",
+    "STEP": "Step",
+    "OF": "of"
+  },
+  "MODAL": {
+    "STEP_COUNTER": "Step {{current}} of {{total}}"
   },
   "AUTH": {
     "LOGIN": "Sign In",
