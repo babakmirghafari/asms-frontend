@@ -1,39 +1,74 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" width="200" height="48" role="img" aria-label="ASMS - Advance Security Management">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140" role="img" aria-label="ASMS Shield Logo">
   <defs>
-    <linearGradient id="shieldGradW" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#7986CB;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#5C6BC0;stop-opacity:1" />
+    <linearGradient id="shieldGradW" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
+    <linearGradient id="borderGradW" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="eagleGradW" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <radialGradient id="glowGradW" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
-  <!-- Shield shape -->
-  <path d="M4 8 L24 4 L44 8 L44 24 C44 35 24 44 24 44 C24 44 4 35 4 24 Z"
-        fill="url(#shieldGradW)" />
+  <!-- Radial glow -->
+  <ellipse cx="60" cy="65" rx="52" ry="62" fill="url(#glowGradW)"/>
 
-  <!-- Lock body (white) -->
-  <rect x="17" y="23" width="14" height="11" rx="2" ry="2" fill="white" opacity="0.95"/>
+  <!-- Shield body -->
+  <path d="M60 6 L108 22 L108 76 C108 108 60 134 60 134 C60 134 12 108 12 76 L12 22 Z"
+        fill="url(#shieldGradW)" stroke="url(#borderGradW)" stroke-width="2.5"/>
 
-  <!-- Lock shackle (white) -->
-  <path d="M19 23 L19 19 C19 15.7 29 15.7 29 19 L29 23"
-        fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+  <!-- Inner border accent -->
+  <path d="M60 14 L101 28 L101 75 C101 104 60 127 60 127 C60 127 19 104 19 75 L19 28 Z"
+        fill="none" stroke="rgba(245,158,11,0.25)" stroke-width="1"/>
 
-  <!-- Lock keyhole -->
-  <circle cx="24" cy="28" r="2" fill="#5C6BC0"/>
-  <rect x="23" y="28" width="2" height="3" fill="#5C6BC0"/>
+  <!-- Eagle body -->
+  <ellipse cx="60" cy="74" rx="10" ry="18" fill="url(#eagleGradW)"/>
 
-  <!-- Wordmark: ASMS (white) -->
-  <text x="54" y="22"
-        font-family="Inter, Roboto, Helvetica Neue, sans-serif"
-        font-size="22"
-        font-weight="700"
-        fill="white"
-        letter-spacing="1">ASMS</text>
+  <!-- Left wing -->
+  <path d="M50 68 C40 58 22 52 18 44 C26 46 36 50 44 58 C42 54 38 46 36 36 C44 42 50 54 52 62 Z"
+        fill="url(#eagleGradW)"/>
 
-  <!-- Subtitle (white, semi-transparent) -->
-  <text x="55" y="36"
-        font-family="Inter, Roboto, Helvetica Neue, sans-serif"
-        font-size="10"
-        font-weight="400"
-        fill="rgba(255,255,255,0.75)"
-        letter-spacing="0.3">Advance Security Management</text>
+  <!-- Right wing -->
+  <path d="M70 68 C80 58 98 52 102 44 C94 46 84 50 76 58 C78 54 82 46 84 36 C76 42 70 54 68 62 Z"
+        fill="url(#eagleGradW)"/>
+
+  <!-- Wing lower feathers -->
+  <path d="M50 74 C38 70 24 68 20 62 C28 64 40 68 48 72 Z" fill="#F59E0B" opacity="0.85"/>
+  <path d="M70 74 C82 70 96 68 100 62 C92 64 80 68 72 72 Z" fill="#F59E0B" opacity="0.85"/>
+
+  <!-- Tail feathers -->
+  <path d="M52 90 C50 98 46 106 44 112 L52 104 L55 114 L60 104 L65 114 L68 104 L76 112 C74 106 70 98 68 90 Z"
+        fill="#F59E0B" opacity="0.9"/>
+
+  <!-- Neck -->
+  <ellipse cx="60" cy="58" rx="7" ry="9" fill="url(#eagleGradW)"/>
+
+  <!-- Head -->
+  <ellipse cx="60" cy="47" rx="9" ry="9" fill="url(#eagleGradW)"/>
+
+  <!-- Beak -->
+  <path d="M60 50 L54 54 L60 53 Z" fill="#D97706"/>
+
+  <!-- Eyes -->
+  <circle cx="56" cy="45" r="1.8" fill="#0f172a"/>
+  <circle cx="56.5" cy="44.5" r="0.6" fill="#FCD34D"/>
+  <circle cx="64" cy="45" r="1.8" fill="#0f172a"/>
+  <circle cx="64.5" cy="44.5" r="0.6" fill="#FCD34D"/>
+
+  <!-- Crest feathers -->
+  <path d="M56 40 C54 34 52 28 53 24 C55 30 57 36 58 40 Z" fill="#FCD34D"/>
+  <path d="M60 38 C60 32 60 26 61 22 C61 28 61 34 61 38 Z" fill="#FCD34D"/>
+  <path d="M64 40 C66 34 68 28 67 24 C65 30 63 36 62 40 Z" fill="#FCD34D"/>
+
+  <!-- Talons -->
+  <path d="M53 92 L48 98 M53 92 L50 100 M53 92 L52 101" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M67 92 L72 98 M67 92 L70 100 M67 92 L68 101" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
 </svg>

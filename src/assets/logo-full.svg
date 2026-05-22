@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" width="200" height="56" role="img" aria-label="ASMS Sentinel - Advance Security Management">
+  <defs>
+    <linearGradient id="shieldGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="borderGradF" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="eagleGradF" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield: scaled to 48x56 -->
+  <g transform="scale(0.4) translate(0 0)">
+    <path d="M60 6 L108 22 L108 76 C108 108 60 134 60 134 C60 134 12 108 12 76 L12 22 Z"
+          fill="url(#shieldGradF)" stroke="url(#borderGradF)" stroke-width="2.5"/>
+    <path d="M60 14 L101 28 L101 75 C101 104 60 127 60 127 C60 127 19 104 19 75 L19 28 Z"
+          fill="none" stroke="rgba(245,158,11,0.25)" stroke-width="1"/>
+    <ellipse cx="60" cy="74" rx="10" ry="18" fill="url(#eagleGradF)"/>
+    <path d="M50 68 C40 58 22 52 18 44 C26 46 36 50 44 58 C42 54 38 46 36 36 C44 42 50 54 52 62 Z" fill="url(#eagleGradF)"/>
+    <path d="M70 68 C80 58 98 52 102 44 C94 46 84 50 76 58 C78 54 82 46 84 36 C76 42 70 54 68 62 Z" fill="url(#eagleGradF)"/>
+    <path d="M52 90 C50 98 46 106 44 112 L52 104 L55 114 L60 104 L65 114 L68 104 L76 112 C74 106 70 98 68 90 Z" fill="#F59E0B" opacity="0.9"/>
+    <ellipse cx="60" cy="58" rx="7" ry="9" fill="url(#eagleGradF)"/>
+    <ellipse cx="60" cy="47" rx="9" ry="9" fill="url(#eagleGradF)"/>
+    <path d="M60 50 L54 54 L60 53 Z" fill="#D97706"/>
+    <circle cx="56" cy="45" r="1.8" fill="#0f172a"/>
+    <circle cx="64" cy="45" r="1.8" fill="#0f172a"/>
+    <path d="M56 40 C54 34 52 28 53 24 C55 30 57 36 58 40 Z" fill="#FCD34D"/>
+    <path d="M60 38 C60 32 60 26 61 22 C61 28 61 34 61 38 Z" fill="#FCD34D"/>
+    <path d="M64 40 C66 34 68 28 67 24 C65 30 63 36 62 40 Z" fill="#FCD34D"/>
+  </g>
+
+  <!-- Wordmark: ASMS -->
+  <text x="56" y="26"
+        font-family="Inter, Roboto, Helvetica Neue, sans-serif"
+        font-size="28"
+        font-weight="800"
+        fill="white"
+        letter-spacing="3">ASMS</text>
+
+  <!-- Subtitle: SENTINEL -->
+  <text x="57" y="42"
+        font-family="Inter, Roboto, Helvetica Neue, sans-serif"
+        font-size="11"
+        font-weight="600"
+        fill="#F59E0B"
+        letter-spacing="4">SENTINEL</text>
+</svg>
