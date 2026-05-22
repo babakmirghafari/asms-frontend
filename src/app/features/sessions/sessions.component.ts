@@ -72,7 +72,7 @@ export class SessionsComponent implements OnInit {
       dangerous: true,
       confirmKey: 'SESSIONS.REVOKE_ALL'
     };
-    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
         this.store.revokeAll('').then(() => {
           this.snackBar.open(

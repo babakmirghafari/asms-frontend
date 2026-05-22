@@ -53,7 +53,7 @@ export class StationPoliciesComponent implements OnInit {
   openCreateDialog(): void {
     const data: StationPolicyFormDialogData = { isEdit: false };
     this.dialog
-      .open(StationPolicyFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(StationPolicyFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: StationPolicyFormResult | null) => {
         if (!result) return;
@@ -70,7 +70,7 @@ export class StationPoliciesComponent implements OnInit {
   openEditDialog(policy: StationPolicyDto): void {
     const data: StationPolicyFormDialogData = { policy, isEdit: true };
     this.dialog
-      .open(StationPolicyFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(StationPolicyFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: StationPolicyFormResult | null) => {
         if (!result) return;
@@ -92,7 +92,7 @@ export class StationPoliciesComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
         this.store.delete(policy.id).then(() => {
           this.snackBar.open(

@@ -66,7 +66,7 @@ export class OrganizationsComponent implements OnInit {
   openCreateDialog(): void {
     const data: OrgFormDialogData = { isEdit: false };
     this.dialog
-      .open(OrgFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(OrgFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((dto: CreateOrganizationRequestDto | null) => {
         if (!dto) return;
@@ -83,7 +83,7 @@ export class OrganizationsComponent implements OnInit {
   openEditDialog(org: OrganizationDto): void {
     const data: OrgFormDialogData = { org, isEdit: true };
     this.dialog
-      .open(OrgFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(OrgFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((dto: CreateOrganizationRequestDto | null) => {
         if (!dto) return;
@@ -106,7 +106,7 @@ export class OrganizationsComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.store.delete(org.id).then(() => {
         this.snackBar.open(

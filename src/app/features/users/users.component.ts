@@ -130,7 +130,7 @@ export class UsersComponent implements OnInit {
   openCreateDialog(): void {
     const data: UserFormDialogData = { isEdit: false };
     this.dialog
-      .open(UserFormDialogComponent, { data, width: '640px', disableClose: true })
+      .open(UserFormDialogComponent, { data, width: 'min(640px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: UserFormResult | null) => {
         if (!result) return;
@@ -147,7 +147,7 @@ export class UsersComponent implements OnInit {
   openEditDialog(user: UserDto): void {
     const data: UserFormDialogData = { user, isEdit: true };
     this.dialog
-      .open(UserFormDialogComponent, { data, width: '640px', disableClose: true })
+      .open(UserFormDialogComponent, { data, width: 'min(640px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: UserFormResult | null) => {
         if (!result) return;
@@ -169,7 +169,7 @@ export class UsersComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.store.delete(user.id).then(() => {
         this.snackBar.open(

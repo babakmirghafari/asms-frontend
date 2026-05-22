@@ -50,7 +50,7 @@ export class AlertsComponent implements OnInit {
       messageKey: 'ALERTS.ACKNOWLEDGE_CONFIRM',
       confirmKey: 'ALERTS.ACKNOWLEDGE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.store.acknowledge(alert.id).then(() => {
         this.snackBar.open(
@@ -68,7 +68,7 @@ export class AlertsComponent implements OnInit {
       messageKey: 'ALERTS.RESOLVE_CONFIRM',
       confirmKey: 'ALERTS.RESOLVE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.store.resolve(alert.id).then(() => {
         this.snackBar.open(

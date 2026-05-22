@@ -51,7 +51,7 @@ export class MembershipsComponent implements OnInit {
   openCreateDialog(): void {
     const data: MembershipFormDialogData = {};
     this.dialog
-      .open(MembershipFormDialogComponent, { data, width: '480px', disableClose: true })
+      .open(MembershipFormDialogComponent, { data, width: 'min(480px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: CreateMembershipRequestDto | null) => {
         if (!result) return;
@@ -72,7 +72,7 @@ export class MembershipsComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
         this.store.delete(membership.id).then(() => {
           this.snackBar.open(

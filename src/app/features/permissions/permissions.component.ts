@@ -67,7 +67,7 @@ export class PermissionsComponent implements OnInit {
   openCreateDialog(): void {
     const data: PermissionFormDialogData = {};
     this.dialog
-      .open(PermissionFormDialogComponent, { data, width: '520px', disableClose: true })
+      .open(PermissionFormDialogComponent, { data, width: 'min(520px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: CreatePermissionRequestDto | null) => {
         if (!result) return;
@@ -88,7 +88,7 @@ export class PermissionsComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
         this.store.delete(permission.id).then(() => {
           this.snackBar.open(

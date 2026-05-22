@@ -66,7 +66,7 @@ export class PermissionGroupsComponent implements OnInit {
   openCreateDialog(): void {
     const data: PgFormDialogData = { isEdit: false };
     this.dialog
-      .open(PgFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(PgFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((dto: CreatePermissionGroupRequestDto | null) => {
         if (!dto) return;
@@ -83,7 +83,7 @@ export class PermissionGroupsComponent implements OnInit {
   openEditDialog(group: PermissionGroupDto): void {
     const data: PgFormDialogData = { group, isEdit: true };
     this.dialog
-      .open(PgFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(PgFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((dto: CreatePermissionGroupRequestDto | null) => {
         if (!dto) return;
@@ -109,7 +109,7 @@ export class PermissionGroupsComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.store.delete(group.id).then(() => {
         this.snackBar.open(

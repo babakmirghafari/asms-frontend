@@ -65,7 +65,7 @@ export class ApplicationsComponent implements OnInit {
   openCreateDialog(): void {
     const data: AppFormDialogData = { isEdit: false };
     this.dialog
-      .open(AppFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(AppFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: AppFormResult | null) => {
         if (!result) return;
@@ -82,7 +82,7 @@ export class ApplicationsComponent implements OnInit {
   openEditDialog(app: ApplicationDto): void {
     const data: AppFormDialogData = { app, isEdit: true };
     this.dialog
-      .open(AppFormDialogComponent, { data, width: '560px', disableClose: true })
+      .open(AppFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
       .subscribe((result: AppFormResult | null) => {
         if (!result) return;
@@ -104,7 +104,7 @@ export class ApplicationsComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
+    this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
         this.store.delete(app.id).then(() => {
           this.snackBar.open(

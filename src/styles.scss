@@ -164,6 +164,22 @@ body {
 .mat-mdc-dialog-container {
   background-color: var(--asms-surface) !important;
   border-radius: var(--asms-radius-lg) !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.mat-mdc-dialog-surface {
+  overflow-x: hidden !important;
+}
+
+.mat-mdc-dialog-content {
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+// Prevent dialog inner content from overflowing width
+.mat-mdc-dialog-container .mdc-dialog__content {
+  overflow-x: hidden !important;
 }
 
 .mat-mdc-table {
@@ -456,24 +472,26 @@ body {
 }
 
 .user-dialog-content {
-  min-width: min(560px, 95vw);
+  width: 100%;
+  box-sizing: border-box;
   padding: var(--asms-space-md) var(--asms-space-lg) !important;
 
   @media (max-width: 600px) {
-    min-width: unset;
-    width: 100%;
     padding: var(--asms-space-sm) var(--asms-space-md) !important;
   }
 }
 
 .user-wizard-content {
-  width: min(900px, 95vw);
-  max-height: 75vh !important;
+  width: 100%;
+  box-sizing: border-box;
+  max-height: 65vh !important;
   padding: 0 var(--asms-space-lg) var(--asms-space-md) !important;
   overflow-y: auto;
+  overflow-x: hidden;
 
   @media (max-width: 600px) {
     padding: 0 var(--asms-space-sm) var(--asms-space-sm) !important;
+    max-height: 60vh !important;
   }
 }
 
