@@ -1,40 +1,160 @@
-<h2 mat-dialog-title>
-  {{ (data.isEdit ? 'ORGANIZATIONS.EDIT' : 'ORGANIZATIONS.ADD') | translate }}
-</h2>
+<!-- Dialog header with colored org avatar -->
+<div class="org-dialog-header">
+  <div class="org-dialog-avatar" [style.background]="avatarColor">
+    <span class="org-dialog-avatar-letter">{{ nameInitial }}</span>
+  </div>
+  <div class="org-dialog-header-text">
+    <h2 mat-dialog-title class="org-dialog-title">
+      {{ (data.isEdit ? 'ORGANIZATIONS.EDIT' : 'ORGANIZATIONS.ADD') | translate }}
+    </h2>
+    @if (form.get('name')?.value) {
+      <p class="org-dialog-subtitle">{{ form.get('name')?.value }}</p>
+    }
+  </div>
+</div>
 
-<mat-dialog-content style="min-width: 440px;">
-  <form [formGroup]="form" class="dialog-form-col">
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }}</mat-label>
-      <mat-icon matPrefix>business</mat-icon>
-      <input matInput formControlName="name" [placeholder]="'e.g. Northwind Bank'" />
-      @if (form.get('name')?.hasError('required')) {
-        <mat-error>Organization name is required</mat-error>
-      }
-      @if (form.get('name')?.hasError('minlength')) {
-        <mat-error>Minimum 2 characters required</mat-error>
-      }
-    </mat-form-field>
+<mat-dialog-content class="org-dialog-content">
+  <form [formGroup]="form" autocomplete="off">
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
-      <mat-icon matPrefix>description</mat-icon>
-      <textarea matInput formControlName="description" rows="3"
-        [placeholder]="'Brief description of this organization'"></textarea>
-    </mat-form-field>
+    <!-- Two-column main fields -->
+    <div class="org-dialog-columns">
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'ORGANIZATIONS.PARENT' | translate }}</mat-label>
-      <mat-icon matPrefix>account_tree</mat-icon>
-      <input matInput formControlName="parentOrganizationId" [placeholder]="'Parent organization ID (optional)'" />
-      <mat-hint>Leave empty for top-level organization</mat-hint>
-    </mat-form-field>
+      <!-- Left column -->
+      <div class="org-dialog-col">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }}</mat-label>
+          <mat-icon matPrefix>business</mat-icon>
+          <input matInput formControlName="name" placeholder="e.g. Northwind Bank" />
+          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+            <mat-error>Organization name is required</mat-error>
+          }
+          @if (form.get('name')?.hasError('minlength') && form.get('name')?.touched) {
+            <mat-error>Minimum 2 characters required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+          <mat-icon matPrefix>description</mat-icon>
+          <textarea matInput formControlName="description" rows="3"
+                    placeholder="Brief description of this organization"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Organization Code</mat-label>
+          <mat-icon matPrefix>tag</mat-icon>
+          <input matInput formControlName="orgCode" class="mono-text"
+                 placeholder="e.g. NORTHWIND-BANK" />
+          <mat-hint>Used as tenant identifier — auto-generated from name</mat-hint>
+          @if (form.get('orgCode')?.hasError('pattern') && form.get('orgCode')?.touched) {
+            <mat-error>Only uppercase letters, numbers, and hyphens</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Right column -->
+      <div class="org-dialog-col">
+
+        <!-- Status toggle -->
+        <div class="dialog-section-label">Status</div>
+        <mat-button-toggle-group formControlName="status" class="org-status-toggle">
+          <mat-button-toggle value="ACTIVE">
+            <mat-icon>check_circle</mat-icon>
+            {{ 'USERS.ACTIVE_STATUS' | translate }}
+          </mat-button-toggle>
+          <mat-button-toggle value="INACTIVE">
+            <mat-icon>cancel</mat-icon>
+            {{ 'USERS.INACTIVE_STATUS' | translate }}
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ORGANIZATIONS.DATA_RESIDENCY' | translate }}</mat-label>
+          <mat-icon matPrefix>public</mat-icon>
+          <mat-select formControlName="dataResidency">
+            <mat-option value="EU">EU</mat-option>
+            <mat-option value="US">US</mat-option>
+            <mat-option value="APAC">APAC</mat-option>
+            <mat-option value="GLOBAL">Global</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Compliance tags multi-select chips -->
+        <div class="dialog-section-label">Compliance</div>
+        <div class="compliance-chip-row">
+          @for (tag of complianceTags; track tag) {
+            <button type="button"
+                    class="compliance-chip"
+                    [class.compliance-chip--selected]="isTagSelected(tag)"
+                    (click)="toggleTag(tag)">
+              <mat-icon>{{ isTagSelected(tag) ? 'check' : 'add' }}</mat-icon>
+              {{ tag }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact & Ownership section -->
+    <div class="dialog-section-label" style="margin-top: 8px;">Contact &amp; Ownership</div>
+    <div class="dialog-form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Admin Email</mat-label>
+        <mat-icon matPrefix>admin_panel_settings</mat-icon>
+        <input matInput formControlName="adminEmail" type="email" placeholder="admin@northwind.com" />
+        @if (form.get('adminEmail')?.hasError('email') && form.get('adminEmail')?.touched) {
+          <mat-error>Enter a valid email address</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Organization Website</mat-label>
+        <mat-icon matPrefix>language</mat-icon>
+        <input matInput formControlName="website" type="url" placeholder="https://northwind.com" />
+        @if (form.get('website')?.hasError('pattern') && form.get('website')?.touched) {
+          <mat-error>Enter a valid URL (https://...)</mat-error>
+        }
+        <mat-hint>Optional</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- Policy Defaults — collapsible panel -->
+    <mat-expansion-panel class="org-policy-panel">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>policy</mat-icon>
+          <span>Policy Defaults</span>
+        </mat-panel-title>
+        <mat-panel-description>Authentication and station policy overrides</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="dialog-settings-section" style="margin-top: 12px;">
+        <div class="dialog-toggle-row">
+          <div class="toggle-label">
+            <span class="toggle-title">Use global authentication policy defaults</span>
+            <span class="toggle-hint">Override with organization-specific authentication rules if disabled</span>
+          </div>
+          <mat-slide-toggle formControlName="useGlobalAuthPolicy" color="primary" />
+        </div>
+
+        <mat-divider />
+
+        <div class="dialog-toggle-row">
+          <div class="toggle-label">
+            <span class="toggle-title">Use global station policy defaults</span>
+            <span class="toggle-hint">Override with organization-specific station access rules if disabled</span>
+          </div>
+          <mat-slide-toggle formControlName="useGlobalStationPolicy" color="primary" />
+        </div>
+      </div>
+    </mat-expansion-panel>
+
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="asms-dialog-actions">
-  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
+  <button mat-stroked-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
     @if (isLoading) { <mat-spinner diameter="18" /> }
     {{ (data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.ADD') | translate }}
   </button>

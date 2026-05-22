@@ -1,0 +1,134 @@
+// Org form dialog styles
+
+.org-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px 0;
+}
+
+.org-dialog-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.org-dialog-avatar-letter {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.org-dialog-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.org-dialog-title {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 18px !important;
+}
+
+.org-dialog-subtitle {
+  font-size: 13px;
+  color: var(--asms-text-secondary);
+  margin: 2px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.org-dialog-content {
+  width: min(640px, 95vw) !important;
+  padding: 16px 24px !important;
+}
+
+.org-dialog-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 8px;
+
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.org-dialog-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.org-status-toggle {
+  width: 100%;
+  margin-bottom: 4px;
+
+  .mat-button-toggle {
+    flex: 1;
+
+    mat-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+    }
+  }
+}
+
+.compliance-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compliance-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border: 1.5px solid var(--asms-border);
+  border-radius: var(--asms-radius-full);
+  background: var(--asms-surface);
+  color: var(--asms-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  mat-icon {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+  }
+
+  &:hover {
+    border-color: var(--asms-primary);
+    color: var(--asms-primary);
+  }
+
+  &--selected {
+    background: var(--asms-primary);
+    border-color: var(--asms-primary);
+    color: #fff;
+  }
+}
+
+.org-policy-panel {
+  margin-top: 12px;
+  border-radius: var(--asms-radius-md) !important;
+  border: 1px solid var(--asms-border) !important;
+  box-shadow: none !important;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-inline-end: 8px;
+  }
+}
