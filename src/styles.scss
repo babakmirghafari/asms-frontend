@@ -443,8 +443,42 @@ body {
   .mat-stepper-horizontal-line { display: none; }
 
   .mat-horizontal-stepper-header-container {
-    padding: 0 var(--asms-space-md);
+    padding: 0 var(--asms-space-sm);
     margin-bottom: var(--asms-space-md);
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+
+  .mat-step-header {
+    padding: 0 8px;
+    min-width: 80px;
+  }
+}
+
+.user-dialog-content {
+  min-width: min(560px, 95vw);
+  padding: var(--asms-space-md) var(--asms-space-lg) !important;
+}
+
+.user-wizard-content {
+  width: min(900px, 95vw);
+  max-height: 75vh !important;
+  padding: 0 var(--asms-space-lg) var(--asms-space-md) !important;
+  overflow-y: auto;
+}
+
+.wizard-dialog-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .wizard-step-counter {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--asms-text-secondary);
+    background: var(--asms-surface-variant);
+    border-radius: var(--asms-radius-full);
+    padding: 2px 12px;
   }
 }
 
@@ -459,6 +493,488 @@ body {
   margin-top: var(--asms-space-md);
   padding-top: var(--asms-space-sm);
   border-top: 1px solid var(--asms-border-light);
+}
+
+// ============================================================
+// Wizard step 2 — Password delivery
+// ============================================================
+
+.temp-password-box {
+  background: var(--asms-surface-variant);
+  border: 1px solid var(--asms-border);
+  border-radius: var(--asms-radius-md);
+  padding: var(--asms-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--asms-space-sm);
+}
+
+.temp-password-label {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-xs);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.temp-password-value {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-sm);
+}
+
+.temp-password-code {
+  flex: 1;
+  font-family: 'Roboto Mono', 'Fira Code', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--asms-text-primary);
+  background: var(--asms-surface);
+  border: 1px solid var(--asms-border);
+  border-radius: var(--asms-radius-sm);
+  padding: 8px 12px;
+  display: block;
+}
+
+.delivery-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--asms-space-sm);
+
+  .mat-mdc-radio-button {
+    border: 1.5px solid var(--asms-border);
+    border-radius: var(--asms-radius-md);
+    padding: var(--asms-space-sm) var(--asms-space-md);
+    transition: border-color 0.15s ease, background 0.15s ease;
+
+    &.mat-mdc-radio-checked {
+      border-color: var(--asms-primary);
+      background: var(--asms-primary-light);
+    }
+  }
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-xs);
+  font-size: 13px;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.dialog-warning-banner--orange {
+  background-color: var(--asms-warning-bg) !important;
+  border-color: #ffcc80 !important;
+  color: var(--asms-warning) !important;
+}
+
+.dialog-warning-banner--red {
+  background-color: var(--asms-danger-bg) !important;
+  border-color: #ef9a9a !important;
+  color: var(--asms-danger) !important;
+}
+
+// ============================================================
+// Wizard step 3 — Org selection
+// ============================================================
+
+.org-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asms-space-sm);
+  margin-bottom: var(--asms-space-md);
+}
+
+.org-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-md);
+  padding: var(--asms-space-sm) var(--asms-space-md);
+  border: 1.5px solid var(--asms-border);
+  border-radius: var(--asms-radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--asms-primary);
+    background: var(--asms-primary-light);
+  }
+
+  &--selected {
+    border-color: var(--asms-primary);
+    background: var(--asms-primary-light);
+  }
+}
+
+.org-checkbox-input {
+  display: none;
+}
+
+.org-checkbox-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.org-checkbox-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.org-checkbox-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--asms-text-primary);
+}
+
+.org-checkbox-meta {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+}
+
+.org-checkbox-check {
+  color: var(--asms-primary);
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+// ============================================================
+// Wizard step 4 — Permissions
+// ============================================================
+
+.permission-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--asms-space-sm);
+  margin-bottom: var(--asms-space-md);
+}
+
+.perm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--asms-border);
+  border-radius: var(--asms-radius-full);
+  background: var(--asms-surface);
+  color: var(--asms-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--asms-primary);
+    color: var(--asms-primary);
+  }
+
+  &--selected {
+    background: var(--asms-primary);
+    border-color: var(--asms-primary);
+    color: #fff;
+  }
+
+  .perm-chip-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.direct-perms-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--asms-space-xs);
+  margin-bottom: var(--asms-space-sm);
+}
+
+.direct-perm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--asms-info-bg);
+  color: var(--asms-info);
+  border: 1px solid rgba(21, 101, 192, 0.2);
+  border-radius: var(--asms-radius-sm);
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: 'Roboto Mono', monospace;
+
+  &--sensitive {
+    background: var(--asms-danger-bg);
+    color: var(--asms-danger);
+    border-color: rgba(198, 40, 40, 0.2);
+  }
+}
+
+.perm-remove-btn {
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+
+  mat-icon {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+  }
+}
+
+.effective-perms-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--asms-space-xs);
+  padding: var(--asms-space-sm);
+  background: var(--asms-surface-variant);
+  border-radius: var(--asms-radius-md);
+  border: 1px solid var(--asms-border-light);
+
+  .effective-perm-chip {
+    font-size: 11px;
+    font-family: 'Roboto Mono', monospace;
+  }
+}
+
+// ============================================================
+// Wizard step 6 — Station policy
+// ============================================================
+
+.ip-tag-input-wrapper {
+  border: 1.5px solid var(--asms-border);
+  border-radius: var(--asms-radius-md);
+  padding: var(--asms-space-sm) var(--asms-space-md);
+  min-height: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  cursor: text;
+  background: var(--asms-surface);
+  transition: border-color 0.15s ease;
+
+  &:focus-within {
+    border-color: var(--asms-primary);
+  }
+}
+
+.ip-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ip-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--asms-primary-light);
+  color: var(--asms-primary);
+  border: 1px solid rgba(63, 81, 181, 0.3);
+  border-radius: var(--asms-radius-sm);
+  padding: 2px 8px;
+  font-size: 12px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.ip-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--asms-primary);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+
+  &:hover { color: var(--asms-danger); }
+}
+
+.ip-tag-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--asms-text-primary);
+  min-width: 200px;
+  flex: 1;
+  font-family: 'Roboto Mono', monospace;
+
+  &::placeholder {
+    color: var(--asms-text-disabled);
+    font-family: 'Inter', 'Roboto', sans-serif;
+  }
+}
+
+.station-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-sm);
+  background: var(--asms-info-bg);
+  color: var(--asms-info);
+  border-radius: var(--asms-radius-md);
+  padding: var(--asms-space-sm) var(--asms-space-md);
+  font-size: 13px;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================
+// Wizard step 7 — Status toggle
+// ============================================================
+
+.status-toggle-group {
+  width: 100%;
+  margin-bottom: var(--asms-space-md);
+
+  .mat-button-toggle {
+    flex: 1;
+    text-align: center;
+
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
+.invitation-preview {
+  background: var(--asms-surface-variant);
+  border: 1px solid var(--asms-border);
+  border-radius: var(--asms-radius-md);
+  padding: var(--asms-space-md);
+}
+
+.invitation-preview-header {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-xs);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--asms-space-sm);
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.invitation-preview-text {
+  font-size: 13px;
+  color: var(--asms-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ============================================================
+// Wizard step 8 — Review
+// ============================================================
+
+.review-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--asms-space-md);
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.review-card {
+  background: var(--asms-surface-variant);
+  border: 1px solid var(--asms-border-light);
+  border-radius: var(--asms-radius-md);
+  padding: var(--asms-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--asms-space-xs);
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--asms-space-xs);
+  padding-bottom: var(--asms-space-xs);
+  border-bottom: 1px solid var(--asms-border-light);
+}
+
+.review-edit-btn {
+  font-size: 12px;
+  min-width: unset;
+  padding: 0 8px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+}
+
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--asms-space-sm);
+  min-height: 24px;
+}
+
+.review-label {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+  flex-shrink: 0;
+}
+
+.review-value {
+  font-size: 13px;
+  color: var(--asms-text-primary);
+  text-align: end;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-badge {
+  font-size: 11px;
+  padding: 1px 8px;
+}
+
+.review-empty {
+  font-size: 13px;
+  color: var(--asms-text-disabled);
+  font-style: italic;
 }
 
 // ============================================================

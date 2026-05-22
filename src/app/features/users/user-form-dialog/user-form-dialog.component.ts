@@ -1,17 +1,22 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, computed, signal } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatStepperModule } from '@angular/material/stepper';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatRadioModule } from '@angular/material/radio';
+import { DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+// DecimalPipe is used in the template via the `| number` pipe
 import { UserDto, CreateUserRequestDto, UpdateUserRequestDto } from '@babakmirghafari/asms-api-client';
 
 export interface UserFormDialogData {
@@ -27,8 +32,11 @@ export type UserFormResult = CreateUserRequestDto | UpdateUserRequestDto;
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
+    DecimalPipe,
     MatDialogModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -38,6 +46,7 @@ export type UserFormResult = CreateUserRequestDto | UpdateUserRequestDto;
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatDividerModule,
+    MatRadioModule,
     TranslateModule
   ]
 })
@@ -47,13 +56,158 @@ export class UserFormDialogComponent {
   private readonly fb = inject(FormBuilder);
 
   isLoading = false;
+  activeStepIndex = 0;
 
-  readonly deliveryOptions = [
-    { value: 'email', label: 'Email' },
-    { value: 'sms', label: 'SMS' },
-    { value: 'both', label: 'Email + SMS' },
-    { value: 'manual', label: 'Manual (copy)' }
+  // ──────────────────────────────────────────
+  // Step 1 — Identity
+  // ──────────────────────────────────────────
+
+  readonly identityForm = this.fb.group({
+    firstName: [this.data.user ? (this.data.user.fullName?.split(' ')[0] ?? '') : '', [Validators.required]],
+    lastName: [this.data.user ? (this.data.user.fullName?.split(' ').slice(1).join(' ') ?? '') : '', [Validators.required]],
+    username: [this.data.user?.username ?? '', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z0-9._-]+$/)]],
+    email: [this.data.user?.email ?? '', [Validators.required, Validators.email]],
+    phoneNumber: [this.data.user?.phoneNumber ?? '', [Validators.pattern(/^\+?[\d\s\-().]{7,20}$/)]],
+    department: [this.data.user?.department ?? ''],
+    jobTitle: [''],
+    // Keep fullName for backward compat in edit mode
+    fullName: [this.data.user?.fullName ?? '']
+  });
+
+  // ──────────────────────────────────────────
+  // Step 2 — Password delivery
+  // ──────────────────────────────────────────
+
+  generatedPassword = this.generatePassword();
+  showTempPassword = false;
+  passwordCopied = false;
+
+  readonly passwordForm = this.fb.group({
+    deliveryMethod: ['email'],
+    passwordExpiry: ['24h'],
+    forcePasswordChange: [true]
+  });
+
+  // ──────────────────────────────────────────
+  // Step 3 — Organization assignment
+  // ──────────────────────────────────────────
+
+  readonly sampleOrgs = [
+    { id: 'org-northwind', name: 'Northwind Bank', members: 1284, color: '#3f51b5' },
+    { id: 'org-globex', name: 'Globex Europe', members: 642, color: '#009688' },
+    { id: 'org-acme', name: 'Acme Retail', members: 328, color: '#f57c00' }
   ];
+
+  selectedOrgIds: string[] = [];
+  primaryOrgId: string | null = null;
+  showOrgSelectionAfterLogin = false;
+
+  isOrgSelected(orgId: string): boolean {
+    return this.selectedOrgIds.includes(orgId);
+  }
+
+  toggleOrg(orgId: string): void {
+    const idx = this.selectedOrgIds.indexOf(orgId);
+    if (idx >= 0) {
+      this.selectedOrgIds = this.selectedOrgIds.filter(id => id !== orgId);
+      if (this.primaryOrgId === orgId) {
+        this.primaryOrgId = this.selectedOrgIds[0] ?? null;
+      }
+    } else {
+      this.selectedOrgIds = [...this.selectedOrgIds, orgId];
+      if (!this.primaryOrgId) this.primaryOrgId = orgId;
+    }
+    this.showOrgSelectionAfterLogin = this.selectedOrgIds.length >= 2;
+  }
+
+  getOrgName(orgId: string): string {
+    return this.sampleOrgs.find(o => o.id === orgId)?.name ?? orgId;
+  }
+
+  // ──────────────────────────────────────────
+  // Step 4 — Permission assignment
+  // ──────────────────────────────────────────
+
+  readonly permissionGroups = [
+    { id: 'pg-finance', name: 'Finance Approver' },
+    { id: 'pg-audit', name: 'Audit Viewer' },
+    { id: 'pg-security', name: 'Security Admin' },
+    { id: 'pg-branch', name: 'Branch Operator' },
+    { id: 'pg-appowner', name: 'Application Owner' }
+  ];
+
+  readonly availablePermissions = [
+    'corebanking.accounts.read',
+    'corebanking.accounts.approve',
+    'corebanking.payments.manage',
+    'claims.case.read',
+    'claims.case.update',
+    'iam.users.manage',
+    'iam.permissions.import'
+  ];
+
+  selectedGroupIds: string[] = [];
+  selectedDirectPermissions: string[] = [];
+  directPermissionToAdd: string | null = null;
+
+  isGroupSelected(groupId: string): boolean {
+    return this.selectedGroupIds.includes(groupId);
+  }
+
+  toggleGroup(groupId: string): void {
+    const idx = this.selectedGroupIds.indexOf(groupId);
+    if (idx >= 0) {
+      this.selectedGroupIds = this.selectedGroupIds.filter(id => id !== groupId);
+    } else {
+      this.selectedGroupIds = [...this.selectedGroupIds, groupId];
+    }
+  }
+
+  getGroupName(groupId: string): string {
+    return this.permissionGroups.find(g => g.id === groupId)?.name ?? groupId;
+  }
+
+  addDirectPermission(perm: string | null): void {
+    if (!perm) return;
+    if (!this.selectedDirectPermissions.includes(perm)) {
+      this.selectedDirectPermissions = [...this.selectedDirectPermissions, perm];
+    }
+    // Reset select after short delay (ngModel two-way binding)
+    setTimeout(() => { this.directPermissionToAdd = null; }, 50);
+  }
+
+  removeDirectPermission(perm: string): void {
+    this.selectedDirectPermissions = this.selectedDirectPermissions.filter(p => p !== perm);
+  }
+
+  isSensitivePermission(perm: string): boolean {
+    return perm.endsWith('.manage') || perm.endsWith('.approve');
+  }
+
+  hasSensitivePermissions(): boolean {
+    return this.selectedDirectPermissions.some(p => this.isSensitivePermission(p));
+  }
+
+  get effectivePermissions(): string[] {
+    const fromGroups: string[] = [];
+    // In a real app this would come from the API; we use stubs here
+    return [...new Set([...fromGroups, ...this.selectedDirectPermissions])];
+  }
+
+  // ──────────────────────────────────────────
+  // Step 5 — Authentication & security
+  // ──────────────────────────────────────────
+
+  readonly securityForm = this.fb.group({
+    mfaEnabled: [false],
+    requireMfaEnrollment: [true],
+    failedLoginThreshold: [3, [Validators.required, Validators.min(1), Validators.max(10)]],
+    lockDuration: ['30m']
+  });
+
+  // ──────────────────────────────────────────
+  // Step 6 — Station policy
+  // ──────────────────────────────────────────
 
   readonly weekdays = [
     { value: 'MONDAY', label: 'Mon' },
@@ -65,64 +219,118 @@ export class UserFormDialogComponent {
     { value: 'SUNDAY', label: 'Sun' }
   ];
 
-  readonly selectedWorkdays: boolean[] = (() => {
-    const existing = this.data.user?.workdays ?? [];
-    return this.weekdays.map(d => existing.includes(d.value as CreateUserRequestDto.WorkdaysEnum));
-  })();
+  selectedWorkdays: boolean[] = [true, true, true, true, true, false, false];
+  allowedIPs: string[] = [];
 
-  // Step 1 — Identity
-  readonly identityForm = this.fb.group({
-    username: [this.data.user?.username ?? '', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z0-9._-]+$/)]],
-    email: [this.data.user?.email ?? '', [Validators.required, Validators.email]],
-    fullName: [this.data.user?.fullName ?? '', [Validators.required, Validators.minLength(2)]],
-    phoneNumber: [this.data.user?.phoneNumber ?? ''],
-    department: [this.data.user?.department ?? '']
+  readonly stationForm = this.fb.group({
+    applyStationPolicy: [false],
+    workStartTime: ['09:00'],
+    workEndTime: ['18:00']
   });
 
-  // Step 2 — Password & delivery (create only)
-  readonly passwordForm = this.fb.group({
-    sendTempPassword: [true],
-    deliveryMethod: ['email'],
-    forcePasswordChange: [true],
-    requireMfa: [false]
-  });
+  addIP(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const val = input.value.trim();
+    if (val && !this.allowedIPs.includes(val)) {
+      this.allowedIPs = [...this.allowedIPs, val];
+    }
+    input.value = '';
+    event.preventDefault();
+  }
 
-  // Step 3 — Organization & station
-  readonly orgForm = this.fb.group({
-    organizationIds: [''],   // comma-separated org IDs
-    ipRestriction: [this.data.user?.ipRestriction ?? ''],
-    workStartTime: [this.data.user?.workHours?.start ?? '08:00'],
-    workEndTime: [this.data.user?.workHours?.end ?? '18:00']
-  });
+  removeIP(ip: string): void {
+    this.allowedIPs = this.allowedIPs.filter(i => i !== ip);
+  }
 
   toggleWorkday(index: number): void {
-    this.selectedWorkdays[index] = !this.selectedWorkdays[index];
+    const copy = [...this.selectedWorkdays];
+    copy[index] = !copy[index];
+    this.selectedWorkdays = copy;
   }
+
+  get selectedWorkdayLabels(): string {
+    const labels = this.weekdays.filter((_, i) => this.selectedWorkdays[i]).map(d => d.label);
+    return labels.length > 0 ? labels.join(', ') : 'None';
+  }
+
+  get stationPolicySummary(): string {
+    const ipCount = this.allowedIPs.length;
+    const days = this.selectedWorkdayLabels;
+    const start = this.stationForm.get('workStartTime')?.value ?? '09:00';
+    const end = this.stationForm.get('workEndTime')?.value ?? '18:00';
+    const ipText = ipCount > 0 ? `${ipCount} IP(s)` : 'any IP';
+    return `User can access from ${ipText}, ${days}, ${start}–${end}`;
+  }
+
+  // ──────────────────────────────────────────
+  // Step 7 — Status & invitation
+  // ──────────────────────────────────────────
+
+  readonly statusForm = this.fb.group({
+    status: ['ACTIVE'],
+    sendInvitation: [true],
+    sendTempPassword: [true]
+  });
+
+  // ──────────────────────────────────────────
+  // Stepper
+  // ──────────────────────────────────────────
+
+  onStepChange(event: StepperSelectionEvent): void {
+    this.activeStepIndex = event.selectedIndex;
+  }
+
+  // ──────────────────────────────────────────
+  // Password helpers
+  // ──────────────────────────────────────────
+
+  private generatePassword(): string {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$';
+    return Array.from({ length: 12 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  }
+
+  toggleTempPassword(): void {
+    this.showTempPassword = !this.showTempPassword;
+  }
+
+  copyPassword(): void {
+    navigator.clipboard.writeText(this.generatedPassword).catch(() => undefined);
+    this.passwordCopied = true;
+    setTimeout(() => { this.passwordCopied = false; }, 2000);
+  }
+
+  // ──────────────────────────────────────────
+  // Dialog actions
+  // ──────────────────────────────────────────
 
   cancel(): void {
     this.dialogRef.close(null);
   }
 
   submit(): void {
-    if (this.identityForm.invalid) {
-      this.identityForm.markAllAsTouched();
-      return;
-    }
-
     if (this.data.isEdit) {
-      const nameParts = (this.identityForm.value.fullName ?? '').trim().split(' ');
+      if (this.identityForm.invalid) {
+        this.identityForm.markAllAsTouched();
+        return;
+      }
+      const fn = this.identityForm.value.firstName?.trim() ?? '';
+      const ln = this.identityForm.value.lastName?.trim() ?? '';
       const dto: UpdateUserRequestDto = {
         email: this.identityForm.value.email!,
-        firstName: nameParts[0] ?? '',
-        lastName: nameParts.slice(1).join(' ') || nameParts[0],
+        firstName: fn,
+        lastName: ln || fn,
         phoneNumber: this.identityForm.value.phoneNumber ?? undefined
       };
       this.dialogRef.close(dto);
     } else {
-      const orgIdsRaw = this.orgForm.value.organizationIds?.trim();
-      const organizationIds = orgIdsRaw
-        ? orgIdsRaw.split(',').map(id => id.trim()).filter(Boolean)
-        : undefined;
+      if (this.identityForm.invalid) {
+        this.identityForm.markAllAsTouched();
+        return;
+      }
+
+      const fn = this.identityForm.value.firstName?.trim() ?? '';
+      const ln = this.identityForm.value.lastName?.trim() ?? '';
+      const fullName = [fn, ln].filter(Boolean).join(' ');
 
       const workdayValues = this.weekdays
         .filter((_, i) => this.selectedWorkdays[i])
@@ -131,16 +339,21 @@ export class UserFormDialogComponent {
       const dto: CreateUserRequestDto = {
         username: this.identityForm.value.username!,
         email: this.identityForm.value.email!,
-        fullName: this.identityForm.value.fullName ?? undefined,
-        phoneNumber: this.identityForm.value.phoneNumber ?? undefined,
-        department: this.identityForm.value.department ?? undefined,
-        organizationIds,
-        workdays: workdayValues.length ? workdayValues : undefined,
-        ipRestriction: this.orgForm.value.ipRestriction?.trim() || undefined,
-        workHours: (this.orgForm.value.workStartTime && this.orgForm.value.workEndTime)
-          ? { start: this.orgForm.value.workStartTime, end: this.orgForm.value.workEndTime }
+        fullName: fullName || undefined,
+        phoneNumber: this.identityForm.value.phoneNumber?.trim() || undefined,
+        department: this.identityForm.value.department?.trim() || undefined,
+        organizationIds: this.selectedOrgIds.length > 0 ? this.selectedOrgIds : undefined,
+        workdays: workdayValues.length > 0 && this.stationForm.get('applyStationPolicy')?.value ? workdayValues : undefined,
+        ipRestriction: (this.stationForm.get('applyStationPolicy')?.value && this.allowedIPs.length > 0)
+          ? this.allowedIPs.join(',')
           : undefined,
-        sendTempPassword: this.passwordForm.value.sendTempPassword ?? false
+        workHours: (this.stationForm.get('applyStationPolicy')?.value)
+          ? {
+              start: this.stationForm.value.workStartTime ?? '09:00',
+              end: this.stationForm.value.workEndTime ?? '18:00'
+            }
+          : undefined,
+        sendTempPassword: this.statusForm.value.sendTempPassword ?? true
       };
       this.dialogRef.close(dto);
     }
