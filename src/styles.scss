@@ -400,6 +400,32 @@ body {
 }
 
 // ============================================================
+// User wizard stepper
+// ============================================================
+
+.user-stepper {
+  .mat-stepper-horizontal-line { display: none; }
+
+  .mat-horizontal-stepper-header-container {
+    padding: 0 var(--asms-space-md);
+    margin-bottom: var(--asms-space-md);
+  }
+}
+
+.step-content {
+  padding-top: var(--asms-space-md);
+}
+
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--asms-space-md);
+  padding-top: var(--asms-space-sm);
+  border-top: 1px solid var(--asms-border-light);
+}
+
+// ============================================================
 // Day picker chips (station policy form)
 // ============================================================
 

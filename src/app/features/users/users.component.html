@@ -5,7 +5,7 @@
     addLabelKey="USERS.ADD"
     (addClicked)="openCreateDialog()" />
 
-  <!-- Toolbar: search + filter -->
+  <!-- Toolbar: search + filter chips -->
   <div class="asms-toolbar-row">
     <mat-form-field appearance="outline" class="asms-search-field">
       <mat-label>{{ 'USERS.SEARCH_PLACEHOLDER' | translate }}</mat-label>
@@ -13,15 +13,65 @@
       <input matInput [formControl]="searchCtrl" />
     </mat-form-field>
 
-    <button mat-stroked-button>
-      <mat-icon>filter_list</mat-icon>
-      {{ 'COMMON.FILTER' | translate }}
-    </button>
+    <!-- Status filter chips -->
+    <div class="filter-chips">
+      @for (chip of statusChips; track chip.value) {
+        <button
+          class="filter-chip asms-chip"
+          [class]="statusFilter() === chip.value ? chip.class : 'filter-chip--inactive'"
+          (click)="setStatusFilter(chip.value)">
+          {{ chip.labelKey | translate }}
+        </button>
+      }
+      <button
+        class="filter-chip asms-chip"
+        [class]="mfaFilter() !== null ? 'chip-active' : 'filter-chip--inactive'"
+        (click)="toggleMfaFilter()">
+        MFA {{ mfaFilter() === true ? 'On' : mfaFilter() === false ? 'Off' : '' }}
+      </button>
+      @if (statusFilter() || mfaFilter() !== null) {
+        <button class="filter-chip filter-chip--clear" (click)="clearFilters()">
+          <mat-icon style="font-size:14px;height:14px;width:14px">close</mat-icon>
+          {{ 'COMMON.CLEAR' | translate }}
+        </button>
+      }
+    </div>
+
     <button mat-stroked-button>
       <mat-icon>file_download</mat-icon>
       {{ 'USERS.EXPORT' | translate }}
     </button>
   </div>
+
+  <!-- Bulk actions bar (shown when rows selected) -->
+  @if (hasSelection()) {
+    <div class="bulk-actions-bar">
+      <span class="bulk-count">{{ selectedIds().size }} selected</span>
+      <button mat-button>
+        <mat-icon>check_circle</mat-icon>
+        {{ 'COMMON.ACTIVATE' | translate }}
+      </button>
+      <button mat-button>
+        <mat-icon>block</mat-icon>
+        {{ 'COMMON.DEACTIVATE' | translate }}
+      </button>
+      <button mat-button>
+        <mat-icon>lock</mat-icon>
+        {{ 'COMMON.LOCK' | translate }}
+      </button>
+      <button mat-button>
+        <mat-icon>lock_open</mat-icon>
+        {{ 'COMMON.UNLOCK' | translate }}
+      </button>
+      <button mat-button>
+        <mat-icon>lock_reset</mat-icon>
+        {{ 'COMMON.RESET_PASSWORD' | translate }}
+      </button>
+      <button mat-icon-button (click)="clearSelection()" [matTooltip]="'COMMON.CLEAR' | translate">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
 
   @if (store.isLoading()) {
     <div class="asms-loading-center">
@@ -29,13 +79,19 @@
     </div>
   } @else {
     <div class="asms-table-wrapper">
-      <table mat-table [dataSource]="store.items()" class="full-width">
+      <table mat-table [dataSource]="filteredItems()" class="full-width">
 
         <!-- Full name + avatar column -->
         <ng-container matColumnDef="fullName">
           <th mat-header-cell *matHeaderCellDef>{{ 'USERS.FULL_NAME' | translate }}</th>
           <td mat-cell *matCellDef="let row">
             <div class="user-cell">
+              <mat-checkbox
+                [checked]="isSelected(row.id)"
+                (change)="toggleSelection(row.id)"
+                (click)="$event.stopPropagation()"
+                color="primary"
+                class="user-check" />
               <div class="user-avatar">{{ (row.fullName || row.username || '?')[0].toUpperCase() }}</div>
               <div class="user-info">
                 <span class="user-name">{{ row.fullName || row.username }}</span>
@@ -123,7 +179,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row"></tr>
       </table>
 
-      @if (store.isEmpty()) {
+      @if (filteredItems().length === 0 && !store.isLoading()) {
         <div class="asms-empty-state">
           <mat-icon>people</mat-icon>
           <p>{{ 'COMMON.NO_DATA' | translate }}</p>

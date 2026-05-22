@@ -2,77 +2,254 @@
   {{ (data.isEdit ? 'USERS.EDIT' : 'USERS.ADD') | translate }}
 </h2>
 
-<mat-dialog-content style="min-width: 480px;">
-  <form [formGroup]="identityForm" class="dialog-form-col" autocomplete="off">
+<mat-dialog-content style="min-width: 560px; min-height: 400px;">
 
-    <div class="dialog-form-row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'USERS.FULL_NAME' | translate }}</mat-label>
-        <mat-icon matPrefix>badge</mat-icon>
-        <input matInput formControlName="fullName" [placeholder]="'Sarah Keller'" />
-        @if (identityForm.get('fullName')?.hasError('required')) {
-          <mat-error>Full name is required</mat-error>
-        }
-      </mat-form-field>
+  @if (data.isEdit) {
+    <!-- Edit: simple form, not stepper -->
+    <form [formGroup]="identityForm" class="dialog-form-col" autocomplete="off">
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'USERS.USERNAME' | translate }}</mat-label>
-        <mat-icon matPrefix>alternate_email</mat-icon>
-        <input matInput formControlName="username" [placeholder]="'sarah.keller'" [readonly]="data.isEdit" />
-        @if (identityForm.get('username')?.hasError('required')) {
-          <mat-error>Username is required</mat-error>
-        }
-        @if (identityForm.get('username')?.hasError('pattern')) {
-          <mat-error>Lowercase letters, numbers, dots, dashes and underscores only</mat-error>
-        }
-      </mat-form-field>
-    </div>
+      <div class="dialog-form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'USERS.FULL_NAME' | translate }}</mat-label>
+          <mat-icon matPrefix>badge</mat-icon>
+          <input matInput formControlName="fullName" placeholder="Sarah Keller" />
+          @if (identityForm.get('fullName')?.hasError('required')) {
+            <mat-error>{{ 'USERS.FULL_NAME' | translate }} is required</mat-error>
+          }
+        </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'USERS.EMAIL' | translate }}</mat-label>
-      <mat-icon matPrefix>email</mat-icon>
-      <input matInput formControlName="email" type="email" [placeholder]="'sarah.keller@northwind.com'" />
-      @if (identityForm.get('email')?.hasError('required')) {
-        <mat-error>Email is required</mat-error>
-      }
-      @if (identityForm.get('email')?.hasError('email')) {
-        <mat-error>Enter a valid email address</mat-error>
-      }
-    </mat-form-field>
-
-    <div class="dialog-form-row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'USERS.PHONE' | translate }}</mat-label>
-        <mat-icon matPrefix>phone</mat-icon>
-        <input matInput formControlName="phoneNumber" type="tel" [placeholder]="'+49 151 2345 1098'" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'USERS.DEPARTMENT' | translate }}</mat-label>
-        <mat-icon matPrefix>corporate_fare</mat-icon>
-        <input matInput formControlName="department" [placeholder]="'Finance'" />
-      </mat-form-field>
-    </div>
-  </form>
-
-  @if (!data.isEdit) {
-    <form [formGroup]="settingsForm" class="dialog-settings-section">
-      <div class="dialog-section-label">{{ 'COMMON.SEND_INVITE' | translate }}</div>
-      <div class="dialog-toggle-row">
-        <div class="dialog-toggle-info">
-          <span class="dialog-toggle-label">{{ 'USERS.TEMP_PASSWORD' | translate }}</span>
-          <span class="dialog-toggle-hint">Send temporary password to user's email</span>
-        </div>
-        <mat-slide-toggle formControlName="sendTempPassword" color="primary" />
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'USERS.USERNAME' | translate }}</mat-label>
+          <mat-icon matPrefix>alternate_email</mat-icon>
+          <input matInput formControlName="username" readonly />
+        </mat-form-field>
       </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'USERS.EMAIL' | translate }}</mat-label>
+        <mat-icon matPrefix>email</mat-icon>
+        <input matInput formControlName="email" type="email" />
+        @if (identityForm.get('email')?.hasError('required')) {
+          <mat-error>{{ 'USERS.EMAIL' | translate }} is required</mat-error>
+        }
+        @if (identityForm.get('email')?.hasError('email')) {
+          <mat-error>Enter a valid email address</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="dialog-form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'USERS.PHONE' | translate }}</mat-label>
+          <mat-icon matPrefix>phone</mat-icon>
+          <input matInput formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'USERS.DEPARTMENT' | translate }}</mat-label>
+          <mat-icon matPrefix>corporate_fare</mat-icon>
+          <input matInput formControlName="department" placeholder="Finance" />
+        </mat-form-field>
+      </div>
+
     </form>
+  } @else {
+    <!-- Create: 3-step stepper -->
+    <mat-stepper orientation="horizontal" linear #stepper class="user-stepper">
+
+      <!-- Step 1: Identity -->
+      <mat-step [stepControl]="identityForm" [label]="'USERS.STEP_1' | translate">
+        <form [formGroup]="identityForm" class="dialog-form-col step-content" autocomplete="off">
+
+          <div class="dialog-form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'USERS.FULL_NAME' | translate }}</mat-label>
+              <mat-icon matPrefix>badge</mat-icon>
+              <input matInput formControlName="fullName" placeholder="Sarah Keller" />
+              @if (identityForm.get('fullName')?.hasError('required')) {
+                <mat-error>Full name is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'USERS.USERNAME' | translate }}</mat-label>
+              <mat-icon matPrefix>alternate_email</mat-icon>
+              <input matInput formControlName="username" placeholder="sarah.keller" />
+              @if (identityForm.get('username')?.hasError('required')) {
+                <mat-error>Username is required</mat-error>
+              }
+              @if (identityForm.get('username')?.hasError('pattern')) {
+                <mat-error>Lowercase, numbers, dots, dashes only</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'USERS.EMAIL' | translate }}</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput formControlName="email" type="email" placeholder="sarah.keller@northwind.com" />
+            @if (identityForm.get('email')?.hasError('required')) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (identityForm.get('email')?.hasError('email')) {
+              <mat-error>Enter a valid email address</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="dialog-form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'USERS.PHONE' | translate }}</mat-label>
+              <mat-icon matPrefix>phone</mat-icon>
+              <input matInput formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'USERS.DEPARTMENT' | translate }}</mat-label>
+              <mat-icon matPrefix>corporate_fare</mat-icon>
+              <input matInput formControlName="department" placeholder="Finance" />
+            </mat-form-field>
+          </div>
+
+          <div class="step-actions">
+            <span></span>
+            <button mat-flat-button color="primary" matStepperNext [disabled]="identityForm.invalid">
+              {{ 'COMMON.NEXT' | translate }}
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Step 2: Password & Security -->
+      <mat-step [label]="'USERS.STEP_2' | translate">
+        <form [formGroup]="passwordForm" class="dialog-form-col step-content">
+
+          <div class="dialog-settings-section">
+            <div class="dialog-toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-title">{{ 'USERS.TEMP_PASSWORD' | translate }}</span>
+                <span class="toggle-hint">Generate and deliver temporary password</span>
+              </div>
+              <mat-slide-toggle formControlName="sendTempPassword" color="primary" />
+            </div>
+          </div>
+
+          @if (passwordForm.get('sendTempPassword')?.value) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'USERS.DELIVERY_METHOD' | translate }}</mat-label>
+              <mat-icon matPrefix>send</mat-icon>
+              <mat-select formControlName="deliveryMethod">
+                @for (opt of deliveryOptions; track opt.value) {
+                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+
+          <div class="dialog-settings-section">
+            <div class="dialog-toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-title">{{ 'USERS.FORCE_CHANGE' | translate }}</span>
+                <span class="toggle-hint">User must set a new password on first login</span>
+              </div>
+              <mat-slide-toggle formControlName="forcePasswordChange" color="primary" />
+            </div>
+          </div>
+
+          <div class="dialog-settings-section">
+            <div class="dialog-toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-title">{{ 'USERS.MFA_REQUIRED' | translate }}</span>
+                <span class="toggle-hint">Require MFA enrollment on first login</span>
+              </div>
+              <mat-slide-toggle formControlName="requireMfa" color="primary" />
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon>
+              {{ 'COMMON.BACK' | translate }}
+            </button>
+            <button mat-flat-button color="primary" matStepperNext>
+              {{ 'COMMON.NEXT' | translate }}
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Step 3: Organizations & Station Policy -->
+      <mat-step [label]="'USERS.STEP_3' | translate">
+        <form [formGroup]="orgForm" class="dialog-form-col step-content">
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'USERS.ORG_ASSIGNMENT' | translate }}</mat-label>
+            <mat-icon matPrefix>business</mat-icon>
+            <input matInput formControlName="organizationIds" placeholder="org-uuid-1, org-uuid-2" />
+            <mat-hint>Comma-separated organization IDs</mat-hint>
+          </mat-form-field>
+
+          <div class="dialog-section-label">{{ 'USERS.STATION_POLICY' | translate }}</div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>IP Restriction (CIDR)</mat-label>
+            <mat-icon matPrefix>router</mat-icon>
+            <input matInput formControlName="ipRestriction" placeholder="192.168.1.0/24" />
+            <mat-hint>Leave empty for unrestricted access</mat-hint>
+          </mat-form-field>
+
+          <div class="dialog-section-label">Work Days</div>
+          <div class="day-checkboxes">
+            @for (day of weekdays; track day.value; let i = $index) {
+              <label class="day-chip" [class.day-chip--active]="selectedWorkdays[i]">
+                <input type="checkbox" [checked]="selectedWorkdays[i]" (change)="toggleWorkday(i)" hidden />
+                {{ day.label }}
+              </label>
+            }
+          </div>
+
+          <div class="dialog-form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Work Start Time</mat-label>
+              <mat-icon matPrefix>schedule</mat-icon>
+              <input matInput formControlName="workStartTime" type="time" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Work End Time</mat-label>
+              <mat-icon matPrefix>schedule</mat-icon>
+              <input matInput formControlName="workEndTime" type="time" />
+            </mat-form-field>
+          </div>
+
+          <div class="step-actions">
+            <button mat-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon>
+              {{ 'COMMON.BACK' | translate }}
+            </button>
+            <button mat-flat-button color="primary" (click)="submit()" [disabled]="isLoading">
+              @if (isLoading) { <mat-spinner diameter="18" /> }
+              {{ 'USERS.CONFIRM_CREATE' | translate }}
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+    </mat-stepper>
   }
+
 </mat-dialog-content>
 
-<mat-dialog-actions align="end" class="asms-dialog-actions">
-  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-flat-button color="primary" (click)="submit()" [disabled]="identityForm.invalid || isLoading">
-    @if (isLoading) { <mat-spinner diameter="18" /> }
-    {{ (data.isEdit ? 'COMMON.SAVE' : 'USERS.CONFIRM_CREATE') | translate }}
-  </button>
-</mat-dialog-actions>
+@if (data.isEdit) {
+  <mat-dialog-actions align="end" class="asms-dialog-actions">
+    <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+    <button mat-flat-button color="primary" (click)="submit()" [disabled]="identityForm.invalid || isLoading">
+      @if (isLoading) { <mat-spinner diameter="18" /> }
+      {{ 'COMMON.SAVE' | translate }}
+    </button>
+  </mat-dialog-actions>
+} @else {
+  <mat-dialog-actions align="end" class="asms-dialog-actions">
+    <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  </mat-dialog-actions>
+}

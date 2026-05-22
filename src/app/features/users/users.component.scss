@@ -69,3 +69,76 @@
   cursor: pointer;
   transition: background 0.1s ease;
 }
+
+// Filter chips row
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  cursor: pointer;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: var(--asms-radius-full);
+  transition: all 0.15s ease;
+
+  &--inactive {
+    background: var(--asms-surface-variant);
+    color: var(--asms-text-secondary);
+    border: 1px solid var(--asms-border);
+
+    &:hover {
+      border-color: var(--asms-primary);
+      color: var(--asms-primary);
+    }
+  }
+
+  &--clear {
+    background: transparent;
+    color: var(--asms-text-secondary);
+    border: 1px dashed var(--asms-border);
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+
+    &:hover {
+      color: var(--asms-danger);
+      border-color: var(--asms-danger);
+    }
+  }
+}
+
+// Bulk actions bar
+.bulk-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-xs);
+  background: var(--asms-primary-light);
+  border: 1px solid var(--asms-primary);
+  border-radius: var(--asms-radius-md);
+  padding: 8px var(--asms-space-md);
+  margin-bottom: var(--asms-space-md);
+  flex-wrap: wrap;
+
+  .bulk-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--asms-primary);
+    margin-inline-end: var(--asms-space-sm);
+  }
+
+  button[mat-button] {
+    font-size: 12px;
+    color: var(--asms-primary);
+    min-width: auto;
+  }
+}
+
+.user-check {
+  margin-inline-end: 4px;
+}

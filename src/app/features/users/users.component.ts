@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,6 +23,8 @@ import { StatusChipComponent } from '../../shared/components/status-chip/status-
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { UserFormDialogComponent, UserFormDialogData, UserFormResult } from './user-form-dialog/user-form-dialog.component';
 import { UserDto, CreateUserRequestDto, UpdateUserRequestDto } from '@babakmirghafari/asms-api-client';
+
+type UserStatus = 'ACTIVE' | 'INACTIVE' | 'LOCKED' | 'PENDING';
 
 @Component({
   selector: 'asms-users',
@@ -33,7 +36,7 @@ import { UserDto, CreateUserRequestDto, UpdateUserRequestDto } from '@babakmirgh
     ReactiveFormsModule,
     MatTableModule, MatButtonModule, MatIconModule, MatMenuModule,
     MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatPaginatorModule,
-    MatDividerModule, MatTooltipModule,
+    MatDividerModule, MatTooltipModule, MatCheckboxModule,
     TranslateModule,
     PageHeaderComponent, StatusChipComponent
   ]
@@ -48,6 +51,36 @@ export class UsersComponent implements OnInit {
   readonly displayedColumns = ['fullName', 'username', 'email', 'status', 'mfaEnabled', 'lastLoginAt', 'actions'];
   readonly searchCtrl = this.fb.control('');
 
+  // Filter chip state
+  readonly statusFilter = signal<UserStatus | ''>('');
+  readonly mfaFilter = signal<boolean | null>(null);
+
+  // Status filter chips
+  readonly statusChips: { value: UserStatus; labelKey: string; class: string }[] = [
+    { value: 'ACTIVE', labelKey: 'COMMON.ACTIVATE', class: 'chip-active' },
+    { value: 'INACTIVE', labelKey: 'COMMON.DEACTIVATE', class: 'chip-inactive' },
+    { value: 'LOCKED', labelKey: 'COMMON.LOCK', class: 'chip-locked' },
+    { value: 'PENDING', labelKey: 'USERS.MFA_SETUP', class: 'chip-pending' }
+  ];
+
+  // Selection for bulk actions
+  readonly selectedIds = signal<Set<string>>(new Set());
+  readonly hasSelection = computed(() => this.selectedIds().size > 0);
+
+  // Filtered view (client-side status filter overlay on top of server data)
+  readonly filteredItems = computed(() => {
+    const status = this.statusFilter();
+    const mfa = this.mfaFilter();
+    let items = this.store.items();
+    if (status) {
+      items = items.filter(u => u.status === status);
+    }
+    if (mfa !== null) {
+      items = items.filter(u => u.mfaEnabled === mfa);
+    }
+    return items;
+  });
+
   constructor() {
     this.searchCtrl.valueChanges.pipe(
       debounceTime(300),
@@ -61,6 +94,37 @@ export class UsersComponent implements OnInit {
 
   onPage(event: PageEvent): void {
     this.store.loadAll(event.pageIndex, event.pageSize, this.searchCtrl.value ?? undefined);
+  }
+
+  setStatusFilter(status: UserStatus | ''): void {
+    this.statusFilter.set(this.statusFilter() === status ? '' : status);
+  }
+
+  toggleMfaFilter(): void {
+    const current = this.mfaFilter();
+    if (current === null) this.mfaFilter.set(true);
+    else if (current === true) this.mfaFilter.set(false);
+    else this.mfaFilter.set(null);
+  }
+
+  clearFilters(): void {
+    this.statusFilter.set('');
+    this.mfaFilter.set(null);
+  }
+
+  toggleSelection(id: string): void {
+    const s = new Set(this.selectedIds());
+    if (s.has(id)) s.delete(id);
+    else s.add(id);
+    this.selectedIds.set(s);
+  }
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
   }
 
   openCreateDialog(): void {
