@@ -60,101 +60,137 @@
   </mat-dialog-actions>
 
 } @else {
-  <!-- Create mode: 8-step wizard -->
-  <h2 mat-dialog-title class="wizard-dialog-title">
-    <span>{{ 'USERS.ADD' | translate }}</span>
-    <span class="wizard-step-counter">{{ 'USERS.STEP_' + (activeStepIndex + 1) | translate }}</span>
-  </h2>
+  <!-- Create mode: 8-step wizard with custom step indicator -->
+
+  <!-- Dialog header -->
+  <div class="wizard-dialog-header">
+    <h2 class="wizard-dialog-title">Create New User</h2>
+    <button mat-icon-button (click)="cancel()" class="wizard-close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Custom step indicator -->
+  <div class="wizard-step-indicator">
+    @for (step of wizardSteps; track step.index) {
+      <div class="wsi-step" [class.wsi-step--active]="activeStepIndex === step.index" [class.wsi-step--done]="activeStepIndex > step.index">
+
+        <div class="wsi-circle">
+          @if (activeStepIndex > step.index) {
+            <mat-icon class="wsi-check-icon">check</mat-icon>
+          } @else {
+            <mat-icon class="wsi-step-icon">{{ step.icon }}</mat-icon>
+          }
+        </div>
+
+        <span class="wsi-label">{{ step.label }}</span>
+      </div>
+
+      @if (step.index < wizardSteps.length - 1) {
+        <div class="wsi-connector" [class.wsi-connector--done]="activeStepIndex > step.index"></div>
+      }
+    }
+  </div>
 
   <mat-dialog-content class="user-wizard-content">
-    <mat-stepper orientation="horizontal" linear #stepper class="user-stepper"
+    <mat-stepper orientation="horizontal" linear #stepper class="user-stepper hidden-stepper"
                  (selectionChange)="onStepChange($event)">
 
       <!-- ══ STEP 1: IDENTITY ══ -->
       <mat-step [stepControl]="identityForm" [label]="'USERS.STEP_1' | translate">
-        <form [formGroup]="identityForm" class="dialog-form-col step-content" autocomplete="off">
+        <form [formGroup]="identityForm" class="wizard-step-content" autocomplete="off">
 
-          <div class="dialog-form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>First Name</mat-label>
-              <mat-icon matPrefix>person</mat-icon>
-              <input matInput formControlName="firstName" placeholder="Sarah" />
-              @if (identityForm.get('firstName')?.hasError('required') && identityForm.get('firstName')?.touched) {
-                <mat-error>First name is required</mat-error>
+          <div class="wf-field-full">
+            <label class="wf-label" for="wf-fullName">Full Name <span class="wf-required">*</span></label>
+            <div class="wf-input-wrap">
+              <input id="wf-fullName" class="wf-input" formControlName="fullName" placeholder="e.g. Sarah Keller" />
+            </div>
+            @if (identityForm.get('fullName')?.hasError('required') && identityForm.get('fullName')?.touched) {
+              <span class="wf-error">Full name is required</span>
+            }
+          </div>
+
+          <div class="wf-row">
+            <div class="wf-field">
+              <label class="wf-label" for="wf-username">Username <span class="wf-required">*</span></label>
+              <div class="wf-input-wrap wf-input-wrap--prefix">
+                <mat-icon class="wf-prefix-icon">alternate_email</mat-icon>
+                <input id="wf-username" class="wf-input" formControlName="username" placeholder="sarah.keller" />
+              </div>
+              @if (identityForm.get('username')?.hasError('required') && identityForm.get('username')?.touched) {
+                <span class="wf-error">Username is required</span>
               }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Last Name</mat-label>
-              <mat-icon matPrefix>person</mat-icon>
-              <input matInput formControlName="lastName" placeholder="Keller" />
-              @if (identityForm.get('lastName')?.hasError('required') && identityForm.get('lastName')?.touched) {
-                <mat-error>Last name is required</mat-error>
+              @if (identityForm.get('username')?.hasError('pattern') && identityForm.get('username')?.touched) {
+                <span class="wf-error">Lowercase, numbers, dots, dashes only</span>
               }
-            </mat-form-field>
+            </div>
+
+            <div class="wf-field">
+              <label class="wf-label" for="wf-email">Email Address <span class="wf-required">*</span></label>
+              <div class="wf-input-wrap wf-input-wrap--prefix">
+                <mat-icon class="wf-prefix-icon">email</mat-icon>
+                <input id="wf-email" class="wf-input" formControlName="email" type="email" placeholder="sarah.keller@company.com" />
+              </div>
+              @if (identityForm.get('email')?.hasError('required') && identityForm.get('email')?.touched) {
+                <span class="wf-error">Email is required</span>
+              }
+              @if (identityForm.get('email')?.hasError('email') && identityForm.get('email')?.touched) {
+                <span class="wf-error">Enter a valid email address</span>
+              }
+            </div>
           </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'USERS.USERNAME' | translate }}</mat-label>
-            <mat-icon matPrefix>alternate_email</mat-icon>
-            <input matInput formControlName="username" placeholder="sarah.keller" />
-            <mat-hint>Lowercase letters, numbers, dots and dashes only</mat-hint>
-            @if (identityForm.get('username')?.hasError('required') && identityForm.get('username')?.touched) {
-              <mat-error>Username is required</mat-error>
-            }
-            @if (identityForm.get('username')?.hasError('pattern') && identityForm.get('username')?.touched) {
-              <mat-error>Lowercase, numbers, dots, dashes only</mat-error>
-            }
-          </mat-form-field>
+          <div class="wf-row">
+            <div class="wf-field">
+              <label class="wf-label" for="wf-phone">Phone Number <span class="wf-required">*</span></label>
+              <div class="wf-input-wrap wf-input-wrap--prefix">
+                <mat-icon class="wf-prefix-icon">phone</mat-icon>
+                <input id="wf-phone" class="wf-input" formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
+              </div>
+              @if (identityForm.get('phoneNumber')?.hasError('pattern') && identityForm.get('phoneNumber')?.touched) {
+                <span class="wf-error">Enter a valid international phone number</span>
+              }
+            </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'USERS.EMAIL' | translate }}</mat-label>
-            <mat-icon matPrefix>email</mat-icon>
-            <input matInput formControlName="email" type="email" placeholder="sarah.keller@northwind.com" />
-            @if (identityForm.get('email')?.hasError('required') && identityForm.get('email')?.touched) {
-              <mat-error>Email is required</mat-error>
-            }
-            @if (identityForm.get('email')?.hasError('email') && identityForm.get('email')?.touched) {
-              <mat-error>Enter a valid email address</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'USERS.PHONE' | translate }}</mat-label>
-            <mat-icon matPrefix>phone</mat-icon>
-            <input matInput formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
-            @if (identityForm.get('phoneNumber')?.hasError('pattern') && identityForm.get('phoneNumber')?.touched) {
-              <mat-error>Enter a valid international phone number</mat-error>
-            }
-          </mat-form-field>
-
-          <div class="dialog-form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'USERS.DEPARTMENT' | translate }}</mat-label>
-              <mat-icon matPrefix>corporate_fare</mat-icon>
-              <input matInput formControlName="department" placeholder="Finance" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{ 'USERS.JOB_TITLE' | translate }}</mat-label>
-              <mat-icon matPrefix>work</mat-icon>
-              <input matInput formControlName="jobTitle" placeholder="Financial Analyst" />
-            </mat-form-field>
+            <div class="wf-field">
+              <label class="wf-label" for="wf-department">Department</label>
+              <div class="wf-input-wrap wf-input-wrap--select">
+                <select id="wf-department" class="wf-select" formControlName="department">
+                  <option value="">Select department</option>
+                  <option value="Finance">Finance</option>
+                  <option value="IT">IT</option>
+                  <option value="Operations">Operations</option>
+                  <option value="HR">HR</option>
+                  <option value="Legal">Legal</option>
+                  <option value="Product">Product</option>
+                </select>
+              </div>
+            </div>
           </div>
 
-          <div class="step-actions">
-            <span></span>
-            <button mat-raised-button color="primary" matStepperNext [disabled]="identityForm.invalid">
-              {{ 'COMMON.NEXT' | translate }}
-              <mat-icon>arrow_forward</mat-icon>
-            </button>
+          <div class="wf-row">
+            <div class="wf-field">
+              <label class="wf-label" for="wf-jobTitle">Job Title</label>
+              <div class="wf-input-wrap">
+                <input id="wf-jobTitle" class="wf-input" formControlName="jobTitle" placeholder="e.g. Senior Engineer" />
+              </div>
+            </div>
+
+            <div class="wf-field">
+              <label class="wf-label" for="wf-manager">Manager</label>
+              <div class="wf-input-wrap wf-input-wrap--prefix">
+                <mat-icon class="wf-prefix-icon">person</mat-icon>
+                <input id="wf-manager" class="wf-input" formControlName="manager" placeholder="e.g. Daniel Weber" />
+              </div>
+            </div>
           </div>
+
         </form>
       </mat-step>
 
       <!-- ══ STEP 2: PASSWORD DELIVERY ══ -->
       <mat-step [label]="'USERS.STEP_2' | translate">
-        <form [formGroup]="passwordForm" class="dialog-form-col step-content">
+        <form [formGroup]="passwordForm" class="wizard-step-content dialog-form-col">
 
           <!-- Auto-generated temp password box -->
           <div class="temp-password-box">
@@ -173,32 +209,22 @@
             </div>
           </div>
 
-          <!-- Delivery method -->
           <div class="dialog-section-label">Delivery Method</div>
           <mat-radio-group formControlName="deliveryMethod" class="delivery-radio-group">
             <mat-radio-button value="email">
-              <span class="radio-label">
-                <mat-icon>email</mat-icon> Email
-              </span>
+              <span class="radio-label"><mat-icon>email</mat-icon> Email</span>
             </mat-radio-button>
             <mat-radio-button value="sms">
-              <span class="radio-label">
-                <mat-icon>sms</mat-icon> SMS
-              </span>
+              <span class="radio-label"><mat-icon>sms</mat-icon> SMS</span>
             </mat-radio-button>
             <mat-radio-button value="both">
-              <span class="radio-label">
-                <mat-icon>mark_email_read</mat-icon> Email + SMS
-              </span>
+              <span class="radio-label"><mat-icon>mark_email_read</mat-icon> Email + SMS</span>
             </mat-radio-button>
             <mat-radio-button value="manual">
-              <span class="radio-label">
-                <mat-icon>content_copy</mat-icon> Manual Copy
-              </span>
+              <span class="radio-label"><mat-icon>content_copy</mat-icon> Manual Copy</span>
             </mat-radio-button>
           </mat-radio-group>
 
-          <!-- Manual copy security warning -->
           @if (passwordForm.get('deliveryMethod')?.value === 'manual') {
             <div class="dialog-warning-banner dialog-warning-banner--orange">
               <mat-icon>warning</mat-icon>
@@ -206,7 +232,6 @@
             </div>
           }
 
-          <!-- Temp password expiry -->
           <mat-form-field appearance="outline">
             <mat-label>Temporary Password Expiry</mat-label>
             <mat-icon matPrefix>timer</mat-icon>
@@ -227,21 +252,12 @@
               <mat-slide-toggle formControlName="forcePasswordChange" color="primary" />
             </div>
           </div>
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> {{ 'COMMON.BACK' | translate }}
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              {{ 'COMMON.NEXT' | translate }} <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
         </form>
       </mat-step>
 
       <!-- ══ STEP 3: ORGANIZATION ASSIGNMENT ══ -->
       <mat-step [label]="'USERS.STEP_3' | translate">
-        <div class="dialog-form-col step-content">
+        <div class="wizard-step-content dialog-form-col">
           <div class="dialog-section-label">Select Organizations</div>
 
           <div class="org-checkbox-list">
@@ -265,7 +281,6 @@
             }
           </div>
 
-          <!-- Primary org selector (shown when ≥2 selected) -->
           @if (selectedOrgIds.length >= 2) {
             <mat-form-field appearance="outline">
               <mat-label>Primary Organization</mat-label>
@@ -288,21 +303,12 @@
               </div>
             </div>
           }
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> {{ 'COMMON.BACK' | translate }}
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              {{ 'COMMON.NEXT' | translate }} <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
         </div>
       </mat-step>
 
       <!-- ══ STEP 4: PERMISSION ASSIGNMENT ══ -->
       <mat-step [label]="'USERS.STEP_4' | translate">
-        <div class="dialog-form-col step-content">
+        <div class="wizard-step-content dialog-form-col">
 
           <div class="dialog-section-label">Permission Groups</div>
           <div class="permission-chip-grid">
@@ -329,7 +335,6 @@
             <mat-hint>Search and select permissions to grant directly</mat-hint>
           </mat-form-field>
 
-          <!-- Direct permissions chip list -->
           @if (selectedDirectPermissions.length > 0) {
             <div class="direct-perms-chips">
               @for (p of selectedDirectPermissions; track p) {
@@ -343,7 +348,6 @@
             </div>
           }
 
-          <!-- Sensitive permission warning -->
           @if (hasSensitivePermissions()) {
             <div class="dialog-warning-banner dialog-warning-banner--red">
               <mat-icon>gpp_bad</mat-icon>
@@ -351,7 +355,6 @@
             </div>
           }
 
-          <!-- Effective permissions preview -->
           @if (effectivePermissions.length > 0) {
             <div class="dialog-section-label">Effective Permissions Preview</div>
             <div class="effective-perms-preview">
@@ -360,21 +363,12 @@
               }
             </div>
           }
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> {{ 'COMMON.BACK' | translate }}
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              {{ 'COMMON.NEXT' | translate }} <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
         </div>
       </mat-step>
 
       <!-- ══ STEP 5: AUTHENTICATION & SECURITY ══ -->
       <mat-step [label]="'USERS.STEP_5' | translate">
-        <form [formGroup]="securityForm" class="dialog-form-col step-content">
+        <form [formGroup]="securityForm" class="wizard-step-content dialog-form-col">
 
           <div class="dialog-settings-section">
             <div class="dialog-toggle-row">
@@ -419,21 +413,12 @@
               </mat-select>
             </mat-form-field>
           </div>
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> {{ 'COMMON.BACK' | translate }}
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              {{ 'COMMON.NEXT' | translate }} <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
         </form>
       </mat-step>
 
       <!-- ══ STEP 6: STATION POLICY ══ -->
       <mat-step [label]="'USERS.STEP_6' | translate">
-        <form [formGroup]="stationForm" class="dialog-form-col step-content">
+        <form [formGroup]="stationForm" class="wizard-step-content dialog-form-col">
 
           <div class="dialog-settings-section">
             <div class="dialog-toggle-row">
@@ -446,8 +431,6 @@
           </div>
 
           @if (stationForm.get('applyStationPolicy')?.value) {
-
-            <!-- IP tag input -->
             <div class="dialog-section-label">Allowed IP Addresses</div>
             <div class="ip-tag-input-wrapper">
               <div class="ip-tags">
@@ -464,7 +447,6 @@
                      (keydown.enter)="addIP($event)" />
             </div>
 
-            <!-- Work days -->
             <div class="dialog-section-label">Work Days</div>
             <div class="day-checkboxes">
               @for (day of weekdays; track day.value; let i = $index) {
@@ -475,7 +457,6 @@
               }
             </div>
 
-            <!-- Work hours -->
             <div class="dialog-form-row">
               <mat-form-field appearance="outline">
                 <mat-label>Work Start Time</mat-label>
@@ -490,28 +471,17 @@
               </mat-form-field>
             </div>
 
-            <!-- Summary preview -->
             <div class="station-preview">
               <mat-icon>info_outline</mat-icon>
               <span>{{ stationPolicySummary }}</span>
             </div>
-
           }
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> {{ 'COMMON.BACK' | translate }}
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              {{ 'COMMON.NEXT' | translate }} <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
         </form>
       </mat-step>
 
       <!-- ══ STEP 7: STATUS & INVITATION ══ -->
       <mat-step [label]="'USERS.STEP_7' | translate">
-        <form [formGroup]="statusForm" class="dialog-form-col step-content">
+        <form [formGroup]="statusForm" class="wizard-step-content dialog-form-col">
 
           <div class="dialog-section-label">User Status</div>
           <mat-button-toggle-group formControlName="status" class="status-toggle-group">
@@ -545,7 +515,6 @@
             </div>
           </div>
 
-          <!-- Preview message -->
           @if (statusForm.get('sendInvitation')?.value || statusForm.get('sendTempPassword')?.value) {
             <div class="invitation-preview">
               <div class="invitation-preview-header">
@@ -563,25 +532,15 @@
               </p>
             </div>
           }
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> {{ 'COMMON.BACK' | translate }}
-            </button>
-            <button mat-raised-button color="primary" matStepperNext>
-              {{ 'COMMON.NEXT' | translate }} <mat-icon>arrow_forward</mat-icon>
-            </button>
-          </div>
         </form>
       </mat-step>
 
       <!-- ══ STEP 8: REVIEW & CONFIRM ══ -->
       <mat-step [label]="'USERS.STEP_8' | translate">
-        <div class="dialog-form-col step-content">
+        <div class="wizard-step-content dialog-form-col">
 
           <div class="review-grid">
 
-            <!-- Identity -->
             <div class="review-card">
               <div class="review-card-header">
                 <span>Identity</span>
@@ -609,7 +568,6 @@
               </div>
             </div>
 
-            <!-- Organizations -->
             <div class="review-card">
               <div class="review-card-header">
                 <span>Organizations</span>
@@ -629,7 +587,6 @@
               }
             </div>
 
-            <!-- Permissions -->
             <div class="review-card">
               <div class="review-card-header">
                 <span>Permissions</span>
@@ -653,7 +610,6 @@
               }
             </div>
 
-            <!-- Auth & Security -->
             <div class="review-card">
               <div class="review-card-header">
                 <span>Authentication</span>
@@ -673,7 +629,6 @@
               </div>
             </div>
 
-            <!-- Station Policy -->
             <div class="review-card">
               <div class="review-card-header">
                 <span>Station Policy</span>
@@ -697,7 +652,6 @@
               }
             </div>
 
-            <!-- Status & Delivery -->
             <div class="review-card">
               <div class="review-card-header">
                 <span>Status &amp; Invitation</span>
@@ -720,24 +674,34 @@
             </div>
 
           </div>
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon> {{ 'COMMON.BACK' | translate }}
-            </button>
-            <button mat-raised-button color="primary" (click)="submit()" [disabled]="isLoading">
-              @if (isLoading) { <mat-spinner diameter="18" /> }
-              <mat-icon>person_add</mat-icon>
-              {{ 'USERS.CONFIRM_CREATE' | translate }}
-            </button>
-          </div>
         </div>
       </mat-step>
 
     </mat-stepper>
   </mat-dialog-content>
 
-  <mat-dialog-actions align="end" class="asms-dialog-actions">
-    <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-  </mat-dialog-actions>
+  <!-- Dialog footer -->
+  <div class="wizard-dialog-footer">
+    <button mat-button (click)="cancel()" class="wizard-cancel-btn">Cancel</button>
+    <span class="wizard-step-counter">Step {{ activeStepIndex + 1 }} of 8</span>
+    <div class="wizard-footer-nav">
+      @if (activeStepIndex > 0) {
+        <button mat-stroked-button class="wizard-nav-back" (click)="goBack(stepper)">
+          <mat-icon>arrow_back</mat-icon> Back
+        </button>
+      }
+      @if (activeStepIndex < 7) {
+        <button mat-raised-button color="primary" class="wizard-nav-next" (click)="goNext(stepper)">
+          Next <mat-icon>arrow_forward</mat-icon>
+        </button>
+      } @else {
+        <button mat-raised-button color="primary" (click)="submit()" [disabled]="isLoading">
+          @if (isLoading) { <mat-spinner diameter="18" /> }
+          <mat-icon>person_add</mat-icon>
+          {{ 'USERS.CONFIRM_CREATE' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+
 }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -16,7 +16,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-// DecimalPipe is used in the template via the `| number` pipe
 import { UserDto, CreateUserRequestDto, UpdateUserRequestDto } from '@babakmirghafari/asms-api-client';
 
 export interface UserFormDialogData {
@@ -25,6 +24,12 @@ export interface UserFormDialogData {
 }
 
 export type UserFormResult = CreateUserRequestDto | UpdateUserRequestDto;
+
+interface WizardStep {
+  index: number;
+  label: string;
+  icon: string;
+}
 
 @Component({
   selector: 'asms-user-form-dialog',
@@ -55,23 +60,38 @@ export class UserFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<UserFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
 
+  @ViewChild('stepper') stepper!: MatStepper;
+
   isLoading = false;
   activeStepIndex = 0;
+
+  // Custom step indicator configuration
+  readonly wizardSteps: WizardStep[] = [
+    { index: 0, label: 'Identity', icon: 'person' },
+    { index: 1, label: 'Password', icon: 'key' },
+    { index: 2, label: 'Organizations', icon: 'business' },
+    { index: 3, label: 'Permissions', icon: 'security' },
+    { index: 4, label: 'Auth & MFA', icon: 'lock' },
+    { index: 5, label: 'Station', icon: 'router' },
+    { index: 6, label: 'Status', icon: 'toggle_on' },
+    { index: 7, label: 'Review', icon: 'check_circle' }
+  ];
 
   // ──────────────────────────────────────────
   // Step 1 — Identity
   // ──────────────────────────────────────────
 
   readonly identityForm = this.fb.group({
-    firstName: [this.data.user ? (this.data.user.fullName?.split(' ')[0] ?? '') : '', [Validators.required]],
-    lastName: [this.data.user ? (this.data.user.fullName?.split(' ').slice(1).join(' ') ?? '') : '', [Validators.required]],
+    // Merged fullName field used in create mode
+    fullName: [this.data.user?.fullName ?? '', [Validators.required]],
+    firstName: [this.data.user ? (this.data.user.fullName?.split(' ')[0] ?? '') : ''],
+    lastName: [this.data.user ? (this.data.user.fullName?.split(' ').slice(1).join(' ') ?? '') : ''],
     username: [this.data.user?.username ?? '', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z0-9._-]+$/)]],
     email: [this.data.user?.email ?? '', [Validators.required, Validators.email]],
     phoneNumber: [this.data.user?.phoneNumber ?? '', [Validators.pattern(/^\+?[\d\s\-().]{7,20}$/)]],
     department: [this.data.user?.department ?? ''],
     jobTitle: [''],
-    // Keep fullName for backward compat in edit mode
-    fullName: [this.data.user?.fullName ?? '']
+    manager: ['']
   });
 
   // ──────────────────────────────────────────
@@ -172,7 +192,6 @@ export class UserFormDialogComponent {
     if (!this.selectedDirectPermissions.includes(perm)) {
       this.selectedDirectPermissions = [...this.selectedDirectPermissions, perm];
     }
-    // Reset select after short delay (ngModel two-way binding)
     setTimeout(() => { this.directPermissionToAdd = null; }, 50);
   }
 
@@ -189,9 +208,7 @@ export class UserFormDialogComponent {
   }
 
   get effectivePermissions(): string[] {
-    const fromGroups: string[] = [];
-    // In a real app this would come from the API; we use stubs here
-    return [...new Set([...fromGroups, ...this.selectedDirectPermissions])];
+    return [...new Set([...this.selectedDirectPermissions])];
   }
 
   // ──────────────────────────────────────────
@@ -273,11 +290,26 @@ export class UserFormDialogComponent {
   });
 
   // ──────────────────────────────────────────
-  // Stepper
+  // Stepper navigation
   // ──────────────────────────────────────────
 
-  onStepChange(event: StepperSelectionEvent): void {
+  onStepChange(event: StepperSelectionEvent | { selectedIndex: number }): void {
     this.activeStepIndex = event.selectedIndex;
+  }
+
+  goNext(stepper: MatStepper): void {
+    // For step 1 (identity) validate before going next
+    if (this.activeStepIndex === 0 && this.identityForm.invalid) {
+      this.identityForm.markAllAsTouched();
+      return;
+    }
+    stepper.next();
+    this.activeStepIndex = stepper.selectedIndex;
+  }
+
+  goBack(stepper: MatStepper): void {
+    stepper.previous();
+    this.activeStepIndex = stepper.selectedIndex;
   }
 
   // ──────────────────────────────────────────
@@ -328,9 +360,7 @@ export class UserFormDialogComponent {
         return;
       }
 
-      const fn = this.identityForm.value.firstName?.trim() ?? '';
-      const ln = this.identityForm.value.lastName?.trim() ?? '';
-      const fullName = [fn, ln].filter(Boolean).join(' ');
+      const fullNameVal = this.identityForm.value.fullName?.trim() ?? '';
 
       const workdayValues = this.weekdays
         .filter((_, i) => this.selectedWorkdays[i])
@@ -339,7 +369,7 @@ export class UserFormDialogComponent {
       const dto: CreateUserRequestDto = {
         username: this.identityForm.value.username!,
         email: this.identityForm.value.email!,
-        fullName: fullName || undefined,
+        fullName: fullNameVal || undefined,
         phoneNumber: this.identityForm.value.phoneNumber?.trim() || undefined,
         department: this.identityForm.value.department?.trim() || undefined,
         organizationIds: this.selectedOrgIds.length > 0 ? this.selectedOrgIds : undefined,
