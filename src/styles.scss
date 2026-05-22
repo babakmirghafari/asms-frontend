@@ -1153,3 +1153,275 @@ body {
   font-family: 'Roboto Mono', 'Fira Code', monospace;
   font-size: 13px;
 }
+
+// ============================================================
+// User wizard — custom step indicator (Screen 4)
+// ============================================================
+
+// Hide material stepper header entirely — we render our own
+.hidden-stepper {
+  .mat-horizontal-stepper-header-container {
+    display: none !important;
+  }
+}
+
+// Wizard dialog header
+.wizard-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+  flex-shrink: 0;
+
+  .wizard-dialog-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--asms-text-primary);
+    margin: 0;
+  }
+
+  .wizard-close-btn {
+    color: var(--asms-text-secondary);
+  }
+}
+
+// Custom step indicator row
+.wizard-step-indicator {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px 16px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.wsi-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.wsi-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  transition: background 0.2s ease;
+
+  .wsi-step-icon,
+  .wsi-check-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    color: #9CA3AF;
+  }
+
+  .wsi-step--active & {
+    background: #F97316;
+
+    .wsi-step-icon {
+      color: #fff;
+    }
+  }
+
+  .wsi-step--done & {
+    background: #D1FAE5;
+
+    .wsi-check-icon {
+      color: #059669;
+    }
+  }
+}
+
+.wsi-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9CA3AF;
+  white-space: nowrap;
+  text-align: center;
+
+  .wsi-step--active & {
+    color: #F97316;
+    font-weight: 600;
+  }
+
+  .wsi-step--done & {
+    color: #374151;
+  }
+}
+
+.wsi-connector {
+  flex: 1;
+  height: 1px;
+  background: #E5E7EB;
+  margin: 0 4px;
+  margin-bottom: 18px; // align with circles
+
+  &--done {
+    background: #F97316;
+  }
+}
+
+// Wizard step content area
+.wizard-step-content {
+  padding: 8px 0;
+}
+
+// Wizard footer
+.wizard-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-top: 1px solid var(--asms-border);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.wizard-cancel-btn {
+  color: var(--asms-text-secondary) !important;
+}
+
+.wizard-step-counter {
+  font-size: 14px;
+  color: var(--asms-text-secondary);
+  flex: 1;
+  text-align: center;
+}
+
+.wizard-footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wizard-nav-back {
+  color: var(--asms-text-secondary) !important;
+}
+
+.wizard-nav-next {
+  background: linear-gradient(135deg, #F97316, #EA580C) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+// ============================================================
+// Screen 4 — Custom form fields (wf-* classes)
+// Light-themed minimal inputs for the create user wizard
+// ============================================================
+
+.wf-field-full {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.wf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wf-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.wf-required {
+  color: #EF4444;
+  margin-left: 2px;
+}
+
+.wf-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 8px;
+  height: 44px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: #F97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  }
+
+  &--prefix {
+    mat-icon.wf-prefix-icon {
+      padding: 0 10px;
+      color: #9CA3AF;
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      flex-shrink: 0;
+    }
+  }
+
+  &--select {
+    padding: 0;
+  }
+}
+
+.wf-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #111827;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  padding: 0 14px;
+  height: 100%;
+  min-width: 0;
+
+  .wf-input-wrap--prefix & {
+    padding-left: 0;
+  }
+
+  &::placeholder {
+    color: #9CA3AF;
+  }
+}
+
+.wf-select {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #111827;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  padding: 0 14px;
+  height: 100%;
+  min-width: 0;
+  cursor: pointer;
+  width: 100%;
+  appearance: auto;
+}
+
+.wf-error {
+  font-size: 12px;
+  color: #EF4444;
+}
