@@ -114,7 +114,15 @@
     "STRENGTH_FAIR": "متوسط",
     "STRENGTH_GOOD": "خوب",
     "STRENGTH_STRONG": "قوی",
-    "SELECT_BUTTON": "انتخاب و ادامه"
+    "SELECT_BUTTON": "انتخاب و ادامه",
+    "PORTAL_TAG": "درگاه دسترسی امن",
+    "SIGN_IN_HEADING": "ورود به حساب کاربری",
+    "SIGN_IN_SUB": "اطلاعات ورود خود را وارد کنید",
+    "OR": "یا",
+    "BRAND_TAGLINE": "مدیریت پیشرفته امنیت و حریم خصوصی",
+    "STAT_ZERO_TRUST": "اعتماد صفر",
+    "STAT_AUDIT": "حسابرسی ۲۴/۷",
+    "STAT_MFA": "MFA: ۲۰۰"
   },
   "DASHBOARD": {
     "TITLE": "داشبورد",

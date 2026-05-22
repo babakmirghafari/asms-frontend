@@ -114,7 +114,15 @@
     "STRENGTH_FAIR": "Fair",
     "STRENGTH_GOOD": "Good",
     "STRENGTH_STRONG": "Strong",
-    "SELECT_BUTTON": "Select & Continue"
+    "SELECT_BUTTON": "Select & Continue",
+    "PORTAL_TAG": "Secure Access Portal",
+    "SIGN_IN_HEADING": "Sign in to your account",
+    "SIGN_IN_SUB": "Enter your credentials to continue",
+    "OR": "or",
+    "BRAND_TAGLINE": "Advance Security & Privacy Management",
+    "STAT_ZERO_TRUST": "Zero Trust",
+    "STAT_AUDIT": "24/7 Audit",
+    "STAT_MFA": "MFA: 200"
   },
   "DASHBOARD": {
     "TITLE": "Dashboard",
