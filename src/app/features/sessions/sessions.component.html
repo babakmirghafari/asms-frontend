@@ -55,7 +55,7 @@
         <ng-container matColumnDef="riskScore">
           <th mat-header-cell *matHeaderCellDef>{{ 'ALERTS.RISK_SCORE' | translate }}</th>
           <td mat-cell *matCellDef="let row">
-            @if (row.riskScore != null) {
+            @if (row.riskScore !== null && row.riskScore !== undefined) {
               <span class="risk-score" [class]="row.riskScore >= 70 ? 'risk-high' : row.riskScore >= 40 ? 'risk-medium' : 'risk-low'">
                 {{ row.riskScore }}
               </span>

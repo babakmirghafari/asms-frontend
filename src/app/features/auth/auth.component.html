@@ -53,10 +53,11 @@
 
             <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" autocomplete="on">
               <div class="auth-field-group">
-                <label class="auth-label">{{ 'AUTH.USERNAME' | translate }}</label>
+                <label class="auth-label" for="auth-username">{{ 'AUTH.USERNAME' | translate }}</label>
                 <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
                   <mat-icon class="auth-input-icon">person</mat-icon>
                   <input
+                    id="auth-username"
                     class="auth-input"
                     formControlName="username"
                     autocomplete="username"
@@ -66,10 +67,11 @@
               </div>
 
               <div class="auth-field-group">
-                <label class="auth-label">{{ 'AUTH.PASSWORD' | translate }}</label>
+                <label class="auth-label" for="auth-password">{{ 'AUTH.PASSWORD' | translate }}</label>
                 <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
                   <mat-icon class="auth-input-icon">lock</mat-icon>
                   <input
+                    id="auth-password"
                     class="auth-input"
                     formControlName="password"
                     [type]="showPassword ? 'text' : 'password'"
@@ -82,8 +84,8 @@
               </div>
 
               <div class="auth-row">
-                <label class="auth-checkbox-label">
-                  <input type="checkbox" class="auth-checkbox" />
+                <label class="auth-checkbox-label" for="auth-remember-me">
+                  <input id="auth-remember-me" type="checkbox" class="auth-checkbox" />
                   <span>{{ 'AUTH.REMEMBER_ME' | translate }}</span>
                 </label>
                 <a href="#" class="auth-link">{{ 'AUTH.FORGOT_PASSWORD' | translate }}</a>
@@ -134,10 +136,11 @@
 
             <form [formGroup]="mfaForm" (ngSubmit)="submitMfa()">
               <div class="auth-field-group">
-                <label class="auth-label">{{ 'AUTH.MFA_CODE' | translate }}</label>
+                <label class="auth-label" for="auth-mfa-code">{{ 'AUTH.MFA_CODE' | translate }}</label>
                 <div class="auth-input-wrapper">
                   <mat-icon class="auth-input-icon">pin</mat-icon>
                   <input
+                    id="auth-mfa-code"
                     class="auth-input auth-input--code"
                     formControlName="code"
                     autocomplete="one-time-code"
@@ -225,10 +228,11 @@
 
             <form [formGroup]="changePasswordForm" (ngSubmit)="submitChangePassword()">
               <div class="auth-field-group">
-                <label class="auth-label">{{ 'AUTH.NEW_PASSWORD' | translate }}</label>
+                <label class="auth-label" for="auth-new-password">{{ 'AUTH.NEW_PASSWORD' | translate }}</label>
                 <div class="auth-input-wrapper">
                   <mat-icon class="auth-input-icon">lock</mat-icon>
                   <input
+                    id="auth-new-password"
                     class="auth-input"
                     formControlName="newPassword"
                     type="password"
@@ -244,10 +248,11 @@
               </div>
 
               <div class="auth-field-group">
-                <label class="auth-label">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
+                <label class="auth-label" for="auth-confirm-password">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
                 <div class="auth-input-wrapper" [class.auth-input-wrapper--error]="changePasswordForm.hasError('mismatch') && changePasswordForm.get('confirmPassword')?.touched">
                   <mat-icon class="auth-input-icon">lock</mat-icon>
                   <input
+                    id="auth-confirm-password"
                     class="auth-input"
                     formControlName="confirmPassword"
                     type="password"
