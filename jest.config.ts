@@ -17,7 +17,9 @@ const config: Config = {
     }
   },
   moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/src/$1'
+    '^src/(.*)$': '<rootDir>/src/$1',
+    '^highcharts(.*)$': '<rootDir>/src/__mocks__/highcharts.ts',
+    '^highcharts-angular$': '<rootDir>/src/__mocks__/highcharts-angular.ts'
   },
   transform: {
     '^.+\\.(ts|js|mjs|html|svg)$': [

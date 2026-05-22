@@ -83,6 +83,31 @@
       </div>
     </div>
 
+    <!-- Charts row -->
+    <div class="charts-row">
+      <!-- User trend chart -->
+      <div class="dashboard-card chart-card">
+        <div class="card-header">
+          <h3 class="card-title">User Growth (12 weeks)</h3>
+        </div>
+        <highcharts-chart
+          [Highcharts]="Highcharts"
+          [options]="userTrendOptions"
+          style="width: 100%; display: block;" />
+      </div>
+
+      <!-- Session volume chart -->
+      <div class="dashboard-card chart-card">
+        <div class="card-header">
+          <h3 class="card-title">Session Volume (this week)</h3>
+        </div>
+        <highcharts-chart
+          [Highcharts]="Highcharts"
+          [options]="sessionVolumeOptions"
+          style="width: 100%; display: block;" />
+      </div>
+    </div>
+
     <!-- Main grid: alerts + quick actions + events -->
     <div class="dashboard-grid">
 
@@ -192,7 +217,7 @@
           </div>
           <div class="posture-item posture-item--warn">
             <mat-icon class="posture-warn">warning</mat-icon>
-            <span>3 users with pending password change</span>
+            <span>3 users pending password change</span>
           </div>
           <div class="posture-item posture-item--warn">
             <mat-icon class="posture-warn">warning</mat-icon>
