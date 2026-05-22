@@ -15,11 +15,11 @@
         <div class="asms-sidebar-header">
           @if (sidebarOpen()) {
             <div class="asms-brand">
-              <img src="assets/logo-white.svg" alt="ASMS" height="36" class="asms-brand-logo" />
+              <img src="assets/app-logo.png" alt="ASMS" height="40" class="asms-brand-logo" />
             </div>
           } @else {
             <div class="asms-brand-icon-only">
-              <mat-icon>security</mat-icon>
+              <img src="assets/app-logo.png" alt="ASMS" height="32" />
             </div>
           }
           <button mat-icon-button (click)="toggleSidebar()" class="asms-toggle-btn" [title]="'NAV.TOGGLE' | translate">
