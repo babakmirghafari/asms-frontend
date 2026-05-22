@@ -1,8 +1,16 @@
-<!-- Edit mode: simple flat form -->
+<!-- Edit mode: simple flat form using asms-modal (no steps) -->
 @if (data.isEdit) {
-  <h2 mat-dialog-title>{{ 'USERS.EDIT' | translate }}</h2>
+  <asms-modal
+    [title]="'USERS.EDIT'"
+    [steps]="[]"
+    [canProceed]="identityForm.valid"
+    [isLoading]="isLoading"
+    [isFirstStep]="true"
+    [isLastStep]="true"
+    [submitLabel]="'COMMON.SAVE'"
+    (cancelled)="cancel()"
+    (submitted)="submit()">
 
-  <mat-dialog-content class="user-dialog-content">
     <form [formGroup]="identityForm" class="dialog-form-col" autocomplete="off">
 
       <div class="dialog-form-row">
@@ -49,55 +57,30 @@
       </div>
 
     </form>
-  </mat-dialog-content>
 
-  <mat-dialog-actions align="end" class="asms-dialog-actions">
-    <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-    <button mat-raised-button color="primary" (click)="submit()" [disabled]="identityForm.invalid || isLoading">
-      @if (isLoading) { <mat-spinner diameter="18" /> }
-      {{ 'COMMON.SAVE' | translate }}
-    </button>
-  </mat-dialog-actions>
+  </asms-modal>
 
 } @else {
-  <!-- Create mode: 8-step wizard with custom step indicator -->
+  <!-- Create mode: 8-step wizard using asms-modal -->
+  <asms-modal
+    [title]="'USERS.ADD'"
+    [steps]="wizardSteps"
+    [currentStep]="currentStep()"
+    [isFirstStep]="isFirstStep()"
+    [isLastStep]="isLastStep()"
+    [canProceed]="canProceedAtCurrentStep()"
+    [isLoading]="isLoading"
+    [submitLabel]="'USERS.CONFIRM_CREATE'"
+    (cancelled)="cancel()"
+    (backed)="goBack()"
+    (nexted)="goNext()"
+    (submitted)="submit()">
 
-  <!-- Dialog header -->
-  <div class="wizard-dialog-header">
-    <h2 class="wizard-dialog-title">Create New User</h2>
-    <button mat-icon-button (click)="cancel()" class="wizard-close-btn">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-
-  <!-- Custom step indicator -->
-  <div class="wizard-step-indicator">
-    @for (step of wizardSteps; track step.index) {
-      <div class="wsi-step" [class.wsi-step--active]="activeStepIndex === step.index" [class.wsi-step--done]="activeStepIndex > step.index">
-
-        <div class="wsi-circle">
-          @if (activeStepIndex > step.index) {
-            <mat-icon class="wsi-check-icon">check</mat-icon>
-          } @else {
-            <mat-icon class="wsi-step-icon">{{ step.icon }}</mat-icon>
-          }
-        </div>
-
-        <span class="wsi-label">{{ step.label }}</span>
-      </div>
-
-      @if (step.index < wizardSteps.length - 1) {
-        <div class="wsi-connector" [class.wsi-connector--done]="activeStepIndex > step.index"></div>
-      }
-    }
-  </div>
-
-  <mat-dialog-content class="user-wizard-content">
-    <mat-stepper orientation="horizontal" linear #stepper class="user-stepper hidden-stepper"
-                 (selectionChange)="onStepChange($event)">
+    <!-- Step content switched by currentStep() -->
+    @switch (currentStep()) {
 
       <!-- ══ STEP 1: IDENTITY ══ -->
-      <mat-step [stepControl]="identityForm" [label]="'USERS.STEP_1' | translate">
+      @case (0) {
         <form [formGroup]="identityForm" class="wizard-step-content" autocomplete="off">
 
           <div class="wf-field-full">
@@ -142,7 +125,7 @@
 
           <div class="wf-row">
             <div class="wf-field">
-              <label class="wf-label" for="wf-phone">Phone Number <span class="wf-required">*</span></label>
+              <label class="wf-label" for="wf-phone">Phone Number</label>
               <div class="wf-input-wrap wf-input-wrap--prefix">
                 <mat-icon class="wf-prefix-icon">phone</mat-icon>
                 <input id="wf-phone" class="wf-input" formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
@@ -186,10 +169,10 @@
           </div>
 
         </form>
-      </mat-step>
+      }
 
       <!-- ══ STEP 2: PASSWORD DELIVERY ══ -->
-      <mat-step [label]="'USERS.STEP_2' | translate">
+      @case (1) {
         <form [formGroup]="passwordForm" class="wizard-step-content dialog-form-col">
 
           <!-- Auto-generated temp password box -->
@@ -253,10 +236,10 @@
             </div>
           </div>
         </form>
-      </mat-step>
+      }
 
       <!-- ══ STEP 3: ORGANIZATION ASSIGNMENT ══ -->
-      <mat-step [label]="'USERS.STEP_3' | translate">
+      @case (2) {
         <div class="wizard-step-content dialog-form-col">
           <div class="dialog-section-label">Select Organizations</div>
 
@@ -304,10 +287,10 @@
             </div>
           }
         </div>
-      </mat-step>
+      }
 
       <!-- ══ STEP 4: PERMISSION ASSIGNMENT ══ -->
-      <mat-step [label]="'USERS.STEP_4' | translate">
+      @case (3) {
         <div class="wizard-step-content dialog-form-col">
 
           <div class="dialog-section-label">Permission Groups</div>
@@ -364,10 +347,10 @@
             </div>
           }
         </div>
-      </mat-step>
+      }
 
       <!-- ══ STEP 5: AUTHENTICATION & SECURITY ══ -->
-      <mat-step [label]="'USERS.STEP_5' | translate">
+      @case (4) {
         <form [formGroup]="securityForm" class="wizard-step-content dialog-form-col">
 
           <div class="dialog-settings-section">
@@ -414,10 +397,10 @@
             </mat-form-field>
           </div>
         </form>
-      </mat-step>
+      }
 
       <!-- ══ STEP 6: STATION POLICY ══ -->
-      <mat-step [label]="'USERS.STEP_6' | translate">
+      @case (5) {
         <form [formGroup]="stationForm" class="wizard-step-content dialog-form-col">
 
           <div class="dialog-settings-section">
@@ -477,10 +460,10 @@
             </div>
           }
         </form>
-      </mat-step>
+      }
 
       <!-- ══ STEP 7: STATUS & INVITATION ══ -->
-      <mat-step [label]="'USERS.STEP_7' | translate">
+      @case (6) {
         <form [formGroup]="statusForm" class="wizard-step-content dialog-form-col">
 
           <div class="dialog-section-label">User Status</div>
@@ -533,10 +516,10 @@
             </div>
           }
         </form>
-      </mat-step>
+      }
 
       <!-- ══ STEP 8: REVIEW & CONFIRM ══ -->
-      <mat-step [label]="'USERS.STEP_8' | translate">
+      @case (7) {
         <div class="wizard-step-content dialog-form-col">
 
           <div class="review-grid">
@@ -544,11 +527,11 @@
             <div class="review-card">
               <div class="review-card-header">
                 <span>Identity</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="stepper.selectedIndex = 0">Edit</button>
+                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(0)">Edit</button>
               </div>
               <div class="review-row">
                 <span class="review-label">Name</span>
-                <span class="review-value">{{ identityForm.get('firstName')?.value }} {{ identityForm.get('lastName')?.value }}</span>
+                <span class="review-value">{{ identityForm.get('fullName')?.value }}</span>
               </div>
               <div class="review-row">
                 <span class="review-label">Username</span>
@@ -571,7 +554,7 @@
             <div class="review-card">
               <div class="review-card-header">
                 <span>Organizations</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="stepper.selectedIndex = 2">Edit</button>
+                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(2)">Edit</button>
               </div>
               @if (selectedOrgIds.length === 0) {
                 <span class="review-empty">No organizations assigned</span>
@@ -590,7 +573,7 @@
             <div class="review-card">
               <div class="review-card-header">
                 <span>Permissions</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="stepper.selectedIndex = 3">Edit</button>
+                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(3)">Edit</button>
               </div>
               @if (selectedGroupIds.length === 0 && selectedDirectPermissions.length === 0) {
                 <span class="review-empty">No permissions assigned</span>
@@ -613,7 +596,7 @@
             <div class="review-card">
               <div class="review-card-header">
                 <span>Authentication</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="stepper.selectedIndex = 4">Edit</button>
+                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(4)">Edit</button>
               </div>
               <div class="review-row">
                 <span class="review-label">MFA</span>
@@ -632,7 +615,7 @@
             <div class="review-card">
               <div class="review-card-header">
                 <span>Station Policy</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="stepper.selectedIndex = 5">Edit</button>
+                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(5)">Edit</button>
               </div>
               @if (!stationForm.get('applyStationPolicy')?.value) {
                 <span class="review-empty">No station restrictions</span>
@@ -655,7 +638,7 @@
             <div class="review-card">
               <div class="review-card-header">
                 <span>Status &amp; Invitation</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="stepper.selectedIndex = 6">Edit</button>
+                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(6)">Edit</button>
               </div>
               <div class="review-row">
                 <span class="review-label">Status</span>
@@ -675,33 +658,8 @@
 
           </div>
         </div>
-      </mat-step>
-
-    </mat-stepper>
-  </mat-dialog-content>
-
-  <!-- Dialog footer -->
-  <div class="wizard-dialog-footer">
-    <button mat-button (click)="cancel()" class="wizard-cancel-btn">Cancel</button>
-    <span class="wizard-step-counter">Step {{ activeStepIndex + 1 }} of 8</span>
-    <div class="wizard-footer-nav">
-      @if (activeStepIndex > 0) {
-        <button mat-stroked-button class="wizard-nav-back" (click)="goBack(stepper)">
-          <mat-icon>arrow_back</mat-icon> Back
-        </button>
       }
-      @if (activeStepIndex < 7) {
-        <button mat-raised-button color="primary" class="wizard-nav-next" (click)="goNext(stepper)">
-          Next <mat-icon>arrow_forward</mat-icon>
-        </button>
-      } @else {
-        <button mat-raised-button color="primary" (click)="submit()" [disabled]="isLoading">
-          @if (isLoading) { <mat-spinner diameter="18" /> }
-          <mat-icon>person_add</mat-icon>
-          {{ 'USERS.CONFIRM_CREATE' | translate }}
-        </button>
-      }
-    </div>
-  </div>
 
+    }
+  </asms-modal>
 }

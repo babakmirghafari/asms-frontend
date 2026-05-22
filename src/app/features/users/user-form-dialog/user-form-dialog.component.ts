@@ -1,6 +1,6 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,8 +8,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { MatStepper, MatStepperModule } from '@angular/material/stepper';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
@@ -17,6 +15,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { UserDto, CreateUserRequestDto, UpdateUserRequestDto } from '@babakmirghafari/asms-api-client';
+import { AsmsModalComponent, ModalStep } from '../../../shared/components/modal/modal.component';
 
 export interface UserFormDialogData {
   user?: UserDto;
@@ -24,12 +23,6 @@ export interface UserFormDialogData {
 }
 
 export type UserFormResult = CreateUserRequestDto | UpdateUserRequestDto;
-
-interface WizardStep {
-  index: number;
-  label: string;
-  icon: string;
-}
 
 @Component({
   selector: 'asms-user-form-dialog',
@@ -39,7 +32,6 @@ interface WizardStep {
     ReactiveFormsModule,
     FormsModule,
     DecimalPipe,
-    MatDialogModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatFormFieldModule,
@@ -47,12 +39,12 @@ interface WizardStep {
     MatSelectModule,
     MatSlideToggleModule,
     MatIconModule,
-    MatStepperModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatDividerModule,
     MatRadioModule,
-    TranslateModule
+    TranslateModule,
+    AsmsModalComponent
   ]
 })
 export class UserFormDialogComponent {
@@ -60,38 +52,49 @@ export class UserFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<UserFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
 
-  @ViewChild('stepper') stepper!: MatStepper;
-
   isLoading = false;
-  activeStepIndex = 0;
 
-  // Custom step indicator configuration
-  readonly wizardSteps: WizardStep[] = [
-    { index: 0, label: 'Identity', icon: 'person' },
-    { index: 1, label: 'Password', icon: 'key' },
-    { index: 2, label: 'Organizations', icon: 'business' },
-    { index: 3, label: 'Permissions', icon: 'security' },
-    { index: 4, label: 'Auth & MFA', icon: 'lock' },
-    { index: 5, label: 'Station', icon: 'router' },
-    { index: 6, label: 'Status', icon: 'toggle_on' },
-    { index: 7, label: 'Review', icon: 'check_circle' }
+  // Signal-based step tracking
+  readonly currentStep = signal(0);
+
+  // Wizard step configuration for asms-modal
+  readonly wizardSteps: ModalStep[] = [
+    { label: 'USERS.STEP_1', icon: 'person' },
+    { label: 'USERS.STEP_2', icon: 'key' },
+    { label: 'USERS.STEP_3', icon: 'business' },
+    { label: 'USERS.STEP_4', icon: 'security' },
+    { label: 'USERS.STEP_5', icon: 'lock' },
+    { label: 'USERS.STEP_6', icon: 'router' },
+    { label: 'USERS.STEP_7', icon: 'toggle_on' },
+    { label: 'USERS.STEP_8', icon: 'check_circle' }
   ];
+
+  readonly isFirstStep = computed(() => this.currentStep() === 0);
+  readonly isLastStep  = computed(() => this.currentStep() === this.wizardSteps.length - 1);
+
+  /** Returns true if the user can proceed from the current step. */
+  readonly canProceedAtCurrentStep = computed(() => {
+    switch (this.currentStep()) {
+      case 0: return this.identityForm.valid;
+      case 1: return this.passwordForm.valid;
+      default: return true;   // optional steps — always allow proceeding
+    }
+  });
 
   // ──────────────────────────────────────────
   // Step 1 — Identity
   // ──────────────────────────────────────────
 
   readonly identityForm = this.fb.group({
-    // Merged fullName field used in create mode
-    fullName: [this.data.user?.fullName ?? '', [Validators.required]],
-    firstName: [this.data.user ? (this.data.user.fullName?.split(' ')[0] ?? '') : ''],
-    lastName: [this.data.user ? (this.data.user.fullName?.split(' ').slice(1).join(' ') ?? '') : ''],
-    username: [this.data.user?.username ?? '', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z0-9._-]+$/)]],
-    email: [this.data.user?.email ?? '', [Validators.required, Validators.email]],
+    fullName:    [this.data.user?.fullName ?? '', [Validators.required]],
+    firstName:   [this.data.user ? (this.data.user.fullName?.split(' ')[0] ?? '') : ''],
+    lastName:    [this.data.user ? (this.data.user.fullName?.split(' ').slice(1).join(' ') ?? '') : ''],
+    username:    [this.data.user?.username ?? '', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z0-9._-]+$/)]],
+    email:       [this.data.user?.email ?? '', [Validators.required, Validators.email]],
     phoneNumber: [this.data.user?.phoneNumber ?? '', [Validators.pattern(/^\+?[\d\s\-().]{7,20}$/)]],
-    department: [this.data.user?.department ?? ''],
-    jobTitle: [''],
-    manager: ['']
+    department:  [this.data.user?.department ?? ''],
+    jobTitle:    [''],
+    manager:     ['']
   });
 
   // ──────────────────────────────────────────
@@ -103,8 +106,8 @@ export class UserFormDialogComponent {
   passwordCopied = false;
 
   readonly passwordForm = this.fb.group({
-    deliveryMethod: ['email'],
-    passwordExpiry: ['24h'],
+    deliveryMethod:      ['email'],
+    passwordExpiry:      ['24h'],
     forcePasswordChange: [true]
   });
 
@@ -114,8 +117,8 @@ export class UserFormDialogComponent {
 
   readonly sampleOrgs = [
     { id: 'org-northwind', name: 'Northwind Bank', members: 1284, color: '#3f51b5' },
-    { id: 'org-globex', name: 'Globex Europe', members: 642, color: '#009688' },
-    { id: 'org-acme', name: 'Acme Retail', members: 328, color: '#f57c00' }
+    { id: 'org-globex',    name: 'Globex Europe',  members: 642,  color: '#009688' },
+    { id: 'org-acme',      name: 'Acme Retail',    members: 328,  color: '#f57c00' }
   ];
 
   selectedOrgIds: string[] = [];
@@ -149,10 +152,10 @@ export class UserFormDialogComponent {
   // ──────────────────────────────────────────
 
   readonly permissionGroups = [
-    { id: 'pg-finance', name: 'Finance Approver' },
-    { id: 'pg-audit', name: 'Audit Viewer' },
+    { id: 'pg-finance',  name: 'Finance Approver' },
+    { id: 'pg-audit',    name: 'Audit Viewer' },
     { id: 'pg-security', name: 'Security Admin' },
-    { id: 'pg-branch', name: 'Branch Operator' },
+    { id: 'pg-branch',   name: 'Branch Operator' },
     { id: 'pg-appowner', name: 'Application Owner' }
   ];
 
@@ -216,10 +219,10 @@ export class UserFormDialogComponent {
   // ──────────────────────────────────────────
 
   readonly securityForm = this.fb.group({
-    mfaEnabled: [false],
-    requireMfaEnrollment: [true],
-    failedLoginThreshold: [3, [Validators.required, Validators.min(1), Validators.max(10)]],
-    lockDuration: ['30m']
+    mfaEnabled:             [false],
+    requireMfaEnrollment:   [true],
+    failedLoginThreshold:   [3, [Validators.required, Validators.min(1), Validators.max(10)]],
+    lockDuration:           ['30m']
   });
 
   // ──────────────────────────────────────────
@@ -227,13 +230,13 @@ export class UserFormDialogComponent {
   // ──────────────────────────────────────────
 
   readonly weekdays = [
-    { value: 'MONDAY', label: 'Mon' },
-    { value: 'TUESDAY', label: 'Tue' },
+    { value: 'MONDAY',    label: 'Mon' },
+    { value: 'TUESDAY',   label: 'Tue' },
     { value: 'WEDNESDAY', label: 'Wed' },
-    { value: 'THURSDAY', label: 'Thu' },
-    { value: 'FRIDAY', label: 'Fri' },
-    { value: 'SATURDAY', label: 'Sat' },
-    { value: 'SUNDAY', label: 'Sun' }
+    { value: 'THURSDAY',  label: 'Thu' },
+    { value: 'FRIDAY',    label: 'Fri' },
+    { value: 'SATURDAY',  label: 'Sat' },
+    { value: 'SUNDAY',    label: 'Sun' }
   ];
 
   selectedWorkdays: boolean[] = [true, true, true, true, true, false, false];
@@ -241,8 +244,8 @@ export class UserFormDialogComponent {
 
   readonly stationForm = this.fb.group({
     applyStationPolicy: [false],
-    workStartTime: ['09:00'],
-    workEndTime: ['18:00']
+    workStartTime:      ['09:00'],
+    workEndTime:        ['18:00']
   });
 
   addIP(event: Event): void {
@@ -284,32 +287,33 @@ export class UserFormDialogComponent {
   // ──────────────────────────────────────────
 
   readonly statusForm = this.fb.group({
-    status: ['ACTIVE'],
-    sendInvitation: [true],
+    status:           ['ACTIVE'],
+    sendInvitation:   [true],
     sendTempPassword: [true]
   });
 
   // ──────────────────────────────────────────
-  // Stepper navigation
+  // Wizard navigation
   // ──────────────────────────────────────────
 
-  onStepChange(event: StepperSelectionEvent | { selectedIndex: number }): void {
-    this.activeStepIndex = event.selectedIndex;
-  }
-
-  goNext(stepper: MatStepper): void {
-    // For step 1 (identity) validate before going next
-    if (this.activeStepIndex === 0 && this.identityForm.invalid) {
+  goNext(): void {
+    if (this.currentStep() === 0 && this.identityForm.invalid) {
       this.identityForm.markAllAsTouched();
       return;
     }
-    stepper.next();
-    this.activeStepIndex = stepper.selectedIndex;
+    if (this.currentStep() < this.wizardSteps.length - 1) {
+      this.currentStep.update(s => s + 1);
+    }
   }
 
-  goBack(stepper: MatStepper): void {
-    stepper.previous();
-    this.activeStepIndex = stepper.selectedIndex;
+  goBack(): void {
+    if (this.currentStep() > 0) {
+      this.currentStep.update(s => s - 1);
+    }
+  }
+
+  jumpToStep(index: number): void {
+    this.currentStep.set(index);
   }
 
   // ──────────────────────────────────────────
@@ -348,9 +352,9 @@ export class UserFormDialogComponent {
       const fn = this.identityForm.value.firstName?.trim() ?? '';
       const ln = this.identityForm.value.lastName?.trim() ?? '';
       const dto: UpdateUserRequestDto = {
-        email: this.identityForm.value.email!,
-        firstName: fn,
-        lastName: ln || fn,
+        email:       this.identityForm.value.email!,
+        firstName:   fn,
+        lastName:    ln || fn,
         phoneNumber: this.identityForm.value.phoneNumber ?? undefined
       };
       this.dialogRef.close(dto);
@@ -367,22 +371,20 @@ export class UserFormDialogComponent {
         .map(d => d.value as CreateUserRequestDto.WorkdaysEnum);
 
       const dto: CreateUserRequestDto = {
-        username: this.identityForm.value.username!,
-        email: this.identityForm.value.email!,
-        fullName: fullNameVal || undefined,
-        phoneNumber: this.identityForm.value.phoneNumber?.trim() || undefined,
-        department: this.identityForm.value.department?.trim() || undefined,
+        username:        this.identityForm.value.username!,
+        email:           this.identityForm.value.email!,
+        fullName:        fullNameVal || undefined,
+        phoneNumber:     this.identityForm.value.phoneNumber?.trim() || undefined,
+        department:      this.identityForm.value.department?.trim() || undefined,
         organizationIds: this.selectedOrgIds.length > 0 ? this.selectedOrgIds : undefined,
-        workdays: workdayValues.length > 0 && this.stationForm.get('applyStationPolicy')?.value ? workdayValues : undefined,
-        ipRestriction: (this.stationForm.get('applyStationPolicy')?.value && this.allowedIPs.length > 0)
-          ? this.allowedIPs.join(',')
-          : undefined,
-        workHours: (this.stationForm.get('applyStationPolicy')?.value)
-          ? {
-              start: this.stationForm.value.workStartTime ?? '09:00',
-              end: this.stationForm.value.workEndTime ?? '18:00'
-            }
-          : undefined,
+        workdays:        workdayValues.length > 0 && this.stationForm.get('applyStationPolicy')?.value
+                           ? workdayValues : undefined,
+        ipRestriction:   (this.stationForm.get('applyStationPolicy')?.value && this.allowedIPs.length > 0)
+                           ? this.allowedIPs.join(',') : undefined,
+        workHours:       this.stationForm.get('applyStationPolicy')?.value
+                           ? { start: this.stationForm.value.workStartTime ?? '09:00',
+                               end:   this.stationForm.value.workEndTime   ?? '18:00' }
+                           : undefined,
         sendTempPassword: this.statusForm.value.sendTempPassword ?? true
       };
       this.dialogRef.close(dto);
