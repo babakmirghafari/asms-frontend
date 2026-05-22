@@ -63,8 +63,8 @@
 
   // Shape
   --asms-radius-sm: 4px;
-  --asms-radius-md: 8px;
-  --asms-radius-lg: 12px;
+  --asms-radius-md: 10px;
+  --asms-radius-lg: 16px;
   --asms-radius-full: 9999px;
 
   // Shadows
@@ -81,6 +81,42 @@
   --asms-space-xl: 32px;
   --asms-space-xxl: 48px;
 }
+
+// ============================================================
+// Global border-radius overrides — rounder, softer UI
+// ============================================================
+
+// Rounder form fields
+.mat-mdc-form-field .mdc-notched-outline__leading { border-radius: 10px 0 0 10px !important; }
+.mat-mdc-form-field .mdc-notched-outline__trailing { border-radius: 0 10px 10px 0 !important; }
+
+// Rounder buttons
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 10px !important;
+}
+.mat-mdc-icon-button { border-radius: 50% !important; }
+
+// Rounder chips
+.mat-mdc-chip { border-radius: 8px !important; }
+
+// Rounder dialogs
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 16px !important;
+}
+
+// Rounder cards
+.mat-mdc-card { border-radius: 12px !important; }
+
+// Rounder snackbar
+.mat-mdc-snack-bar-container { border-radius: 10px !important; }
+
+// Rounder select panel
+.mat-mdc-select-panel { border-radius: 10px !important; }
+
+// Rounder menu
+.mat-mdc-menu-panel { border-radius: 12px !important; }
 
 * {
   box-sizing: border-box;
