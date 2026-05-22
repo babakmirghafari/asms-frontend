@@ -1112,6 +1112,32 @@ body {
 }
 
 // ============================================================
+// Responsive utilities
+// ============================================================
+
+@media (max-width: 768px) {
+  .asms-page {
+    padding: 12px;
+  }
+
+  .asms-toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .asms-search-field {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+// ============================================================
 // Text utility helpers
 // ============================================================
 

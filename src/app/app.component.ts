@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, computed, signal } from '@angular/core';
+import { Component, OnInit, inject, computed, signal, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -50,6 +50,16 @@ export class AppComponent implements OnInit {
   private readonly router = inject(Router);
 
   readonly sidebarOpen = signal(true);
+  readonly mobileNavOpen = signal(false);
+  readonly isMobile = signal(window.innerWidth < 768);
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.isMobile.set(window.innerWidth < 768);
+    if (!this.isMobile()) {
+      this.mobileNavOpen.set(false);
+    }
+  }
 
   // Navigation groups — matching the spec
   readonly overviewNavItems: NavItem[] = [
@@ -103,6 +113,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.languageStore.initLanguage(this.translate);
+    this.isMobile.set(window.innerWidth < 768);
   }
 
   toggleSidebar(): void {

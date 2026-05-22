@@ -409,6 +409,48 @@
 }
 
 // ============================================================
+// Responsive — mobile / tablet
+// ============================================================
+
+// Hamburger: only visible on mobile
+.asms-hamburger {
+  display: none;
+  color: var(--asms-text-secondary) !important;
+  margin-inline-end: var(--asms-space-xs);
+
+  @media (max-width: 767px) {
+    display: inline-flex;
+  }
+}
+
+// Hide search on mobile, show on tablet+
+.asms-search-desktop {
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+// Topbar title: reduce font on mobile
+@media (max-width: 767px) {
+  .asms-topbar-title {
+    font-size: 15px;
+  }
+
+  .asms-topbar {
+    padding: 0 var(--asms-space-sm);
+  }
+
+  .asms-topbar-left {
+    min-width: 0;
+  }
+
+  .asms-content-area {
+    // extra bottom padding so FAB / tabs don't overlap content
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+// ============================================================
 // RTL adjustments
 // ============================================================
 

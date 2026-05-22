@@ -4,10 +4,12 @@
 
       <!-- ===== SIDEBAR ===== -->
       <mat-sidenav
-        mode="side"
-        [opened]="sidebarOpen()"
+        #sidenav
+        [mode]="isMobile() ? 'over' : 'side'"
+        [opened]="isMobile() ? mobileNavOpen() : sidebarOpen()"
         class="asms-sidenav"
-        [style.width]="sidebarOpen() ? 'var(--asms-sidebar-width)' : 'var(--asms-sidebar-collapsed-width)'">
+        [style.width]="(!isMobile() && !sidebarOpen()) ? 'var(--asms-sidebar-collapsed-width)' : 'var(--asms-sidebar-width)'"
+        (closedStart)="mobileNavOpen.set(false)">
 
         <!-- Sidebar header: logo + collapse toggle -->
         <div class="asms-sidebar-header">
@@ -123,10 +125,14 @@
         <!-- Top bar -->
         <div class="asms-topbar">
           <div class="asms-topbar-left">
+            <!-- Hamburger: mobile only -->
+            <button mat-icon-button class="asms-hamburger" (click)="mobileNavOpen.set(true)" [title]="'NAV.TOGGLE' | translate">
+              <mat-icon>menu</mat-icon>
+            </button>
             <span class="asms-topbar-title">{{ currentPageTitle() | translate }}</span>
           </div>
 
-          <div class="asms-topbar-center">
+          <div class="asms-topbar-center asms-search-desktop">
             <div class="asms-global-search">
               <mat-icon class="asms-search-icon">search</mat-icon>
               <input
