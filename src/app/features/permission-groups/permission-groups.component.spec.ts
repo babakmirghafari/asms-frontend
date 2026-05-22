@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { PermissionGroupsComponent } from './permission-groups.component';
@@ -7,7 +8,7 @@ describe('PermissionGroupsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PermissionGroupsComponent],
-      providers: [provideRouter([]), provideHttpClient()]
+      providers: [provideRouter([]), provideHttpClient(), provideTranslateService({ defaultLanguage: 'en' })]
     }).compileComponents();
   });
 

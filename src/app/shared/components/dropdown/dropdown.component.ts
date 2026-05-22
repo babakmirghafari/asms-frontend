@@ -31,8 +31,8 @@ export class DropdownComponent implements ControlValueAccessor {
 
   value = '';
   disabled = false;
-  private onChange: (v: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (v: string) => void = (v) => { void v; };
+  private onTouched: () => void = () => { return; };
 
   writeValue(val: string): void { this.value = val; }
   registerOnChange(fn: (v: string) => void): void { this.onChange = fn; }

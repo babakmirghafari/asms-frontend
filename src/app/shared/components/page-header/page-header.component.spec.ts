@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from './page-header.component';
 
 describe('PageHeaderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PageHeaderComponent]
+      imports: [PageHeaderComponent],
+      providers: [provideTranslateService({ defaultLanguage: 'en' })]
     }).compileComponents();
   });
 
