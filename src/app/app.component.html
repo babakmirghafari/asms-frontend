@@ -1,4 +1,37 @@
-<!-- TODO(angular-logic-implementer): replace with full layout shell (sidebar + topbar + content slot) -->
-<div [dir]="languageStore.direction()">
-  <router-outlet />
+<div [dir]="languageStore.direction()" class="asms-app-root">
+  @if (authStore.isAuthenticated()) {
+    <mat-sidenav-container class="asms-sidenav-container">
+      <mat-sidenav mode="side" opened class="asms-sidenav">
+        <div class="asms-sidebar-header">
+          <span class="asms-logo">ASMS</span>
+          <asms-language-switcher />
+        </div>
+        <mat-nav-list>
+          @for (item of navItems; track item.route) {
+            <a mat-list-item [routerLink]="item.route" routerLinkActive="active-nav-item">
+              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+              <span matListItemTitle>{{ item.labelKey | translate }}</span>
+            </a>
+          }
+        </mat-nav-list>
+        <div class="asms-sidebar-footer">
+          <button mat-button (click)="logout()" class="asms-logout-btn">
+            <mat-icon>logout</mat-icon>
+            <span>{{ 'AUTH.LOGOUT' | translate }}</span>
+          </button>
+        </div>
+      </mat-sidenav>
+      <mat-sidenav-content class="asms-main-content">
+        <mat-toolbar class="asms-topbar">
+          <span class="asms-topbar-title">{{ currentPageTitle() | translate }}</span>
+          <span class="spacer"></span>
+        </mat-toolbar>
+        <div class="asms-content-area">
+          <router-outlet />
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  } @else {
+    <router-outlet />
+  }
 </div>

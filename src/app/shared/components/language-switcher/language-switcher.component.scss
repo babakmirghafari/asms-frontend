@@ -1,5 +1,19 @@
-// TODO(angular-logic-implementer): add language switcher styles
-.language-switcher {
-  display: flex;
-  gap: 4px;
+.lang-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--asms-primary);
+  letter-spacing: 1px;
+}
+
+.lang-flag {
+  display: inline-block;
+  width: 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--asms-primary);
+}
+
+.active-lang {
+  background-color: var(--asms-surface-variant) !important;
+  color: var(--asms-primary) !important;
 }

@@ -1,1 +1,32 @@
-// TODO(angular-logic-implementer): add component styles
+.search-bar {
+  margin-bottom: var(--asms-space-md);
+  mat-form-field { width: 320px; }
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: var(--asms-space-xxl);
+}
+
+.table-wrapper {
+  background: var(--asms-surface);
+  border: 1px solid var(--asms-border);
+  border-radius: var(--asms-radius-md);
+  overflow: hidden;
+}
+
+.asms-table {
+  width: 100%;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  padding: var(--asms-space-xl);
+  color: var(--asms-text-secondary);
+}
+
+.icon-success { color: var(--asms-success); }
+.icon-disabled { color: var(--asms-text-disabled); }
+.delete-action { color: var(--asms-danger) !important; }

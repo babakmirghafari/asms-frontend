@@ -1,2 +1,96 @@
-<!-- TODO(angular-logic-implementer): render real login form from DESIGN_SYSTEM -->
-<p>auth — pending implementation</p>
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <div class="auth-logo">ASMS</div>
+    </mat-card-header>
+
+    @switch (store.currentStep()) {
+      @case ('login') {
+        <mat-card-title>{{ 'AUTH.LOGIN' | translate }}</mat-card-title>
+        <mat-card-content>
+          @if (store.errorMessage()) {
+            <div class="auth-error">{{ store.errorMessage()! | translate }}</div>
+          }
+          <form [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'AUTH.USERNAME' | translate }}</mat-label>
+              <mat-icon matPrefix>person</mat-icon>
+              <input matInput formControlName="username" autocomplete="username" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'AUTH.PASSWORD' | translate }}</mat-label>
+              <mat-icon matPrefix>lock</mat-icon>
+              <input matInput formControlName="password" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" />
+              <button mat-icon-button matSuffix type="button" (click)="showPassword = !showPassword">
+                <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="loginForm.invalid || store.isLoading()">
+              @if (store.isLoading()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                {{ 'AUTH.LOGIN' | translate }}
+              }
+            </button>
+          </form>
+        </mat-card-content>
+      }
+
+      @case ('mfa') {
+        <mat-card-title>{{ 'AUTH.MFA_TITLE' | translate }}</mat-card-title>
+        <mat-card-content>
+          @if (store.errorMessage()) {
+            <div class="auth-error">{{ store.errorMessage()! | translate }}</div>
+          }
+          <form [formGroup]="mfaForm" (ngSubmit)="submitMfa()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'AUTH.MFA_CODE' | translate }}</mat-label>
+              <mat-icon matPrefix>security</mat-icon>
+              <input matInput formControlName="code" autocomplete="one-time-code" maxlength="6" />
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="mfaForm.invalid || store.isLoading()">
+              @if (store.isLoading()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                {{ 'COMMON.SUBMIT' | translate }}
+              }
+            </button>
+            <button mat-button type="button" class="full-width" (click)="backToLogin()">
+              {{ 'COMMON.BACK' | translate }}
+            </button>
+          </form>
+        </mat-card-content>
+      }
+
+      @case ('change-password') {
+        <mat-card-title>{{ 'AUTH.FIRST_LOGIN_TITLE' | translate }}</mat-card-title>
+        <mat-card-content>
+          @if (store.errorMessage()) {
+            <div class="auth-error">{{ store.errorMessage()! | translate }}</div>
+          }
+          <form [formGroup]="changePasswordForm" (ngSubmit)="submitChangePassword()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'AUTH.NEW_PASSWORD' | translate }}</mat-label>
+              <input matInput formControlName="newPassword" type="password" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</mat-label>
+              <input matInput formControlName="confirmPassword" type="password" />
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="changePasswordForm.invalid || store.isLoading()">
+              @if (store.isLoading()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                {{ 'COMMON.SAVE' | translate }}
+              }
+            </button>
+          </form>
+        </mat-card-content>
+      }
+    }
+  </mat-card>
+</div>

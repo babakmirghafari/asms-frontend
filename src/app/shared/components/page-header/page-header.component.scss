@@ -1,1 +1,21 @@
-// TODO(angular-logic-implementer): add component styles
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--asms-space-lg);
+
+  .page-header-text {
+    .page-header-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--asms-text-primary);
+      margin: 0 0 var(--asms-space-xs) 0;
+    }
+
+    .page-header-subtitle {
+      font-size: 0.875rem;
+      color: var(--asms-text-secondary);
+      margin: 0;
+    }
+  }
+}

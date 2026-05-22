@@ -1,14 +1,34 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 
-// TODO(angular-logic-implementer): implement full Material template, styles, and behavior
+export interface ConfirmDialogData {
+  titleKey: string;
+  messageKey: string;
+  messageParams?: Record<string, string>;
+  confirmKey?: string;
+  cancelKey?: string;
+  dangerous?: boolean;
+}
+
 @Component({
   selector: 'asms-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.scss',
   standalone: true,
-  imports: [CommonModule]
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, TranslateModule]
 })
 export class ConfirmDialogComponent {
-  // TODO(angular-logic-implementer): define @Input() and @Output() bindings
+  protected readonly data: ConfirmDialogData = inject(MAT_DIALOG_DATA);
+  private readonly dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);
+
+  confirm(): void {
+    this.dialogRef.close(true);
+  }
+
+  cancel(): void {
+    this.dialogRef.close(false);
+  }
 }

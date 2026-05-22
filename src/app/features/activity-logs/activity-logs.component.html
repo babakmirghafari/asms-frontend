@@ -1,2 +1,72 @@
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
-<p>activity-logs — pending implementation</p>
+<asms-page-header titleKey="ACTIVITY_LOGS.TITLE" />
+
+<div class="filter-bar">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'COMMON.FILTER' | translate }}</mat-label>
+    <mat-select [formControl]="categoryCtrl">
+      <mat-option value="">{{ 'COMMON.CLEAR' | translate }}</mat-option>
+      @for (cat of categories; track cat) {
+        <mat-option [value]="cat">{{ cat }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (store.isLoading()) {
+  <div class="loading-center"><mat-spinner diameter="40" /></div>
+} @else {
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="store.items()" class="asms-table">
+      <ng-container matColumnDef="timestamp">
+        <th mat-header-cell *matHeaderCellDef>{{ 'ACTIVITY_LOGS.TIMESTAMP' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.timestamp | date: 'short' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actorUsername">
+        <th mat-header-cell *matHeaderCellDef>{{ 'ACTIVITY_LOGS.ACTOR' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.actorUsername }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="eventType">
+        <th mat-header-cell *matHeaderCellDef>{{ 'ACTIVITY_LOGS.ACTION' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.eventType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.category }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="targetDisplayName">
+        <th mat-header-cell *matHeaderCellDef>{{ 'ACTIVITY_LOGS.TARGET' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.targetDisplayName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="outcome">
+        <th mat-header-cell *matHeaderCellDef>{{ 'ACTIVITY_LOGS.DETAILS' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.outcome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ipAddress">
+        <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.IP_ADDRESS' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.ipAddress }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    @if (store.isEmpty()) {
+      <div class="empty-state">{{ 'COMMON.NO_DATA' | translate }}</div>
+    }
+
+    <mat-paginator
+      [length]="store.totalElements()"
+      [pageSize]="store.pageSize()"
+      [pageIndex]="store.pageIndex()"
+      [pageSizeOptions]="[10, 20, 50]"
+      (page)="onPage($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+}

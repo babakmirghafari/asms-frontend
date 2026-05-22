@@ -1,9 +1,11 @@
-import { signalStore, withState, withMethods } from '@ngrx/signals';
-
-// TODO(angular-logic-implementer): implement real API calls using injected services from @babakmirghafari/asms-api-client
+import { computed, inject } from '@angular/core';
+import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
+import { firstValueFrom } from 'rxjs';
+import { DashboardService, DashboardSummaryDto } from '@babakmirghafari/asms-api-client';
+import { AuthStore } from '../../core/store/auth.store';
 
 export interface DashboardState {
-  items: unknown[];
+  summary: DashboardSummaryDto | null;
   loading: boolean;
   error: string | null;
 }
@@ -11,11 +13,39 @@ export interface DashboardState {
 export const DashboardStore = signalStore(
   { providedIn: 'root' },
   withState<DashboardState>({
-    items: [],
+    summary: null,
     loading: false,
     error: null
   }),
-  withMethods(() => ({
-    // TODO(angular-logic-implementer): loadAll(), create(), update(), delete()
-  }))
+  withComputed((store) => ({
+    isLoading: computed(() => store.loading()),
+    hasSummary: computed(() => !!store.summary()),
+    totalUsers: computed(() => store.summary()?.totalUsers ?? 0),
+    activeUsers: computed(() => store.summary()?.activeUsers ?? 0),
+    lockedUsers: computed(() => store.summary()?.lockedUsers ?? 0),
+    activeSessions: computed(() => store.summary()?.activeSessions ?? 0),
+    recentActivityCount: computed(() => store.summary()?.recentActivityCount ?? 0),
+    alertsBySeverity: computed(() => store.summary()?.openAlertsBySeverity ?? null)
+  })),
+  withMethods((store) => {
+    const dashboardService = inject(DashboardService);
+    const authStore = inject(AuthStore);
+
+    return {
+      async loadSummary(): Promise<void> {
+        const orgId = authStore.organizationId();
+        if (!orgId) {
+          patchState(store, { loading: false });
+          return;
+        }
+        patchState(store, { loading: true, error: null });
+        try {
+          const summary = await firstValueFrom(dashboardService.getDashboardSummary(orgId));
+          patchState(store, { summary, loading: false });
+        } catch {
+          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        }
+      }
+    };
+  })
 );

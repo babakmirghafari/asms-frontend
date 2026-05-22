@@ -1,14 +1,48 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { TranslateModule } from '@ngx-translate/core';
 
-// TODO(angular-logic-implementer): implement full Material template, styles, and behavior
+export interface DropdownOption {
+  value: string;
+  labelKey: string;
+}
+
 @Component({
   selector: 'asms-dropdown',
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
   standalone: true,
-  imports: [CommonModule]
+  imports: [MatSelectModule, MatFormFieldModule, ReactiveFormsModule, TranslateModule],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => DropdownComponent),
+      multi: true
+    }
+  ]
 })
-export class DropdownComponent {
-  // TODO(angular-logic-implementer): define @Input() and @Output() bindings
+export class DropdownComponent implements ControlValueAccessor {
+  @Input() labelKey = '';
+  @Input() options: DropdownOption[] = [];
+  @Input() placeholder = '';
+  @Output() selectionChange = new EventEmitter<string>();
+
+  value = '';
+  disabled = false;
+  private onChange: (v: string) => void = () => {};
+  private onTouched: () => void = () => {};
+
+  writeValue(val: string): void { this.value = val; }
+  registerOnChange(fn: (v: string) => void): void { this.onChange = fn; }
+  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
+
+  onSelect(val: string): void {
+    this.value = val;
+    this.onChange(val);
+    this.onTouched();
+    this.selectionChange.emit(val);
+  }
 }

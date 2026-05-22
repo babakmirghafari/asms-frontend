@@ -1,1 +1,22 @@
-// TODO(angular-logic-implementer): add component styles
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: var(--asms-space-xxl);
+}
+
+.policy-card {
+  max-width: 600px;
+}
+
+.policy-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asms-space-md);
+  padding-top: var(--asms-space-md);
+}
+
+.checkbox-row {
+  display: flex;
+  gap: var(--asms-space-lg);
+  flex-wrap: wrap;
+}

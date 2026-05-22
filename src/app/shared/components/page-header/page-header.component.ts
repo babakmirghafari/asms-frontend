@@ -1,14 +1,19 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
-// TODO(angular-logic-implementer): implement full Material template, styles, and behavior
 @Component({
   selector: 'asms-page-header',
   templateUrl: './page-header.component.html',
   styleUrl: './page-header.component.scss',
   standalone: true,
-  imports: [CommonModule]
+  imports: [TranslateModule, MatButtonModule, MatIconModule]
 })
 export class PageHeaderComponent {
-  // TODO(angular-logic-implementer): define @Input() and @Output() bindings
+  @Input() titleKey = '';
+  @Input() subtitleKey = '';
+  @Input() addLabelKey = 'COMMON.ADD';
+  @Input() showAdd = false;
+  @Output() addClicked = new EventEmitter<void>();
 }

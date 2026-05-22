@@ -1,12 +1,65 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AlertsStore } from './alerts.store';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { AlertDto } from '@babakmirghafari/asms-api-client';
 
-// TODO(angular-logic-implementer): implement real Material template from DESIGN_SYSTEM
 @Component({
   selector: 'asms-alerts',
   templateUrl: './alerts.component.html',
   styleUrl: './alerts.component.scss',
   standalone: true,
-  imports: [CommonModule]
+  imports: [
+    DatePipe,
+    MatTableModule, MatButtonModule, MatIconModule, MatMenuModule,
+    MatProgressSpinnerModule, MatPaginatorModule,
+    TranslateModule,
+    PageHeaderComponent, StatusChipComponent
+  ]
 })
-export class AlertsComponent {}
+export class AlertsComponent implements OnInit {
+  protected readonly store = inject(AlertsStore);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
+
+  readonly displayedColumns = ['alertType', 'severity', 'status', 'riskScore', 'actorUsername', 'ipAddress', 'createdAt', 'actions'];
+
+  ngOnInit(): void {
+    this.store.loadAll();
+  }
+
+  onPage(event: PageEvent): void {
+    this.store.loadAll(event.pageIndex, event.pageSize);
+  }
+
+  confirmAcknowledge(alert: AlertDto): void {
+    const data: ConfirmDialogData = {
+      titleKey: 'ALERTS.ACKNOWLEDGE_TITLE',
+      messageKey: 'ALERTS.ACKNOWLEDGE_CONFIRM',
+      confirmKey: 'ALERTS.ACKNOWLEDGE'
+    };
+    this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.store.acknowledge(alert.id).then(() => {
+          this.snackBar.open(
+            this.translate.instant('ALERTS.ACKNOWLEDGE') + ' OK',
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 3000 }
+          );
+        });
+      }
+    });
+  }
+}

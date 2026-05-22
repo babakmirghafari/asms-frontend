@@ -1,1 +1,9 @@
-// TODO(angular-logic-implementer): add component styles
+.warn-icon {
+  vertical-align: middle;
+  margin-inline-end: var(--asms-space-sm);
+  color: var(--asms-danger);
+}
+
+mat-dialog-content p {
+  color: var(--asms-text-secondary);
+}

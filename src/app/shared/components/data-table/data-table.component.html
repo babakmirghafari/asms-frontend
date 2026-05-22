@@ -1,2 +1,21 @@
-<!-- TODO(angular-logic-implementer): implement component template -->
-<ng-content />
+<div class="table-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="40" />
+    </div>
+  }
+  <ng-content />
+  @if (!loading && data.length === 0) {
+    <div class="empty-state">
+      <p>{{ 'COMMON.NO_DATA' | translate }}</p>
+    </div>
+  }
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="pageChanged.emit($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

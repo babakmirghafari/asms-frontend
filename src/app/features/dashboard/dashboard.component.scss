@@ -1,1 +1,100 @@
-// TODO(angular-logic-implementer): add component styles
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: var(--asms-space-xxl);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--asms-space-md);
+  margin-bottom: var(--asms-space-lg);
+}
+
+.kpi-card {
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--asms-space-lg) var(--asms-space-md);
+
+    .kpi-icon {
+      font-size: 2.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      color: var(--asms-primary);
+      margin-bottom: var(--asms-space-sm);
+    }
+
+    .kpi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--asms-text-primary);
+      line-height: 1;
+      margin-bottom: var(--asms-space-xs);
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      color: var(--asms-text-secondary);
+      text-align: center;
+    }
+  }
+
+  &.kpi-success .kpi-icon { color: var(--asms-success); }
+  &.kpi-danger .kpi-icon { color: var(--asms-danger); }
+  &.kpi-info .kpi-icon { color: var(--asms-info); }
+  &.kpi-warning .kpi-icon { color: var(--asms-warning); }
+}
+
+.alerts-card {
+  margin-bottom: var(--asms-space-lg);
+
+  .severity-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--asms-space-md);
+    padding: var(--asms-space-md) 0;
+
+    .severity-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--asms-space-md);
+      border-radius: var(--asms-radius-md);
+
+      .severity-count {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .severity-label {
+        font-size: 0.75rem;
+        margin-top: var(--asms-space-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      &.critical {
+        background: rgba(248, 81, 73, 0.1);
+        .severity-count { color: var(--asms-danger); }
+      }
+
+      &.high {
+        background: rgba(255, 109, 0, 0.1);
+        .severity-count { color: #ff6d00; }
+      }
+
+      &.medium {
+        background: rgba(227, 179, 65, 0.1);
+        .severity-count { color: var(--asms-warning); }
+      }
+
+      &.low {
+        background: rgba(88, 166, 255, 0.1);
+        .severity-count { color: var(--asms-info); }
+      }
+    }
+  }
+}

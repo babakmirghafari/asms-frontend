@@ -1,21 +1,59 @@
-import { signalStore, withState, withMethods } from '@ngrx/signals';
-
-// TODO(angular-logic-implementer): implement real API calls using injected services from @babakmirghafari/asms-api-client
+import { computed, inject } from '@angular/core';
+import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
+import { firstValueFrom, Observable } from 'rxjs';
+import { OrganizationsService, OrganizationDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto, PagedResponseDto } from '@babakmirghafari/asms-api-client';
 
 export interface OrganizationsState {
-  items: unknown[];
+  items: OrganizationDto[];
+  totalElements: number;
+  pageIndex: number;
+  pageSize: number;
   loading: boolean;
   error: string | null;
 }
 
 export const OrganizationsStore = signalStore(
   { providedIn: 'root' },
-  withState<OrganizationsState>({
-    items: [],
-    loading: false,
-    error: null
-  }),
-  withMethods(() => ({
-    // TODO(angular-logic-implementer): loadAll(), create(), update(), delete()
-  }))
+  withState<OrganizationsState>({ items: [], totalElements: 0, pageIndex: 0, pageSize: 20, loading: false, error: null }),
+  withComputed((store) => ({
+    isLoading: computed(() => store.loading()),
+    isEmpty: computed(() => store.items().length === 0 && !store.loading())
+  })),
+  withMethods((store) => {
+    const svc = inject(OrganizationsService);
+    return {
+      async loadAll(page = 0, size = 20): Promise<void> {
+        patchState(store, { loading: true, error: null, pageIndex: page, pageSize: size });
+        try {
+          const obs: Observable<PagedResponseDto> = svc.listOrganizations(page, size);
+          const res = await firstValueFrom(obs);
+          patchState(store, { items: res.content as OrganizationDto[], totalElements: res.totalElements, loading: false });
+        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); }
+      },
+      async create(dto: CreateOrganizationRequestDto): Promise<OrganizationDto> {
+        patchState(store, { loading: true, error: null });
+        try {
+          const obs: Observable<OrganizationDto> = svc.createOrganization(dto);
+          const created = await firstValueFrom(obs);
+          patchState(store, { items: [created, ...store.items()], totalElements: store.totalElements() + 1, loading: false });
+          return created;
+        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); throw new Error('Create failed'); }
+      },
+      async update(id: string, dto: UpdateOrganizationRequestDto): Promise<void> {
+        patchState(store, { loading: true, error: null });
+        try {
+          const obs: Observable<OrganizationDto> = svc.updateOrganization(id, dto);
+          const updated = await firstValueFrom(obs);
+          patchState(store, { items: store.items().map(o => o.id === id ? updated : o), loading: false });
+        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); }
+      },
+      async delete(id: string): Promise<void> {
+        patchState(store, { loading: true, error: null });
+        try {
+          await firstValueFrom(svc.deleteOrganization(id));
+          patchState(store, { items: store.items().filter(o => o.id !== id), totalElements: store.totalElements() - 1, loading: false });
+        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); }
+      }
+    };
+  })
 );

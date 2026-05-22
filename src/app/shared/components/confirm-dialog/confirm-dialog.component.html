@@ -1,2 +1,17 @@
-<!-- TODO(angular-logic-implementer): implement component template -->
-<ng-content />
+<h2 mat-dialog-title>
+  @if (data.dangerous) {
+    <mat-icon class="warn-icon">warning</mat-icon>
+  }
+  {{ data.titleKey | translate }}
+</h2>
+<mat-dialog-content>
+  <p>{{ data.messageKey | translate: (data.messageParams ?? {}) }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">
+    {{ (data.cancelKey ?? 'COMMON.CANCEL') | translate }}
+  </button>
+  <button mat-raised-button [color]="data.dangerous ? 'warn' : 'primary'" (click)="confirm()">
+    {{ (data.confirmKey ?? 'COMMON.CONFIRM') | translate }}
+  </button>
+</mat-dialog-actions>

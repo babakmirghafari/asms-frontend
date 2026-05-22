@@ -1,1 +1,33 @@
-// TODO(angular-logic-implementer): add component styles
+.simulate-card, .result-card {
+  max-width: 640px;
+  margin-bottom: var(--asms-space-md);
+}
+
+.simulate-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--asms-space-md);
+  padding-top: var(--asms-space-md);
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-sm);
+  font-size: 1.1rem;
+}
+
+.icon-success { color: var(--asms-success); }
+.icon-danger { color: var(--asms-danger); }
+
+.reason-list {
+  margin-top: var(--asms-space-sm);
+  padding-inline-start: var(--asms-space-lg);
+  color: var(--asms-text-secondary);
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: var(--asms-space-xxl);
+}

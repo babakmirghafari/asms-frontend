@@ -1,2 +1,10 @@
-<!-- TODO(angular-logic-implementer): implement component template -->
-<ng-content />
+<mat-form-field appearance="outline" class="asms-dropdown">
+  @if (labelKey) {
+    <mat-label>{{ labelKey | translate }}</mat-label>
+  }
+  <mat-select [value]="value" [disabled]="disabled" (selectionChange)="onSelect($event.value)">
+    @for (opt of options; track opt.value) {
+      <mat-option [value]="opt.value">{{ opt.labelKey | translate }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>

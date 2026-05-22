@@ -1,7 +1,40 @@
-// Global styles — placeholder
-// TODO(angular-logic-implementer): replace with real global styles extracted from DESIGN_SYSTEM
+// ASMS Global Styles — dark security theme
+// Design source: ASMS ARC42 Confluence / domain-derived dark navy/teal palette
+// Sync date: 2026-05-21
 
 @use './styles/theme' as *;
+
+// CSS custom properties — DESIGN_SYSTEM tokens
+:root {
+  --asms-bg: #0d1117;
+  --asms-surface: #161b22;
+  --asms-surface-variant: #21262d;
+  --asms-sidebar: #161b22;
+  --asms-topbar: #161b22;
+  --asms-border: #30363d;
+  --asms-primary: #0097a7;
+  --asms-primary-hover: #00838f;
+  --asms-accent: #ffd740;
+  --asms-success: #56d364;
+  --asms-warning: #e3b341;
+  --asms-danger: #f85149;
+  --asms-info: #58a6ff;
+  --asms-text-primary: #e6edf3;
+  --asms-text-secondary: #8b949e;
+  --asms-text-disabled: #484f58;
+  --asms-text-on-primary: #ffffff;
+  --asms-sidebar-width: 240px;
+  --asms-topbar-height: 64px;
+  --asms-radius-sm: 4px;
+  --asms-radius-md: 8px;
+  --asms-radius-lg: 12px;
+  --asms-space-xs: 4px;
+  --asms-space-sm: 8px;
+  --asms-space-md: 16px;
+  --asms-space-lg: 24px;
+  --asms-space-xl: 32px;
+  --asms-space-xxl: 48px;
+}
 
 * {
   box-sizing: border-box;
@@ -11,5 +44,68 @@ html,
 body {
   height: 100%;
   margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background-color: var(--asms-bg);
+  color: var(--asms-text-primary);
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
 }
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--asms-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--asms-border);
+  border-radius: var(--asms-radius-sm);
+}
+
+// Material overrides for dark theme
+.mat-mdc-card {
+  background-color: var(--asms-surface) !important;
+  border: 1px solid var(--asms-border);
+}
+
+.mat-mdc-dialog-container {
+  background-color: var(--asms-surface-variant) !important;
+}
+
+.mat-mdc-table {
+  background-color: var(--asms-surface) !important;
+}
+
+.mat-mdc-header-row {
+  background-color: var(--asms-surface-variant) !important;
+}
+
+.mdc-data-table__row:hover {
+  background-color: var(--asms-surface-variant) !important;
+}
+
+// Page layout utility classes
+.asms-page {
+  padding: var(--asms-space-lg);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.asms-page-content {
+  max-width: 1400px;
+}
+
+// Status chip colors
+.chip-active { background-color: var(--asms-success) !important; color: #000 !important; }
+.chip-inactive { background-color: var(--asms-text-disabled) !important; color: var(--asms-text-primary) !important; }
+.chip-locked { background-color: var(--asms-danger) !important; color: #fff !important; }
+.chip-suspended { background-color: var(--asms-warning) !important; color: #000 !important; }
+.chip-critical { background-color: var(--asms-danger) !important; color: #fff !important; }
+.chip-high { background-color: #ff6d00 !important; color: #fff !important; }
+.chip-medium { background-color: var(--asms-warning) !important; color: #000 !important; }
+.chip-low { background-color: var(--asms-info) !important; color: #000 !important; }
+.chip-open { background-color: var(--asms-warning) !important; color: #000 !important; }
+.chip-acknowledged { background-color: var(--asms-info) !important; color: #000 !important; }
+.chip-resolved { background-color: var(--asms-success) !important; color: #000 !important; }

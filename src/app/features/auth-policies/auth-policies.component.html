@@ -1,2 +1,44 @@
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
-<p>auth-policies — pending implementation</p>
+<asms-page-header titleKey="AUTH_POLICIES.TITLE" />
+
+@if (store.isLoading()) {
+  <div class="loading-center"><mat-spinner diameter="40" /></div>
+} @else {
+  <mat-card class="policy-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'AUTH_POLICIES.EDIT' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" class="policy-form">
+        <mat-checkbox formControlName="mfaRequired">
+          {{ 'AUTH_POLICIES.MFA_REQUIRED' | translate }}
+        </mat-checkbox>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'AUTH_POLICIES.MAX_FAILED_ATTEMPTS' | translate }}</mat-label>
+          <input matInput type="number" formControlName="maxFailedLoginAttempts" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'AUTH_POLICIES.SESSION_TIMEOUT' | translate }}</mat-label>
+          <input matInput type="number" formControlName="sessionTimeoutMinutes" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'AUTH_POLICIES.LOCKOUT_DURATION' | translate }}</mat-label>
+          <input matInput type="number" formControlName="passwordMinLength" />
+        </mat-form-field>
+
+        <div class="checkbox-row">
+          <mat-checkbox formControlName="passwordRequiresUppercase">Uppercase required</mat-checkbox>
+          <mat-checkbox formControlName="passwordRequiresNumber">Number required</mat-checkbox>
+          <mat-checkbox formControlName="passwordRequiresSpecial">Special char required</mat-checkbox>
+        </div>
+      </form>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || store.isLoading()">
+        {{ 'COMMON.SAVE' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+}

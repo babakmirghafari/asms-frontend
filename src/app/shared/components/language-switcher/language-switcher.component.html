@@ -1,13 +1,11 @@
-<!-- TODO(angular-logic-implementer): implement Material button group / select -->
-<div class="language-switcher">
+<button mat-icon-button [matMenuTriggerFor]="langMenu" [matTooltip]="languageStore.language() === 'en' ? 'English' : 'فارسی'">
+  <span class="lang-badge">{{ languageStore.language() === 'en' ? 'EN' : 'FA' }}</span>
+</button>
+<mat-menu #langMenu="matMenu">
   @for (lang of languages; track lang.code) {
-    <button
-      type="button"
-      [class.active]="languageStore.language() === lang.code"
-      (click)="switchLanguage(lang.code)"
-      [attr.aria-label]="'Switch to ' + lang.label"
-      [attr.aria-pressed]="languageStore.language() === lang.code">
-      {{ lang.label }}
+    <button mat-menu-item (click)="switchLanguage(lang.code)" [class.active-lang]="languageStore.language() === lang.code">
+      <span class="lang-flag">{{ lang.flag }}</span>
+      <span>{{ lang.label }}</span>
     </button>
   }
-</div>
+</mat-menu>

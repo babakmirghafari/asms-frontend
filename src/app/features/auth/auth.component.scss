@@ -1,1 +1,53 @@
-// TODO(angular-logic-implementer): add login page styles
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--asms-bg);
+  padding: var(--asms-space-md);
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: var(--asms-space-lg);
+    background-color: var(--asms-surface);
+    border: 1px solid var(--asms-border);
+
+    .auth-logo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--asms-primary);
+      letter-spacing: 4px;
+      text-align: center;
+      width: 100%;
+      margin-bottom: var(--asms-space-md);
+    }
+
+    mat-card-title {
+      text-align: center;
+      margin-bottom: var(--asms-space-lg);
+      color: var(--asms-text-primary);
+    }
+
+    .auth-error {
+      background-color: rgba(248, 81, 73, 0.1);
+      border: 1px solid var(--asms-danger);
+      border-radius: var(--asms-radius-sm);
+      padding: var(--asms-space-sm) var(--asms-space-md);
+      color: var(--asms-danger);
+      margin-bottom: var(--asms-space-md);
+      font-size: 0.875rem;
+    }
+
+    .full-width {
+      width: 100%;
+      margin-bottom: var(--asms-space-sm);
+    }
+
+    .submit-btn {
+      margin-top: var(--asms-space-sm);
+      height: 48px;
+      font-size: 1rem;
+    }
+  }
+}

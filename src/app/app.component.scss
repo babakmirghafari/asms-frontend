@@ -1,5 +1,99 @@
-// TODO(angular-logic-implementer): add layout shell styles
 :host {
   display: block;
   height: 100%;
+}
+
+.asms-app-root {
+  height: 100%;
+}
+
+.asms-sidenav-container {
+  height: 100%;
+}
+
+.asms-sidenav {
+  width: var(--asms-sidebar-width, 240px);
+  background-color: var(--asms-sidebar);
+  border-right: 1px solid var(--asms-border);
+
+  .asms-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--asms-space-md);
+    border-bottom: 1px solid var(--asms-border);
+    height: var(--asms-topbar-height, 64px);
+
+    .asms-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--asms-primary);
+      letter-spacing: 2px;
+    }
+  }
+
+  .asms-sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: var(--asms-space-sm);
+    border-top: 1px solid var(--asms-border);
+
+    .asms-logout-btn {
+      width: 100%;
+      color: var(--asms-text-secondary);
+
+      &:hover {
+        color: var(--asms-danger);
+      }
+
+      mat-icon {
+        margin-inline-end: var(--asms-space-sm);
+      }
+    }
+  }
+}
+
+.active-nav-item {
+  background-color: var(--asms-surface-variant) !important;
+  color: var(--asms-primary) !important;
+  border-inline-start: 3px solid var(--asms-primary);
+}
+
+.asms-topbar {
+  background-color: var(--asms-topbar);
+  border-bottom: 1px solid var(--asms-border);
+  height: var(--asms-topbar-height, 64px);
+
+  .asms-topbar-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--asms-text-primary);
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.asms-main-content {
+  background-color: var(--asms-bg);
+}
+
+.asms-content-area {
+  padding: var(--asms-space-lg);
+  height: calc(100% - var(--asms-topbar-height, 64px));
+  overflow-y: auto;
+}
+
+[dir='rtl'] {
+  .asms-sidenav {
+    border-right: none;
+    border-left: 1px solid var(--asms-border);
+  }
+
+  .active-nav-item {
+    border-inline-start: 3px solid var(--asms-primary);
+    border-inline-end: none;
+  }
 }

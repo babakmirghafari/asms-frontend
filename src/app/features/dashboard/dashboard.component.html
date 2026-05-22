@@ -1,2 +1,77 @@
-<!-- TODO(angular-logic-implementer): render real template from DESIGN_SYSTEM -->
-<p>dashboard — pending implementation</p>
+<asms-page-header titleKey="DASHBOARD.TITLE" />
+
+@if (store.isLoading()) {
+  <div class="loading-center">
+    <mat-spinner diameter="48" />
+  </div>
+} @else {
+  <div class="dashboard-grid">
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon">people</mat-icon>
+        <div class="kpi-value">{{ store.totalUsers() }}</div>
+        <div class="kpi-label">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card kpi-success">
+      <mat-card-content>
+        <mat-icon class="kpi-icon">person_check</mat-icon>
+        <div class="kpi-value">{{ store.activeUsers() }}</div>
+        <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_USERS' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card kpi-danger">
+      <mat-card-content>
+        <mat-icon class="kpi-icon">lock</mat-icon>
+        <div class="kpi-value">{{ store.lockedUsers() }}</div>
+        <div class="kpi-label">{{ 'DASHBOARD.LOCKED_USERS' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card kpi-info">
+      <mat-card-content>
+        <mat-icon class="kpi-icon">computer</mat-icon>
+        <div class="kpi-value">{{ store.activeSessions() }}</div>
+        <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_SESSIONS' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon">timeline</mat-icon>
+        <div class="kpi-value">{{ store.recentActivityCount() }}</div>
+        <div class="kpi-label">{{ 'DASHBOARD.RECENT_ACTIVITY' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (store.alertsBySeverity()) {
+    <mat-card class="alerts-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'DASHBOARD.ALERTS_BY_SEVERITY' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="severity-grid">
+          <div class="severity-item critical">
+            <span class="severity-count">{{ store.alertsBySeverity()!.critical ?? 0 }}</span>
+            <span class="severity-label">{{ 'DASHBOARD.CRITICAL' | translate }}</span>
+          </div>
+          <div class="severity-item high">
+            <span class="severity-count">{{ store.alertsBySeverity()!.high ?? 0 }}</span>
+            <span class="severity-label">{{ 'DASHBOARD.HIGH' | translate }}</span>
+          </div>
+          <div class="severity-item medium">
+            <span class="severity-count">{{ store.alertsBySeverity()!.medium ?? 0 }}</span>
+            <span class="severity-label">{{ 'DASHBOARD.MEDIUM' | translate }}</span>
+          </div>
+          <div class="severity-item low">
+            <span class="severity-count">{{ store.alertsBySeverity()!.low ?? 0 }}</span>
+            <span class="severity-label">{{ 'DASHBOARD.LOW' | translate }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+}
