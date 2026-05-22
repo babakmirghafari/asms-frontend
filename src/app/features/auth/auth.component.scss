@@ -464,21 +464,35 @@
 }
 
 // ============================================================
-// Org selection
+// Auth card — wide variant for org selection
 // ============================================================
 
-.auth-org-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 8px;
+.auth-card--wide {
+  max-width: 480px;
+  width: 100%;
+  align-self: center;
 }
 
-.auth-org-item {
+.auth-brand-logo-wrap--sm {
+  margin-bottom: 16px !important;
+}
+
+// ============================================================
+// Org selection — card-based list
+// ============================================================
+
+.auth-org-card-list {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.auth-org-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
   border: 1.5px solid var(--asms-border);
   border-radius: var(--asms-radius-md);
   background: var(--asms-surface);
@@ -491,48 +505,95 @@
     border-color: #3f51b5;
     background: #e8eaf6;
   }
-}
 
-.auth-org-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #e8eaf6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  mat-icon {
-    color: #3f51b5;
-    font-size: 20px;
-    height: 20px;
-    width: 20px;
+  &--selected {
+    border-color: #3f51b5;
+    background: #e8eaf6;
+    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
   }
 }
 
-.auth-org-info {
+.auth-org-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.auth-org-card-body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
-.auth-org-name {
-  font-size: 14px;
+.auth-org-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.auth-org-card-name {
+  font-size: 15px;
   font-weight: 600;
   color: var(--asms-text-primary);
 }
 
-.auth-org-members {
+.auth-org-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: var(--asms-radius-full);
+  font-size: 11px;
+  font-weight: 600;
+
+  &--primary {
+    background: #e8eaf6;
+    color: #3f51b5;
+    border: 1px solid rgba(63, 81, 181, 0.3);
+  }
+}
+
+.auth-org-card-check {
+  color: #3f51b5;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  margin-inline-start: auto;
+}
+
+.auth-org-card-members {
   font-size: 12px;
   color: var(--asms-text-secondary);
 }
 
-.auth-org-arrow {
-  color: var(--asms-text-disabled);
-  font-size: 18px;
-  height: 18px;
-  width: 18px;
+.auth-org-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.auth-org-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--asms-radius-sm);
+  background: var(--asms-surface-variant);
+  border: 1px solid var(--asms-border);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 // ============================================================

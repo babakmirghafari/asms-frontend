@@ -174,29 +174,55 @@
 
         <!-- ===== SELECT ORG STEP ===== -->
         @case ('select-org') {
-          <div class="auth-card">
+          <div class="auth-card auth-card--wide">
             <div class="auth-card-header">
-              <div class="auth-step-icon auth-step-icon--green">
-                <mat-icon>business</mat-icon>
+              <div class="auth-brand-logo-wrap auth-brand-logo-wrap--sm">
+                <img src="assets/logo.svg" alt="ASMS" height="32" />
               </div>
               <h2 class="auth-card-title">{{ 'AUTH.SELECT_ORG' | translate }}</h2>
               <p class="auth-card-subtitle">{{ 'AUTH.SELECT_ORG_SUBTITLE' | translate }}</p>
             </div>
 
-            <div class="auth-org-list">
+            <div class="auth-org-card-list">
               @for (org of sampleOrgs; track org.id) {
-                <button class="auth-org-item" (click)="selectOrg(org.id)">
-                  <div class="auth-org-avatar">
-                    <mat-icon>business</mat-icon>
+                <button class="auth-org-card"
+                        [class.auth-org-card--selected]="selectedOrgId === org.id"
+                        (click)="selectedOrgId = org.id">
+
+                  <!-- Org avatar circle -->
+                  <div class="auth-org-card-avatar" [style.background]="org.color">
+                    {{ org.name[0] }}
                   </div>
-                  <div class="auth-org-info">
-                    <span class="auth-org-name">{{ org.name }}</span>
-                    <span class="auth-org-members">{{ org.members }} members</span>
+
+                  <!-- Org info -->
+                  <div class="auth-org-card-body">
+                    <div class="auth-org-card-top">
+                      <span class="auth-org-card-name">{{ org.name }}</span>
+                      @if (org.isPrimary) {
+                        <span class="auth-org-card-badge auth-org-card-badge--primary">Primary</span>
+                      }
+                      @if (selectedOrgId === org.id) {
+                        <mat-icon class="auth-org-card-check">check_circle</mat-icon>
+                      }
+                    </div>
+                    <span class="auth-org-card-members">{{ org.members | number }} members &middot; {{ org.status }}</span>
+                    <div class="auth-org-card-tags">
+                      @for (tag of org.complianceTags; track tag) {
+                        <span class="auth-org-tag">{{ tag }}</span>
+                      }
+                    </div>
                   </div>
-                  <mat-icon class="auth-org-arrow">chevron_right</mat-icon>
                 </button>
               }
             </div>
+
+            <button
+              class="auth-btn auth-btn--primary"
+              [disabled]="!selectedOrgId"
+              (click)="selectOrg(selectedOrgId!)">
+              <mat-icon>arrow_forward</mat-icon>
+              <span>{{ 'AUTH.SELECT_BUTTON' | translate }}</span>
+            </button>
 
             <div class="auth-secondary-actions">
               <button type="button" class="auth-link-btn" (click)="backToLogin()">

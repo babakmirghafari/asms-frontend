@@ -2,6 +2,7 @@ import { Component, OnInit, inject, computed } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { AuthFeatureStore } from './auth.store';
@@ -20,6 +21,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    DecimalPipe,
     MatIconModule,
     MatProgressSpinnerModule,
     TranslateModule
@@ -50,11 +52,38 @@ export class AuthComponent implements OnInit {
 
   showPassword = false;
 
+  // Org selection state
+  selectedOrgId: string | null = null;
+
   // Sample org data for the select-org step
   readonly sampleOrgs = [
-    { id: 'org-northwind', name: 'Northwind Bank', members: '1,284' },
-    { id: 'org-globex', name: 'Globex Europe', members: '642' },
-    { id: 'org-acme', name: 'Acme Retail', members: '328' }
+    {
+      id: 'org-northwind',
+      name: 'Northwind Bank',
+      members: 1284,
+      status: 'Active',
+      color: '#3f51b5',
+      isPrimary: true,
+      complianceTags: ['SOC2', 'ISO 27001']
+    },
+    {
+      id: 'org-globex',
+      name: 'Globex Europe',
+      members: 642,
+      status: 'Active',
+      color: '#009688',
+      isPrimary: false,
+      complianceTags: ['ISO 27001']
+    },
+    {
+      id: 'org-acme',
+      name: 'Acme Retail',
+      members: 328,
+      status: 'Active',
+      color: '#f57c00',
+      isPrimary: false,
+      complianceTags: ['GDPR']
+    }
   ];
 
   readonly passwordStrengthClass = computed(() => {
