@@ -50,16 +50,33 @@ export class AlertsComponent implements OnInit {
       messageKey: 'ALERTS.ACKNOWLEDGE_CONFIRM',
       confirmKey: 'ALERTS.ACKNOWLEDGE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.store.acknowledge(alert.id).then(() => {
-          this.snackBar.open(
-            this.translate.instant('ALERTS.ACKNOWLEDGE') + ' OK',
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000 }
-          );
-        });
-      }
+    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.store.acknowledge(alert.id).then(() => {
+        this.snackBar.open(
+          this.translate.instant('ALERTS.ACKNOWLEDGED_SUCCESS'),
+          this.translate.instant('COMMON.CLOSE'),
+          { duration: 3000, panelClass: 'snackbar-success' }
+        );
+      });
+    });
+  }
+
+  confirmResolve(alert: AlertDto): void {
+    const data: ConfirmDialogData = {
+      titleKey: 'ALERTS.RESOLVE_TITLE',
+      messageKey: 'ALERTS.RESOLVE_CONFIRM',
+      confirmKey: 'ALERTS.RESOLVE'
+    };
+    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.store.resolve(alert.id).then(() => {
+        this.snackBar.open(
+          this.translate.instant('ALERTS.RESOLVED_SUCCESS'),
+          this.translate.instant('COMMON.CLOSE'),
+          { duration: 3000, panelClass: 'snackbar-success' }
+        );
+      });
     });
   }
 }

@@ -1,77 +1,206 @@
-<asms-page-header titleKey="DASHBOARD.TITLE" />
+<div class="asms-page">
+  <asms-page-header titleKey="DASHBOARD.TITLE" />
 
-@if (store.isLoading()) {
-  <div class="loading-center">
-    <mat-spinner diameter="48" />
-  </div>
-} @else {
-  <div class="dashboard-grid">
-    <mat-card class="kpi-card">
-      <mat-card-content>
-        <mat-icon class="kpi-icon">people</mat-icon>
-        <div class="kpi-value">{{ store.totalUsers() }}</div>
-        <div class="kpi-label">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</div>
-      </mat-card-content>
-    </mat-card>
+  @if (store.isLoading()) {
+    <div class="asms-loading-center">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else {
+    <!-- KPI tiles -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-icon--blue">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ store.totalUsers() | number }}</div>
+          <div class="kpi-label">{{ 'DASHBOARD.TOTAL_USERS' | translate }}</div>
+        </div>
+        <div class="kpi-trend kpi-trend--up">
+          <mat-icon>trending_up</mat-icon>
+          <span>+12%</span>
+        </div>
+      </div>
 
-    <mat-card class="kpi-card kpi-success">
-      <mat-card-content>
-        <mat-icon class="kpi-icon">person_check</mat-icon>
-        <div class="kpi-value">{{ store.activeUsers() }}</div>
-        <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_USERS' | translate }}</div>
-      </mat-card-content>
-    </mat-card>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-icon--green">
+          <mat-icon>person_check</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ store.activeUsers() | number }}</div>
+          <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_USERS' | translate }}</div>
+        </div>
+        <div class="kpi-trend kpi-trend--up">
+          <mat-icon>trending_up</mat-icon>
+          <span>+3%</span>
+        </div>
+      </div>
 
-    <mat-card class="kpi-card kpi-danger">
-      <mat-card-content>
-        <mat-icon class="kpi-icon">lock</mat-icon>
-        <div class="kpi-value">{{ store.lockedUsers() }}</div>
-        <div class="kpi-label">{{ 'DASHBOARD.LOCKED_USERS' | translate }}</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="kpi-card kpi-info">
-      <mat-card-content>
-        <mat-icon class="kpi-icon">computer</mat-icon>
-        <div class="kpi-value">{{ store.activeSessions() }}</div>
-        <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_SESSIONS' | translate }}</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="kpi-card">
-      <mat-card-content>
-        <mat-icon class="kpi-icon">timeline</mat-icon>
-        <div class="kpi-value">{{ store.recentActivityCount() }}</div>
-        <div class="kpi-label">{{ 'DASHBOARD.RECENT_ACTIVITY' | translate }}</div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  @if (store.alertsBySeverity()) {
-    <mat-card class="alerts-card">
-      <mat-card-header>
-        <mat-card-title>{{ 'DASHBOARD.ALERTS_BY_SEVERITY' | translate }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="severity-grid">
-          <div class="severity-item critical">
-            <span class="severity-count">{{ store.alertsBySeverity()!.critical ?? 0 }}</span>
-            <span class="severity-label">{{ 'DASHBOARD.CRITICAL' | translate }}</span>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-icon--red">
+          <mat-icon>lock</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ store.lockedUsers() | number }}</div>
+          <div class="kpi-label">{{ 'DASHBOARD.LOCKED_USERS' | translate }}</div>
+        </div>
+        @if ((store.lockedUsers() ?? 0) > 0) {
+          <div class="kpi-trend kpi-trend--down">
+            <mat-icon>warning</mat-icon>
+            <span>{{ 'COMMON.LOCK' | translate }}</span>
           </div>
-          <div class="severity-item high">
-            <span class="severity-count">{{ store.alertsBySeverity()!.high ?? 0 }}</span>
-            <span class="severity-label">{{ 'DASHBOARD.HIGH' | translate }}</span>
+        }
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-icon--teal">
+          <mat-icon>computer</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ store.activeSessions() | number }}</div>
+          <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_SESSIONS' | translate }}</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-icon--amber">
+          <mat-icon>timeline</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ store.recentActivityCount() | number }}</div>
+          <div class="kpi-label">{{ 'DASHBOARD.RECENT_ACTIVITY' | translate }}</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-wrap kpi-icon--purple">
+          <mat-icon>notifications_active</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ alertCount() }}</div>
+          <div class="kpi-label">{{ 'DASHBOARD.OPEN_ALERTS' | translate }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main grid: alerts + quick actions + events -->
+    <div class="dashboard-grid">
+
+      <!-- Alerts by severity -->
+      @if (store.alertsBySeverity()) {
+        <div class="dashboard-card alerts-card">
+          <div class="card-header">
+            <h3 class="card-title">{{ 'DASHBOARD.ALERTS_BY_SEVERITY' | translate }}</h3>
+            <a routerLink="/alerts" class="card-link">{{ 'COMMON.VIEW' | translate }}</a>
           </div>
-          <div class="severity-item medium">
-            <span class="severity-count">{{ store.alertsBySeverity()!.medium ?? 0 }}</span>
-            <span class="severity-label">{{ 'DASHBOARD.MEDIUM' | translate }}</span>
-          </div>
-          <div class="severity-item low">
-            <span class="severity-count">{{ store.alertsBySeverity()!.low ?? 0 }}</span>
-            <span class="severity-label">{{ 'DASHBOARD.LOW' | translate }}</span>
+          <div class="severity-grid">
+            <div class="severity-item severity--critical">
+              <span class="severity-value">{{ store.alertsBySeverity()!.critical ?? 0 }}</span>
+              <span class="severity-label">{{ 'DASHBOARD.CRITICAL' | translate }}</span>
+            </div>
+            <div class="severity-item severity--high">
+              <span class="severity-value">{{ store.alertsBySeverity()!.high ?? 0 }}</span>
+              <span class="severity-label">{{ 'DASHBOARD.HIGH' | translate }}</span>
+            </div>
+            <div class="severity-item severity--medium">
+              <span class="severity-value">{{ store.alertsBySeverity()!.medium ?? 0 }}</span>
+              <span class="severity-label">{{ 'DASHBOARD.MEDIUM' | translate }}</span>
+            </div>
+            <div class="severity-item severity--low">
+              <span class="severity-value">{{ store.alertsBySeverity()!.low ?? 0 }}</span>
+              <span class="severity-label">{{ 'DASHBOARD.LOW' | translate }}</span>
+            </div>
           </div>
         </div>
-      </mat-card-content>
-    </mat-card>
+      }
+
+      <!-- Quick actions -->
+      <div class="dashboard-card quick-actions-card">
+        <div class="card-header">
+          <h3 class="card-title">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h3>
+        </div>
+        <div class="quick-actions-grid">
+          <a routerLink="/users" class="quick-action">
+            <div class="qa-icon qa-icon--blue"><mat-icon>person_add</mat-icon></div>
+            <span>{{ 'DASHBOARD.CREATE_USER' | translate }}</span>
+          </a>
+          <a routerLink="/permissions" class="quick-action">
+            <div class="qa-icon qa-icon--green"><mat-icon>upload_file</mat-icon></div>
+            <span>{{ 'DASHBOARD.IMPORT_PERMISSIONS' | translate }}</span>
+          </a>
+          <a routerLink="/permission-groups" class="quick-action">
+            <div class="qa-icon qa-icon--purple"><mat-icon>admin_panel_settings</mat-icon></div>
+            <span>{{ 'DASHBOARD.CREATE_PERMISSION_GROUP' | translate }}</span>
+          </a>
+          <a routerLink="/applications" class="quick-action">
+            <div class="qa-icon qa-icon--teal"><mat-icon>app_registration</mat-icon></div>
+            <span>{{ 'DASHBOARD.REGISTER_APP' | translate }}</span>
+          </a>
+          <a routerLink="/alerts" class="quick-action">
+            <div class="qa-icon qa-icon--red"><mat-icon>notifications_active</mat-icon></div>
+            <span>{{ 'DASHBOARD.REVIEW_ALERTS' | translate }}</span>
+          </a>
+          <a routerLink="/audit-logs" class="quick-action">
+            <div class="qa-icon qa-icon--amber"><mat-icon>download</mat-icon></div>
+            <span>{{ 'DASHBOARD.EXPORT_AUDIT' | translate }}</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent audit events -->
+      <div class="dashboard-card events-card">
+        <div class="card-header">
+          <h3 class="card-title">{{ 'DASHBOARD.RECENT_EVENTS' | translate }}</h3>
+          <a routerLink="/audit-logs" class="card-link">{{ 'COMMON.VIEW' | translate }}</a>
+        </div>
+        <div class="events-list">
+          @for (event of recentEvents; track event.id) {
+            <div class="event-item">
+              <div class="event-icon" [ngClass]="event.iconClass">
+                <mat-icon>{{ event.icon }}</mat-icon>
+              </div>
+              <div class="event-body">
+                <span class="event-action">{{ event.action }}</span>
+                <span class="event-meta">{{ event.actor }} &bull; {{ event.time }}</span>
+              </div>
+              <span class="event-severity" [ngClass]="event.severityClass">{{ event.severity }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Security posture -->
+      <div class="dashboard-card posture-card">
+        <div class="card-header">
+          <h3 class="card-title">{{ 'DASHBOARD.SECURITY_POSTURE' | translate }}</h3>
+        </div>
+        <div class="posture-score">
+          <div class="posture-dial">
+            <span class="posture-number">78</span>
+            <span class="posture-unit">/100</span>
+          </div>
+          <div class="posture-label">Good</div>
+        </div>
+        <div class="posture-items">
+          <div class="posture-item">
+            <mat-icon class="posture-check">check_circle</mat-icon>
+            <span>MFA enforced on 94% of users</span>
+          </div>
+          <div class="posture-item">
+            <mat-icon class="posture-check">check_circle</mat-icon>
+            <span>Audit logs retained 90 days</span>
+          </div>
+          <div class="posture-item posture-item--warn">
+            <mat-icon class="posture-warn">warning</mat-icon>
+            <span>3 users with pending password change</span>
+          </div>
+          <div class="posture-item posture-item--warn">
+            <mat-icon class="posture-warn">warning</mat-icon>
+            <span>1 application secret rotation overdue</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
   }
-}
+</div>

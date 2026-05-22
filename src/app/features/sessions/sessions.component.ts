@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,7 +24,7 @@ import { SessionDto } from '@babakmirghafari/asms-api-client';
   imports: [
     DatePipe,
     MatTableModule, MatButtonModule, MatIconModule, MatMenuModule,
-    MatProgressSpinnerModule, MatPaginatorModule,
+    MatProgressSpinnerModule, MatPaginatorModule, MatTooltipModule,
     TranslateModule,
     PageHeaderComponent, StatusChipComponent
   ]
@@ -55,10 +56,31 @@ export class SessionsComponent implements OnInit {
       if (confirmed) {
         this.store.revoke(session.id).then(() => {
           this.snackBar.open(
-            this.translate.instant('SESSIONS.REVOKE') + ' OK',
+            this.translate.instant('SESSIONS.REVOKE_SUCCESS'),
             this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000 }
+            { duration: 3000, panelClass: 'snackbar-success' }
           );
+        });
+      }
+    });
+  }
+
+  confirmRevokeAll(): void {
+    const data: ConfirmDialogData = {
+      titleKey: 'SESSIONS.REVOKE_TITLE',
+      messageKey: 'SESSIONS.REVOKE_ALL_CONFIRM',
+      dangerous: true,
+      confirmKey: 'SESSIONS.REVOKE_ALL'
+    };
+    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.store.revokeAll('').then(() => {
+          this.snackBar.open(
+            this.translate.instant('SESSIONS.REVOKE_ALL_SUCCESS'),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 4000, panelClass: 'snackbar-success' }
+          );
+          this.store.loadAll();
         });
       }
     });

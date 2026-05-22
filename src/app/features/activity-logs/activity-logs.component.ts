@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -20,7 +21,7 @@ import { ActivityLogDto } from '@babakmirghafari/asms-api-client';
   imports: [
     DatePipe,
     ReactiveFormsModule,
-    MatTableModule, MatButtonModule,
+    MatTableModule, MatButtonModule, MatIconModule,
     MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule, MatPaginatorModule,
     TranslateModule,
     PageHeaderComponent
@@ -30,7 +31,7 @@ export class ActivityLogsComponent implements OnInit {
   protected readonly store = inject(ActivityLogsStore);
   private readonly fb = inject(FormBuilder);
 
-  readonly displayedColumns = ['timestamp', 'actorUsername', 'eventType', 'category', 'targetDisplayName', 'outcome', 'ipAddress'];
+  readonly displayedColumns = ['timestamp', 'actorUsername', 'eventType', 'targetDisplayName', 'outcome', 'ipAddress'];
   readonly categoryCtrl = this.fb.control('');
   readonly categories = Object.values(ActivityLogDto.CategoryEnum);
 

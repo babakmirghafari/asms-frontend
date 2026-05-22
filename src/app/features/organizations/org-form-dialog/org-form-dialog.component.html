@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>
+  {{ (data.isEdit ? 'ORGANIZATIONS.EDIT' : 'ORGANIZATIONS.ADD') | translate }}
+</h2>
+
+<mat-dialog-content style="min-width: 440px;">
+  <form [formGroup]="form" class="dialog-form-col">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }}</mat-label>
+      <mat-icon matPrefix>business</mat-icon>
+      <input matInput formControlName="name" [placeholder]="'e.g. Northwind Bank'" />
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>Organization name is required</mat-error>
+      }
+      @if (form.get('name')?.hasError('minlength')) {
+        <mat-error>Minimum 2 characters required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+      <mat-icon matPrefix>description</mat-icon>
+      <textarea matInput formControlName="description" rows="3"
+        [placeholder]="'Brief description of this organization'"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'ORGANIZATIONS.PARENT' | translate }}</mat-label>
+      <mat-icon matPrefix>account_tree</mat-icon>
+      <input matInput formControlName="parentOrganizationId" [placeholder]="'Parent organization ID (optional)'" />
+      <mat-hint>Leave empty for top-level organization</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="asms-dialog-actions">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
+    @if (isLoading) { <mat-spinner diameter="18" /> }
+    {{ (data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.ADD') | translate }}
+  </button>
+</mat-dialog-actions>

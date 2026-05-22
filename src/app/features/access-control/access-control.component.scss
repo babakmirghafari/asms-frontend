@@ -1,6 +1,10 @@
-.simulate-card, .result-card {
-  max-width: 640px;
-  margin-bottom: var(--asms-space-md);
+.simulate-card {
+  max-width: 900px;
+  margin-bottom: var(--asms-space-lg);
+}
+
+.result-card {
+  max-width: 900px;
 }
 
 .simulate-form {
@@ -8,26 +12,49 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--asms-space-md);
   padding-top: var(--asms-space-md);
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.result-row {
+.result-decision {
   display: flex;
   align-items: center;
-  gap: var(--asms-space-sm);
-  font-size: 1.1rem;
-}
+  gap: var(--asms-space-md);
+  padding: var(--asms-space-md);
+  border-radius: var(--asms-radius-md);
+  margin-bottom: var(--asms-space-md);
 
-.icon-success { color: var(--asms-success); }
-.icon-danger { color: var(--asms-danger); }
+  mat-icon {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+  }
+
+  .result-label {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &.result-allow {
+    background-color: var(--asms-success-bg);
+    color: var(--asms-success);
+  }
+
+  &.result-deny {
+    background-color: var(--asms-danger-bg);
+    color: var(--asms-danger);
+  }
+}
 
 .reason-list {
-  margin-top: var(--asms-space-sm);
+  margin: 0;
   padding-inline-start: var(--asms-space-lg);
   color: var(--asms-text-secondary);
-}
+  font-size: 13px;
 
-.loading-center {
-  display: flex;
-  justify-content: center;
-  padding: var(--asms-space-xxl);
+  li {
+    margin-bottom: var(--asms-space-xs);
+  }
 }

@@ -1,75 +1,107 @@
-<asms-page-header titleKey="SESSIONS.TITLE" />
+<div class="asms-page">
+  <asms-page-header titleKey="SESSIONS.TITLE" />
 
-@if (store.isLoading()) {
-  <div class="loading-center"><mat-spinner diameter="40" /></div>
-} @else {
-  <div class="table-wrapper">
-    <table mat-table [dataSource]="store.items()" class="asms-table">
-      <ng-container matColumnDef="username">
-        <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.USER' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.username }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="organizationName">
-        <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.ORGANIZATION' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.organizationName }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="ipAddress">
-        <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.IP_ADDRESS' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.ipAddress }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.STATUS' | translate }}</th>
-        <td mat-cell *matCellDef="let row">
-          <asms-status-chip [status]="row.status" />
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="mfaVerified">
-        <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.MFA_VERIFIED' | translate }}</th>
-        <td mat-cell *matCellDef="let row">
-          <mat-icon [class]="row.mfaVerified ? 'icon-success' : 'icon-disabled'">
-            {{ row.mfaVerified ? 'verified_user' : 'shield' }}
-          </mat-icon>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="riskScore">
-        <th mat-header-cell *matHeaderCellDef>{{ 'ALERTS.RISK_SCORE' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.riskScore ?? '-' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="lastActivityAt">
-        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.UPDATED_AT' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.lastActivityAt | date: 'short' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
-        <td mat-cell *matCellDef="let row">
-          <button mat-icon-button color="warn" (click)="confirmRevoke(row)" [disabled]="row.status !== 'ACTIVE'">
-            <mat-icon>block</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    @if (store.isEmpty()) {
-      <div class="empty-state">{{ 'COMMON.NO_DATA' | translate }}</div>
-    }
-
-    <mat-paginator
-      [length]="store.totalElements()"
-      [pageSize]="store.pageSize()"
-      [pageIndex]="store.pageIndex()"
-      [pageSizeOptions]="[10, 20, 50]"
-      (page)="onPage($event)"
-      showFirstLastButtons>
-    </mat-paginator>
+  <div class="asms-toolbar-row">
+    <span class="toolbar-spacer"></span>
+    <button mat-stroked-button color="warn" (click)="confirmRevokeAll()" [disabled]="store.isLoading()">
+      <mat-icon>power_settings_new</mat-icon>
+      {{ 'SESSIONS.REVOKE_ALL' | translate }}
+    </button>
   </div>
-}
+
+  @if (store.isLoading()) {
+    <div class="asms-loading-center">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else {
+    <div class="asms-table-wrapper">
+      <table mat-table [dataSource]="store.items()" class="full-width">
+
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.USER' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="mono-text">{{ row.username }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="organizationName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.ORGANIZATION' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.organizationName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="ipAddress">
+          <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.IP_ADDRESS' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="mono-text text-secondary">{{ row.ipAddress }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <asms-status-chip [status]="row.status" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="mfaVerified">
+          <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.MFA_VERIFIED' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-icon [class]="row.mfaVerified ? 'icon-success' : 'icon-disabled'">
+              {{ row.mfaVerified ? 'verified_user' : 'shield' }}
+            </mat-icon>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="riskScore">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ALERTS.RISK_SCORE' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            @if (row.riskScore != null) {
+              <span class="risk-score" [class]="row.riskScore >= 70 ? 'risk-high' : row.riskScore >= 40 ? 'risk-medium' : 'risk-low'">
+                {{ row.riskScore }}
+              </span>
+            } @else {
+              <span class="text-secondary">-</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastActivityAt">
+          <th mat-header-cell *matHeaderCellDef>{{ 'SESSIONS.LAST_ACTIVITY' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="text-secondary text-sm">{{ row.lastActivityAt | date: 'dd MMM yyyy, HH:mm' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="warn"
+              (click)="confirmRevoke(row)"
+              [disabled]="row.status !== 'ACTIVE'"
+              [matTooltip]="'COMMON.REVOKE' | translate">
+              <mat-icon>block</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      @if (store.isEmpty()) {
+        <div class="asms-empty-state">
+          <mat-icon>sensor_occupied</mat-icon>
+          <p>{{ 'COMMON.NO_DATA' | translate }}</p>
+        </div>
+      }
+
+      <mat-paginator
+        [length]="store.totalElements()"
+        [pageSize]="store.pageSize()"
+        [pageIndex]="store.pageIndex()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons />
+    </div>
+  }
+</div>

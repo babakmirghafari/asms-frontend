@@ -4,6 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -20,6 +22,7 @@ import { AuthStore } from '../../core/store/auth.store';
   imports: [
     ReactiveFormsModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatCheckboxModule,
+    MatSlideToggleModule, MatIconModule,
     MatButtonModule, MatProgressSpinnerModule,
     TranslateModule,
     PageHeaderComponent

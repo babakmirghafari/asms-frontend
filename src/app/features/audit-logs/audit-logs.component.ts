@@ -32,7 +32,7 @@ export class AuditLogsComponent implements OnInit {
   protected readonly store = inject(AuditLogsStore);
   private readonly fb = inject(FormBuilder);
 
-  readonly displayedColumns = ['timestamp', 'eventType', 'actorUsername', 'targetType', 'targetId', 'outcome', 'ipAddress'];
+  readonly displayedColumns = ['timestamp', 'eventType', 'actorUsername', 'targetType', 'outcome', 'ipAddress'];
   readonly eventTypeCtrl = this.fb.control('');
 
   constructor() {

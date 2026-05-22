@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>{{ 'MEMBERSHIPS.ADD' | translate }}</h2>
+
+<mat-dialog-content style="min-width: 440px;">
+  <form [formGroup]="form" class="dialog-form-col" autocomplete="off">
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'MEMBERSHIPS.USER' | translate }} (User ID)</mat-label>
+      <mat-icon matPrefix>person</mat-icon>
+      <input matInput formControlName="userId" placeholder="user-uuid" />
+      @if (form.get('userId')?.hasError('required')) {
+        <mat-error>User ID is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'MEMBERSHIPS.ORGANIZATION' | translate }} (Organization ID)</mat-label>
+      <mat-icon matPrefix>business</mat-icon>
+      <input matInput formControlName="organizationId" placeholder="org-uuid" />
+      @if (form.get('organizationId')?.hasError('required')) {
+        <mat-error>Organization ID is required</mat-error>
+      }
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="asms-dialog-actions">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
+    @if (isLoading) { <mat-spinner diameter="18" /> }
+    {{ 'MEMBERSHIPS.ADD' | translate }}
+  </button>
+</mat-dialog-actions>

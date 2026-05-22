@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>
+  {{ (data.isEdit ? 'STATION_POLICIES.EDIT' : 'STATION_POLICIES.ADD') | translate }}
+</h2>
+
+<mat-dialog-content style="min-width: 480px;">
+  <form [formGroup]="form" class="dialog-form-col" autocomplete="off">
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'STATION_POLICIES.NAME' | translate }}</mat-label>
+      <mat-icon matPrefix>policy</mat-icon>
+      <input matInput formControlName="name" placeholder="Office Hours - Berlin" />
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>Policy name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+      <mat-icon matPrefix>description</mat-icon>
+      <textarea matInput formControlName="description" rows="2"
+        placeholder="Describe the access restriction"></textarea>
+    </mat-form-field>
+
+    @if (!data.isEdit) {
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }} (Organization ID)</mat-label>
+        <mat-icon matPrefix>business</mat-icon>
+        <input matInput formControlName="organizationId" placeholder="org-uuid" />
+        @if (form.get('organizationId')?.hasError('required')) {
+          <mat-error>Organization is required</mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'STATION_POLICIES.ALLOWED_IPS' | translate }}</mat-label>
+      <mat-icon matPrefix>router</mat-icon>
+      <textarea matInput formControlName="allowedIpRanges" rows="3"
+        placeholder="192.168.1.0/24&#10;10.0.0.1&#10;185.22.14.0/24"></textarea>
+      <mat-hint>Enter one IP address or CIDR range per line</mat-hint>
+    </mat-form-field>
+
+    <div class="dialog-section-label">{{ 'STATION_POLICIES.ALLOWED_DAYS' | translate }}</div>
+    <div class="day-checkboxes">
+      @for (day of weekDays; track day.value; let i = $index) {
+        <label class="day-chip" [class.day-chip--active]="allowedDays[i]">
+          <input type="checkbox" [checked]="allowedDays[i]" (change)="toggleDay(i)" hidden />
+          {{ day.label }}
+        </label>
+      }
+    </div>
+
+    <div class="dialog-form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'STATION_POLICIES.START_HOUR' | translate }}</mat-label>
+        <mat-icon matPrefix>schedule</mat-icon>
+        <input matInput formControlName="workStartTime" type="time" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'STATION_POLICIES.END_HOUR' | translate }}</mat-label>
+        <mat-icon matPrefix>schedule</mat-icon>
+        <input matInput formControlName="workEndTime" type="time" />
+      </mat-form-field>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="asms-dialog-actions">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
+    @if (isLoading) { <mat-spinner diameter="18" /> }
+    {{ (data.isEdit ? 'COMMON.SAVE' : 'STATION_POLICIES.ADD') | translate }}
+  </button>
+</mat-dialog-actions>

@@ -1,70 +1,75 @@
-<asms-page-header titleKey="ACCESS_CONTROL.TITLE" />
+<div class="asms-page">
+  <asms-page-header titleKey="ACCESS_CONTROL.TITLE" />
 
-<mat-card class="simulate-card">
-  <mat-card-header>
-    <mat-card-title>{{ 'ACCESS_CONTROL.SIMULATE' | translate }}</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <form [formGroup]="simulateForm" class="simulate-form">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'ACCESS_CONTROL.USER' | translate }}</mat-label>
-        <input matInput formControlName="userId" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'MEMBERSHIPS.ORGANIZATION' | translate }}</mat-label>
-        <input matInput formControlName="organizationId" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'ACCESS_CONTROL.RESOURCE' | translate }}</mat-label>
-        <input matInput formControlName="resource" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'ACCESS_CONTROL.ACTION' | translate }}</mat-label>
-        <mat-select formControlName="action">
-          @for (action of actions; track action) {
-            <mat-option [value]="action">{{ action }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </form>
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-flat-button color="primary" (click)="simulate()" [disabled]="simulateForm.invalid || store.isLoading()">
-      @if (store.isLoading()) {
-        <mat-spinner diameter="18" />
-      } @else {
-        <mat-icon>play_arrow</mat-icon>
-      }
-      {{ 'ACCESS_CONTROL.SIMULATE' | translate }}
-    </button>
-    @if (store.hasResult()) {
-      <button mat-stroked-button (click)="clearResult()">{{ 'COMMON.CLEAR' | translate }}</button>
-    }
-  </mat-card-actions>
-</mat-card>
-
-@if (store.hasResult()) {
-  <mat-card class="result-card">
+  <mat-card class="simulate-card">
     <mat-card-header>
-      <mat-card-title>{{ 'ACCESS_CONTROL.RESULT' | translate }}</mat-card-title>
+      <mat-card-title>{{ 'ACCESS_CONTROL.SIMULATE' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'ACCESS_CONTROL.SIMULATE_SUBTITLE' | translate }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <div class="result-row">
-        <mat-icon [class]="store.simulationResult()!.decision === 'ALLOW' ? 'icon-success' : 'icon-danger'">
-          {{ store.simulationResult()!.decision === 'ALLOW' ? 'check_circle' : 'cancel' }}
-        </mat-icon>
-        <span>{{ store.simulationResult()!.decision }}</span>
-      </div>
-      @if (store.simulationResult()!.reasons?.length) {
-        <ul class="reason-list">
-          @for (r of store.simulationResult()!.reasons!; track r) {
-            <li>{{ r }}</li>
-          }
-        </ul>
-      }
+      <form [formGroup]="simulateForm" class="simulate-form dialog-form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ACCESS_CONTROL.USER' | translate }}</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="userId" [placeholder]="'ACCESS_CONTROL.USER_PLACEHOLDER' | translate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'MEMBERSHIPS.ORGANIZATION' | translate }}</mat-label>
+          <mat-icon matPrefix>business</mat-icon>
+          <input matInput formControlName="organizationId" [placeholder]="'ACCESS_CONTROL.ORG_PLACEHOLDER' | translate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ACCESS_CONTROL.RESOURCE' | translate }}</mat-label>
+          <mat-icon matPrefix>inventory_2</mat-icon>
+          <input matInput formControlName="resource" [placeholder]="'ACCESS_CONTROL.RESOURCE_PLACEHOLDER' | translate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PERMISSIONS.ACTION_VERB' | translate }}</mat-label>
+          <mat-icon matPrefix>play_arrow</mat-icon>
+          <mat-select formControlName="action">
+            @for (action of actions; track action) {
+              <mat-option [value]="action">{{ action }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </form>
     </mat-card-content>
+    <mat-card-actions align="end">
+      @if (store.hasResult()) {
+        <button mat-button (click)="clearResult()">{{ 'COMMON.CLEAR' | translate }}</button>
+      }
+      <button mat-flat-button color="primary" (click)="simulate()" [disabled]="simulateForm.invalid || store.isLoading()">
+        @if (store.isLoading()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          <mat-icon>play_arrow</mat-icon>
+        }
+        {{ 'ACCESS_CONTROL.RUN_SIMULATION' | translate }}
+      </button>
+    </mat-card-actions>
   </mat-card>
-}
+
+  @if (store.hasResult()) {
+    <mat-card class="result-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'ACCESS_CONTROL.RESULT' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="result-decision" [class]="store.simulationResult()!.decision === 'ALLOW' ? 'result-allow' : 'result-deny'">
+          <mat-icon>{{ store.simulationResult()!.decision === 'ALLOW' ? 'check_circle' : 'cancel' }}</mat-icon>
+          <span class="result-label">{{ store.simulationResult()!.decision }}</span>
+        </div>
+        @if (store.simulationResult()!.reasons?.length) {
+          <ul class="reason-list">
+            @for (r of store.simulationResult()!.reasons!; track r) {
+              <li>{{ r }}</li>
+            }
+          </ul>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

@@ -1,33 +1,79 @@
-// ASMS Global Styles — dark security theme
-// Design source: ASMS ARC42 Confluence / domain-derived dark navy/teal palette
-// Sync date: 2026-05-21
+// ASMS Global Styles — light enterprise IAM platform
+// Design source: ASMS_Figma_Product_UI_Prompt.md
+// Theme: Light theme, deep indigo primary, teal accent
+// Sync date: 2026-05-22
 
 @use './styles/theme' as *;
 
 // CSS custom properties — DESIGN_SYSTEM tokens
 :root {
-  --asms-bg: #0d1117;
-  --asms-surface: #161b22;
-  --asms-surface-variant: #21262d;
-  --asms-sidebar: #161b22;
-  --asms-topbar: #161b22;
-  --asms-border: #30363d;
-  --asms-primary: #0097a7;
-  --asms-primary-hover: #00838f;
-  --asms-accent: #ffd740;
-  --asms-success: #56d364;
-  --asms-warning: #e3b341;
-  --asms-danger: #f85149;
-  --asms-info: #58a6ff;
-  --asms-text-primary: #e6edf3;
-  --asms-text-secondary: #8b949e;
-  --asms-text-disabled: #484f58;
+  // Backgrounds
+  --asms-bg: #f5f6fa;
+  --asms-surface: #ffffff;
+  --asms-surface-variant: #f0f2f5;
+  --asms-surface-hover: #e8eaf6;
+
+  // Sidebar — dark navy for enterprise security feel
+  --asms-sidebar: #1a237e;
+  --asms-sidebar-hover: #283593;
+  --asms-sidebar-active: #3949ab;
+  --asms-sidebar-text: rgba(255, 255, 255, 0.87);
+  --asms-sidebar-text-secondary: rgba(255, 255, 255, 0.54);
+  --asms-sidebar-icon: rgba(255, 255, 255, 0.7);
+
+  // Top bar — white
+  --asms-topbar: #ffffff;
+
+  // Borders
+  --asms-border: #e0e0e0;
+  --asms-border-light: #f0f0f0;
+
+  // Brand colors
+  --asms-primary: #3f51b5;
+  --asms-primary-dark: #1a237e;
+  --asms-primary-hover: #303f9f;
+  --asms-primary-light: #e8eaf6;
+  --asms-accent: #009688;
+  --asms-accent-hover: #00796b;
+
+  // Semantic colors
+  --asms-success: #2e7d32;
+  --asms-success-bg: #e8f5e9;
+  --asms-warning: #f57c00;
+  --asms-warning-bg: #fff3e0;
+  --asms-danger: #c62828;
+  --asms-danger-bg: #ffebee;
+  --asms-info: #1565c0;
+  --asms-info-bg: #e3f2fd;
+  --asms-locked: #b71c1c;
+  --asms-pending: #e65100;
+  --asms-pending-bg: #fff3e0;
+
+  // Text
+  --asms-text-primary: #1a1a2e;
+  --asms-text-secondary: #546e7a;
+  --asms-text-disabled: #9e9e9e;
   --asms-text-on-primary: #ffffff;
-  --asms-sidebar-width: 240px;
+  --asms-text-on-dark: rgba(255, 255, 255, 0.87);
+
+  // Layout dimensions
+  --asms-sidebar-width: 256px;
+  --asms-sidebar-collapsed-width: 64px;
   --asms-topbar-height: 64px;
+
+  // Shape
   --asms-radius-sm: 4px;
   --asms-radius-md: 8px;
   --asms-radius-lg: 12px;
+  --asms-radius-full: 9999px;
+
+  // Shadows
+  --asms-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --asms-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --asms-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.06);
+  --asms-shadow-topbar: 0 1px 4px rgba(0, 0, 0, 0.12);
+
+  // Spacing
   --asms-space-xs: 4px;
   --asms-space-sm: 8px;
   --asms-space-md: 16px;
@@ -47,6 +93,9 @@ body {
   background-color: var(--asms-bg);
   color: var(--asms-text-primary);
   font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 // Scrollbar styling
@@ -56,56 +105,447 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--asms-surface);
+  background: var(--asms-surface-variant);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--asms-border);
   border-radius: var(--asms-radius-sm);
+  &:hover { background: #bdbdbd; }
 }
 
-// Material overrides for dark theme
+// ============================================================
+// Material component overrides for enterprise light theme
+// ============================================================
+
 .mat-mdc-card {
   background-color: var(--asms-surface) !important;
   border: 1px solid var(--asms-border);
+  border-radius: var(--asms-radius-md) !important;
+  box-shadow: var(--asms-shadow-sm) !important;
 }
 
 .mat-mdc-dialog-container {
-  background-color: var(--asms-surface-variant) !important;
+  background-color: var(--asms-surface) !important;
+  border-radius: var(--asms-radius-lg) !important;
 }
 
 .mat-mdc-table {
   background-color: var(--asms-surface) !important;
+  border: 1px solid var(--asms-border);
+  border-radius: var(--asms-radius-md) !important;
+  overflow: hidden;
 }
 
 .mat-mdc-header-row {
   background-color: var(--asms-surface-variant) !important;
+  border-bottom: 2px solid var(--asms-border) !important;
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600 !important;
+  color: var(--asms-text-secondary) !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .mdc-data-table__row:hover {
-  background-color: var(--asms-surface-variant) !important;
+  background-color: var(--asms-surface-hover) !important;
 }
 
-// Page layout utility classes
+.mat-mdc-row {
+  border-bottom-color: var(--asms-border-light) !important;
+}
+
+// Snackbar
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: #323232;
+  border-radius: var(--asms-radius-md) !important;
+}
+
+.snackbar-success .mdc-snackbar__surface {
+  background-color: var(--asms-success) !important;
+}
+
+.snackbar-error .mdc-snackbar__surface {
+  background-color: var(--asms-danger) !important;
+}
+
+// Form fields
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+// Paginator
+.mat-mdc-paginator {
+  background-color: var(--asms-surface) !important;
+  border-top: 1px solid var(--asms-border);
+}
+
+// ============================================================
+// Page layout utilities
+// ============================================================
+
 .asms-page {
   padding: var(--asms-space-lg);
-  height: 100%;
-  overflow-y: auto;
+  min-height: 100%;
 }
 
 .asms-page-content {
   max-width: 1400px;
+  margin: 0 auto;
 }
 
+// Search toolbar
+.asms-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-md);
+  margin-bottom: var(--asms-space-lg);
+  flex-wrap: wrap;
+}
+
+.asms-search-field {
+  flex: 1;
+  min-width: 240px;
+  max-width: 400px;
+}
+
+// Table wrapper
+.asms-table-wrapper {
+  border-radius: var(--asms-radius-md);
+  overflow: hidden;
+  box-shadow: var(--asms-shadow-sm);
+}
+
+// Loading state
+.asms-loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--asms-space-xxl);
+  min-height: 200px;
+}
+
+// Empty state
+.asms-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--asms-space-xxl);
+  color: var(--asms-text-secondary);
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: var(--asms-space-md);
+    opacity: 0.4;
+  }
+
+  p {
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+// Icon colors
+.icon-success {
+  color: var(--asms-success) !important;
+}
+
+.icon-warn {
+  color: var(--asms-warning) !important;
+}
+
+.icon-danger {
+  color: var(--asms-danger) !important;
+}
+
+.icon-disabled {
+  color: var(--asms-text-disabled) !important;
+}
+
+// ============================================================
 // Status chip colors
-.chip-active { background-color: var(--asms-success) !important; color: #000 !important; }
-.chip-inactive { background-color: var(--asms-text-disabled) !important; color: var(--asms-text-primary) !important; }
-.chip-locked { background-color: var(--asms-danger) !important; color: #fff !important; }
-.chip-suspended { background-color: var(--asms-warning) !important; color: #000 !important; }
-.chip-critical { background-color: var(--asms-danger) !important; color: #fff !important; }
-.chip-high { background-color: #ff6d00 !important; color: #fff !important; }
-.chip-medium { background-color: var(--asms-warning) !important; color: #000 !important; }
-.chip-low { background-color: var(--asms-info) !important; color: #000 !important; }
-.chip-open { background-color: var(--asms-warning) !important; color: #000 !important; }
-.chip-acknowledged { background-color: var(--asms-info) !important; color: #000 !important; }
-.chip-resolved { background-color: var(--asms-success) !important; color: #000 !important; }
+// ============================================================
+
+.asms-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--asms-radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  gap: 4px;
+}
+
+.chip-active {
+  background-color: var(--asms-success-bg) !important;
+  color: var(--asms-success) !important;
+}
+
+.chip-inactive {
+  background-color: var(--asms-surface-variant) !important;
+  color: var(--asms-text-secondary) !important;
+}
+
+.chip-locked {
+  background-color: var(--asms-danger-bg) !important;
+  color: var(--asms-locked) !important;
+}
+
+.chip-suspended {
+  background-color: var(--asms-warning-bg) !important;
+  color: var(--asms-warning) !important;
+}
+
+.chip-pending {
+  background-color: var(--asms-pending-bg) !important;
+  color: var(--asms-pending) !important;
+}
+
+.chip-critical {
+  background-color: #fce4ec !important;
+  color: #ad1457 !important;
+}
+
+.chip-high {
+  background-color: #fbe9e7 !important;
+  color: #bf360c !important;
+}
+
+.chip-medium {
+  background-color: var(--asms-warning-bg) !important;
+  color: var(--asms-warning) !important;
+}
+
+.chip-low {
+  background-color: var(--asms-info-bg) !important;
+  color: var(--asms-info) !important;
+}
+
+.chip-open {
+  background-color: var(--asms-warning-bg) !important;
+  color: var(--asms-warning) !important;
+}
+
+.chip-acknowledged {
+  background-color: var(--asms-info-bg) !important;
+  color: var(--asms-info) !important;
+}
+
+.chip-resolved {
+  background-color: var(--asms-success-bg) !important;
+  color: var(--asms-success) !important;
+}
+
+.chip-healthy {
+  background-color: var(--asms-success-bg) !important;
+  color: var(--asms-success) !important;
+}
+
+.chip-warning {
+  background-color: var(--asms-warning-bg) !important;
+  color: var(--asms-warning) !important;
+}
+
+// ============================================================
+// Dialog styles
+// ============================================================
+
+.asms-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--asms-space-sm);
+  padding: var(--asms-space-md) !important;
+}
+
+// ============================================================
+// MFA risk score pill
+// ============================================================
+
+.risk-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 24px;
+  border-radius: var(--asms-radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+
+  &.risk-low { background: var(--asms-success-bg); color: var(--asms-success); }
+  &.risk-medium { background: var(--asms-warning-bg); color: var(--asms-warning); }
+  &.risk-high { background: var(--asms-danger-bg); color: var(--asms-danger); }
+}
+
+// ============================================================
+// Section headings
+// ============================================================
+
+.asms-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--asms-space-sm);
+  padding-bottom: var(--asms-space-sm);
+  border-bottom: 1px solid var(--asms-border);
+}
+
+// ============================================================
+// Day picker chips (station policy form)
+// ============================================================
+
+.day-checkboxes {
+  display: flex;
+  gap: var(--asms-space-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--asms-space-sm);
+}
+
+.day-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  border-radius: var(--asms-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--asms-border);
+  cursor: pointer;
+  background: var(--asms-surface);
+  color: var(--asms-text-secondary);
+  transition: all 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    border-color: var(--asms-primary);
+    color: var(--asms-primary);
+  }
+
+  &--active {
+    background: var(--asms-primary);
+    border-color: var(--asms-primary);
+    color: var(--asms-text-on-primary);
+  }
+}
+
+// ============================================================
+// Utility: delete action in menus
+// ============================================================
+
+.delete-action {
+  color: var(--asms-danger) !important;
+
+  mat-icon {
+    color: var(--asms-danger) !important;
+  }
+}
+
+// ============================================================
+// Dialog form layout utilities (used across all feature dialogs)
+// ============================================================
+
+.dialog-form-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--asms-space-md);
+  padding-top: var(--asms-space-sm);
+}
+
+.dialog-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--asms-space-md);
+
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dialog-section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: var(--asms-space-sm) 0 0;
+  padding-bottom: var(--asms-space-xs);
+  border-bottom: 1px solid var(--asms-border-light);
+}
+
+.dialog-settings-section {
+  background-color: var(--asms-surface-variant);
+  border-radius: var(--asms-radius-md);
+  padding: var(--asms-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--asms-space-sm);
+}
+
+.dialog-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--asms-space-md);
+
+  .toggle-label {
+    display: flex;
+    flex-direction: column;
+
+    .toggle-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--asms-text-primary);
+    }
+
+    .toggle-hint {
+      font-size: 12px;
+      color: var(--asms-text-secondary);
+    }
+  }
+}
+
+.dialog-warning-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--asms-space-sm);
+  background-color: var(--asms-warning-bg);
+  border: 1px solid #ffcc80;
+  border-radius: var(--asms-radius-md);
+  padding: var(--asms-space-sm) var(--asms-space-md);
+  color: var(--asms-warning);
+  font-size: 13px;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================
+// Text utility helpers
+// ============================================================
+
+.text-secondary {
+  color: var(--asms-text-secondary);
+}
+
+.text-sm {
+  font-size: 12px;
+}
+
+.mono-text {
+  font-family: 'Roboto Mono', 'Fira Code', monospace;
+  font-size: 13px;
+}

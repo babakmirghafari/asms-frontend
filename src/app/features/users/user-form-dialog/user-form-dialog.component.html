@@ -1,0 +1,78 @@
+<h2 mat-dialog-title>
+  {{ (data.isEdit ? 'USERS.EDIT' : 'USERS.ADD') | translate }}
+</h2>
+
+<mat-dialog-content style="min-width: 480px;">
+  <form [formGroup]="identityForm" class="dialog-form-col" autocomplete="off">
+
+    <div class="dialog-form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'USERS.FULL_NAME' | translate }}</mat-label>
+        <mat-icon matPrefix>badge</mat-icon>
+        <input matInput formControlName="fullName" [placeholder]="'Sarah Keller'" />
+        @if (identityForm.get('fullName')?.hasError('required')) {
+          <mat-error>Full name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'USERS.USERNAME' | translate }}</mat-label>
+        <mat-icon matPrefix>alternate_email</mat-icon>
+        <input matInput formControlName="username" [placeholder]="'sarah.keller'" [readonly]="data.isEdit" />
+        @if (identityForm.get('username')?.hasError('required')) {
+          <mat-error>Username is required</mat-error>
+        }
+        @if (identityForm.get('username')?.hasError('pattern')) {
+          <mat-error>Lowercase letters, numbers, dots, dashes and underscores only</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'USERS.EMAIL' | translate }}</mat-label>
+      <mat-icon matPrefix>email</mat-icon>
+      <input matInput formControlName="email" type="email" [placeholder]="'sarah.keller@northwind.com'" />
+      @if (identityForm.get('email')?.hasError('required')) {
+        <mat-error>Email is required</mat-error>
+      }
+      @if (identityForm.get('email')?.hasError('email')) {
+        <mat-error>Enter a valid email address</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="dialog-form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'USERS.PHONE' | translate }}</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput formControlName="phoneNumber" type="tel" [placeholder]="'+49 151 2345 1098'" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'USERS.DEPARTMENT' | translate }}</mat-label>
+        <mat-icon matPrefix>corporate_fare</mat-icon>
+        <input matInput formControlName="department" [placeholder]="'Finance'" />
+      </mat-form-field>
+    </div>
+  </form>
+
+  @if (!data.isEdit) {
+    <form [formGroup]="settingsForm" class="dialog-settings-section">
+      <div class="dialog-section-label">{{ 'COMMON.SEND_INVITE' | translate }}</div>
+      <div class="dialog-toggle-row">
+        <div class="dialog-toggle-info">
+          <span class="dialog-toggle-label">{{ 'USERS.TEMP_PASSWORD' | translate }}</span>
+          <span class="dialog-toggle-hint">Send temporary password to user's email</span>
+        </div>
+        <mat-slide-toggle formControlName="sendTempPassword" color="primary" />
+      </div>
+    </form>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="asms-dialog-actions">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="identityForm.invalid || isLoading">
+    @if (isLoading) { <mat-spinner diameter="18" /> }
+    {{ (data.isEdit ? 'COMMON.SAVE' : 'USERS.CONFIRM_CREATE') | translate }}
+  </button>
+</mat-dialog-actions>

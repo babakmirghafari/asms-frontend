@@ -1,32 +1,71 @@
-.search-bar {
-  margin-bottom: var(--asms-space-md);
-  mat-form-field { width: 320px; }
+:host {
+  display: block;
+  height: 100%;
 }
 
-.loading-center {
-  display: flex;
-  justify-content: center;
-  padding: var(--asms-space-xxl);
-}
-
-.table-wrapper {
-  background: var(--asms-surface);
-  border: 1px solid var(--asms-border);
-  border-radius: var(--asms-radius-md);
-  overflow: hidden;
-}
-
-.asms-table {
+.full-width {
   width: 100%;
 }
 
-.empty-state {
+// User name + avatar cell
+.user-cell {
   display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--asms-primary-light);
+  color: var(--asms-primary);
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: var(--asms-space-xl);
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--asms-text-primary);
+  font-size: 14px;
+}
+
+.user-dept {
+  font-size: 12px;
   color: var(--asms-text-secondary);
 }
 
-.icon-success { color: var(--asms-success); }
-.icon-disabled { color: var(--asms-text-disabled); }
-.delete-action { color: var(--asms-danger) !important; }
+.mono-text {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--asms-primary);
+}
+
+.text-secondary {
+  color: var(--asms-text-secondary);
+  font-size: 13px;
+}
+
+.text-sm {
+  font-size: 12px;
+}
+
+.mfa-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.1s ease;
+}

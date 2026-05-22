@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -18,7 +20,8 @@ import { OrganizationsStore } from './organizations.store';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { OrganizationDto } from '@babakmirghafari/asms-api-client';
+import { OrgFormDialogComponent, OrgFormDialogData } from './org-form-dialog/org-form-dialog.component';
+import { OrganizationDto, CreateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
 
 @Component({
   selector: 'asms-organizations',
@@ -26,10 +29,11 @@ import { OrganizationDto } from '@babakmirghafari/asms-api-client';
   styleUrl: './organizations.component.scss',
   standalone: true,
   imports: [
-    DatePipe,
+    DatePipe, DecimalPipe, SlicePipe,
     ReactiveFormsModule,
     MatTableModule, MatButtonModule, MatIconModule, MatMenuModule,
     MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatPaginatorModule,
+    MatDividerModule, MatTooltipModule,
     TranslateModule,
     PageHeaderComponent, StatusChipComponent
   ]
@@ -59,6 +63,41 @@ export class OrganizationsComponent implements OnInit {
     this.store.loadAll(event.pageIndex, event.pageSize);
   }
 
+  openCreateDialog(): void {
+    const data: OrgFormDialogData = { isEdit: false };
+    this.dialog
+      .open(OrgFormDialogComponent, { data, width: '560px', disableClose: true })
+      .afterClosed()
+      .subscribe((dto: CreateOrganizationRequestDto | null) => {
+        if (!dto) return;
+        this.store.create(dto).then(() => {
+          this.snackBar.open(
+            this.translate.instant('ORGANIZATIONS.CREATED_SUCCESS'),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 4000, panelClass: 'snackbar-success' }
+          );
+        });
+      });
+  }
+
+  openEditDialog(org: OrganizationDto): void {
+    const data: OrgFormDialogData = { org, isEdit: true };
+    this.dialog
+      .open(OrgFormDialogComponent, { data, width: '560px', disableClose: true })
+      .afterClosed()
+      .subscribe((dto: CreateOrganizationRequestDto | null) => {
+        if (!dto) return;
+        // Map CreateOrganizationRequestDto to UpdateOrganizationRequestDto
+        this.store.update(org.id, { name: dto.name, description: dto.description }).then(() => {
+          this.snackBar.open(
+            this.translate.instant('ORGANIZATIONS.UPDATED_SUCCESS'),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 4000, panelClass: 'snackbar-success' }
+          );
+        });
+      });
+  }
+
   confirmDelete(org: OrganizationDto): void {
     const data: ConfirmDialogData = {
       titleKey: 'ORGANIZATIONS.DELETE_TITLE',
@@ -67,16 +106,15 @@ export class OrganizationsComponent implements OnInit {
       dangerous: true,
       confirmKey: 'COMMON.DELETE'
     };
-    this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.store.delete(org.id).then(() => {
-          this.snackBar.open(
-            this.translate.instant('ORGANIZATIONS.DELETE') + ' OK',
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000 }
-          );
-        });
-      }
+    this.dialog.open(ConfirmDialogComponent, { data, width: '440px' }).afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.store.delete(org.id).then(() => {
+        this.snackBar.open(
+          this.translate.instant('ORGANIZATIONS.DELETED_SUCCESS'),
+          this.translate.instant('COMMON.CLOSE'),
+          { duration: 4000, panelClass: 'snackbar-success' }
+        );
+      });
     });
   }
 }

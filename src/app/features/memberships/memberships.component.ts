@@ -13,7 +13,11 @@ import { MembershipsStore } from './memberships.store';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MembershipDto } from '@babakmirghafari/asms-api-client';
+import {
+  MembershipFormDialogComponent,
+  MembershipFormDialogData
+} from './membership-form-dialog/membership-form-dialog.component';
+import { MembershipDto, CreateMembershipRequestDto } from '@babakmirghafari/asms-api-client';
 
 @Component({
   selector: 'asms-memberships',
@@ -34,7 +38,7 @@ export class MembershipsComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
 
-  readonly displayedColumns = ['userId', 'username', 'organizationName', 'status', 'createdAt', 'actions'];
+  readonly displayedColumns = ['username', 'organizationName', 'status', 'createdAt', 'actions'];
 
   ngOnInit(): void {
     this.store.loadAll();
@@ -42,6 +46,23 @@ export class MembershipsComponent implements OnInit {
 
   onPage(event: PageEvent): void {
     this.store.loadAll(event.pageIndex, event.pageSize);
+  }
+
+  openCreateDialog(): void {
+    const data: MembershipFormDialogData = {};
+    this.dialog
+      .open(MembershipFormDialogComponent, { data, width: '480px', disableClose: true })
+      .afterClosed()
+      .subscribe((result: CreateMembershipRequestDto | null) => {
+        if (!result) return;
+        this.store.create(result).then(() => {
+          this.snackBar.open(
+            this.translate.instant('MEMBERSHIPS.CREATED_SUCCESS'),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 4000, panelClass: 'snackbar-success' }
+          );
+        });
+      });
   }
 
   confirmDelete(membership: MembershipDto): void {
@@ -55,9 +76,9 @@ export class MembershipsComponent implements OnInit {
       if (confirmed) {
         this.store.delete(membership.id).then(() => {
           this.snackBar.open(
-            this.translate.instant('COMMON.DELETE') + ' OK',
+            this.translate.instant('MEMBERSHIPS.DELETED_SUCCESS'),
             this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000 }
+            { duration: 3000, panelClass: 'snackbar-success' }
           );
         });
       }

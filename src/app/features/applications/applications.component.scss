@@ -1,26 +1,57 @@
-.loading-center {
+.full-width { width: 100%; }
+
+.app-name-cell {
   display: flex;
-  justify-content: center;
-  padding: var(--asms-space-xxl);
+  align-items: center;
+  gap: var(--asms-space-sm);
 }
 
-.table-wrapper {
-  background: var(--asms-surface);
-  border: 1px solid var(--asms-border);
+.app-icon {
+  width: 36px;
+  height: 36px;
   border-radius: var(--asms-radius-md);
-  overflow: hidden;
-}
-
-.asms-table { width: 100%; }
-
-.empty-state {
+  background-color: var(--asms-primary-light);
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: var(--asms-space-xl);
-  color: var(--asms-text-secondary);
+  flex-shrink: 0;
+
+  mat-icon {
+    color: var(--asms-primary);
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
 }
 
-.icon-success { color: var(--asms-success); }
-.icon-disabled { color: var(--asms-text-disabled); }
-.icon-danger { color: var(--asms-danger); }
-.delete-action { color: var(--asms-danger) !important; }
+.app-name {
+  font-weight: 500;
+  color: var(--asms-text-primary);
+}
+
+.connector-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--asms-radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Roboto Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &--oidc {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &--saml {
+    background: #f3e5f5;
+    color: #6a1b9a;
+  }
+
+  &--api_token {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+}

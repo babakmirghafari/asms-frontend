@@ -1,17 +1,20 @@
-// ASMS Material Theme — dark security-focused palette
-// Design source: ASMS ARC42 Confluence — derived from security domain (dark navy/teal)
-// Sync date: 2026-05-21
+// ASMS Material Theme — light enterprise IAM platform
+// Design source: ASMS_Figma_Product_UI_Prompt.md
+// Sync date: 2026-05-22
+// Theme: Light primary, deep indigo/blue primary, teal accent
 
 @use '@angular/material' as mat;
 
 @include mat.core();
 
-// Primary: dark teal/cyan for security dashboard feel
-$asms-primary: mat.m2-define-palette(mat.$m2-cyan-palette, 700, 500, 900);
-$asms-accent: mat.m2-define-palette(mat.$m2-amber-palette, A200, A100, A400);
+// Primary: deep indigo-blue for enterprise IAM
+$asms-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 700, 500, 900);
+// Accent: teal for highlights
+$asms-accent: mat.m2-define-palette(mat.$m2-teal-palette, 600, 400, 800);
+// Warn: red
 $asms-warn: mat.m2-define-palette(mat.$m2-red-palette, 600);
 
-$asms-theme: mat.m2-define-dark-theme((
+$asms-theme: mat.m2-define-light-theme((
   color: (
     primary: $asms-primary,
     accent: $asms-accent,

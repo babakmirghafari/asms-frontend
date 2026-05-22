@@ -1,44 +1,75 @@
-<asms-page-header titleKey="AUTH_POLICIES.TITLE" />
+<div class="asms-page">
+  <asms-page-header titleKey="AUTH_POLICIES.TITLE" />
 
-@if (store.isLoading()) {
-  <div class="loading-center"><mat-spinner diameter="40" /></div>
-} @else {
-  <mat-card class="policy-card">
-    <mat-card-header>
-      <mat-card-title>{{ 'AUTH_POLICIES.EDIT' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="form" class="policy-form">
-        <mat-checkbox formControlName="mfaRequired">
-          {{ 'AUTH_POLICIES.MFA_REQUIRED' | translate }}
-        </mat-checkbox>
+  @if (store.isLoading()) {
+    <div class="asms-loading-center">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else {
+    <mat-card class="policy-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'AUTH_POLICIES.EDIT' | translate }}</mat-card-title>
+        <mat-card-subtitle>{{ 'AUTH_POLICIES.SUBTITLE' | translate }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="form" class="policy-form">
+          <div class="policy-section">
+            <div class="asms-section-title">{{ 'AUTH_POLICIES.PASSWORD_POLICY' | translate }}</div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'AUTH_POLICIES.MAX_FAILED_ATTEMPTS' | translate }}</mat-label>
-          <input matInput type="number" formControlName="maxFailedLoginAttempts" />
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'AUTH_POLICIES.MIN_PASSWORD_LENGTH' | translate }}</mat-label>
+              <mat-icon matPrefix>lock</mat-icon>
+              <input matInput type="number" formControlName="passwordMinLength" min="6" max="64" />
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'AUTH_POLICIES.SESSION_TIMEOUT' | translate }}</mat-label>
-          <input matInput type="number" formControlName="sessionTimeoutMinutes" />
-        </mat-form-field>
+            <div class="policy-checkboxes">
+              <mat-checkbox formControlName="passwordRequiresUppercase">
+                {{ 'AUTH_POLICIES.REQUIRES_UPPERCASE' | translate }}
+              </mat-checkbox>
+              <mat-checkbox formControlName="passwordRequiresNumber">
+                {{ 'AUTH_POLICIES.REQUIRES_NUMBER' | translate }}
+              </mat-checkbox>
+              <mat-checkbox formControlName="passwordRequiresSpecial">
+                {{ 'AUTH_POLICIES.REQUIRES_SPECIAL' | translate }}
+              </mat-checkbox>
+            </div>
+          </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'AUTH_POLICIES.LOCKOUT_DURATION' | translate }}</mat-label>
-          <input matInput type="number" formControlName="passwordMinLength" />
-        </mat-form-field>
+          <div class="policy-section">
+            <div class="asms-section-title">{{ 'AUTH_POLICIES.SESSION_POLICY' | translate }}</div>
 
-        <div class="checkbox-row">
-          <mat-checkbox formControlName="passwordRequiresUppercase">Uppercase required</mat-checkbox>
-          <mat-checkbox formControlName="passwordRequiresNumber">Number required</mat-checkbox>
-          <mat-checkbox formControlName="passwordRequiresSpecial">Special char required</mat-checkbox>
-        </div>
-      </form>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || store.isLoading()">
-        {{ 'COMMON.SAVE' | translate }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
-}
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'AUTH_POLICIES.MAX_FAILED_ATTEMPTS' | translate }}</mat-label>
+              <mat-icon matPrefix>block</mat-icon>
+              <input matInput type="number" formControlName="maxFailedLoginAttempts" min="1" max="20" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'AUTH_POLICIES.SESSION_TIMEOUT' | translate }}</mat-label>
+              <mat-icon matPrefix>timer</mat-icon>
+              <input matInput type="number" formControlName="sessionTimeoutMinutes" min="1" />
+              <mat-hint>{{ 'AUTH_POLICIES.MINUTES_HINT' | translate }}</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="policy-section">
+            <div class="asms-section-title">{{ 'AUTH_POLICIES.MFA_POLICY' | translate }}</div>
+            <div class="dialog-toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-title">{{ 'AUTH_POLICIES.MFA_REQUIRED' | translate }}</span>
+                <span class="toggle-hint">{{ 'AUTH_POLICIES.MFA_REQUIRED_HINT' | translate }}</span>
+              </div>
+              <mat-slide-toggle formControlName="mfaRequired" color="primary" />
+            </div>
+          </div>
+        </form>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || store.isLoading()">
+          @if (store.isLoading()) { <mat-spinner diameter="18" /> }
+          {{ 'COMMON.SAVE' | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div>

@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>{{ 'PERMISSIONS.ADD' | translate }}</h2>
+
+<mat-dialog-content style="min-width: 480px;">
+  <form [formGroup]="form" class="dialog-form-col" autocomplete="off">
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'PERMISSIONS.NAME' | translate }}</mat-label>
+      <mat-icon matPrefix>key</mat-icon>
+      <input matInput formControlName="name" placeholder="corebanking.accounts.read" />
+      <mat-hint>Use format: domain.resource.action (lowercase, dots, dashes)</mat-hint>
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>Permission name is required</mat-error>
+      }
+      @if (form.get('name')?.hasError('pattern')) {
+        <mat-error>Use lowercase letters, dots, dashes (e.g. corebanking.accounts.read)</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'PERMISSIONS.RESOURCE' | translate }}</mat-label>
+      <mat-icon matPrefix>inventory_2</mat-icon>
+      <input matInput formControlName="resource" placeholder="accounts" />
+      @if (form.get('resource')?.hasError('required')) {
+        <mat-error>Resource is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'PERMISSIONS.ACTION_VERB' | translate }}</mat-label>
+      <mat-icon matPrefix>play_arrow</mat-icon>
+      <mat-select formControlName="action">
+        @for (a of actions; track a.value) {
+          <mat-option [value]="a.value">{{ a.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+      <mat-icon matPrefix>description</mat-icon>
+      <textarea matInput formControlName="description" rows="2"
+        placeholder="Describe what this permission grants"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }} (Organization ID)</mat-label>
+      <mat-icon matPrefix>business</mat-icon>
+      <input matInput formControlName="organizationId" placeholder="org-uuid" />
+      @if (form.get('organizationId')?.hasError('required')) {
+        <mat-error>Organization is required</mat-error>
+      }
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="asms-dialog-actions">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
+    @if (isLoading) { <mat-spinner diameter="18" /> }
+    {{ 'PERMISSIONS.ADD' | translate }}
+  </button>
+</mat-dialog-actions>

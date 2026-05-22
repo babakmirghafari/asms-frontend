@@ -1,76 +1,111 @@
-<asms-page-header
-  titleKey="ORGANIZATIONS.TITLE"
-  [showAdd]="true"
-  addLabelKey="ORGANIZATIONS.ADD"
-/>
+<div class="asms-page">
+  <asms-page-header
+    titleKey="ORGANIZATIONS.TITLE"
+    [showAdd]="true"
+    addLabelKey="ORGANIZATIONS.ADD"
+    (addClicked)="openCreateDialog()" />
 
-<div class="search-bar">
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'ORGANIZATIONS.SEARCH_PLACEHOLDER' | translate }}</mat-label>
-    <mat-icon matPrefix>search</mat-icon>
-    <input matInput [formControl]="searchCtrl" />
-  </mat-form-field>
-</div>
-
-@if (store.isLoading()) {
-  <div class="loading-center"><mat-spinner diameter="40" /></div>
-} @else {
-  <div class="table-wrapper">
-    <table mat-table [dataSource]="store.items()" class="asms-table">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>{{ 'ORGANIZATIONS.NAME' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef>{{ 'ORGANIZATIONS.DESCRIPTION' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.description }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>{{ 'ORGANIZATIONS.STATUS' | translate }}</th>
-        <td mat-cell *matCellDef="let row">
-          <asms-status-chip [status]="row.status" />
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.CREATED_AT' | translate }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'short' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
-        <td mat-cell *matCellDef="let row">
-          <button mat-icon-button [matMenuTriggerFor]="actionMenu">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #actionMenu>
-            <button mat-menu-item>
-              <mat-icon>edit</mat-icon>{{ 'COMMON.EDIT' | translate }}
-            </button>
-            <button mat-menu-item (click)="confirmDelete(row)" class="delete-action">
-              <mat-icon>delete</mat-icon>{{ 'COMMON.DELETE' | translate }}
-            </button>
-          </mat-menu>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    @if (store.isEmpty()) {
-      <div class="empty-state">{{ 'COMMON.NO_DATA' | translate }}</div>
-    }
-
-    <mat-paginator
-      [length]="store.totalElements()"
-      [pageSize]="store.pageSize()"
-      [pageIndex]="store.pageIndex()"
-      [pageSizeOptions]="[10, 20, 50]"
-      (page)="onPage($event)"
-      showFirstLastButtons>
-    </mat-paginator>
+  <div class="asms-toolbar-row">
+    <mat-form-field appearance="outline" class="asms-search-field">
+      <mat-label>{{ 'ORGANIZATIONS.SEARCH_PLACEHOLDER' | translate }}</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [formControl]="searchCtrl" />
+    </mat-form-field>
+    <button mat-stroked-button>
+      <mat-icon>filter_list</mat-icon>
+      {{ 'COMMON.FILTER' | translate }}
+    </button>
+    <button mat-stroked-button>
+      <mat-icon>file_download</mat-icon>
+      {{ 'COMMON.EXPORT' | translate }}
+    </button>
   </div>
-}
+
+  @if (store.isLoading()) {
+    <div class="asms-loading-center">
+      <mat-spinner diameter="48" />
+    </div>
+  } @else {
+    <div class="asms-table-wrapper">
+      <table mat-table [dataSource]="store.items()" class="full-width">
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ORGANIZATIONS.NAME' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="org-name-cell">
+              <div class="org-avatar">
+                <mat-icon>business</mat-icon>
+              </div>
+              <div>
+                <div class="org-name">{{ row.name }}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="text-secondary">{{ row.description | slice:0:60 }}{{ (row.description?.length ?? 0) > 60 ? '...' : '' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <asms-status-chip [status]="row.status" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.CREATED_AT' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="text-secondary text-sm">{{ row.createdAt | date: 'dd MMM yyyy' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #actionMenu>
+              <button mat-menu-item (click)="openEditDialog(row)">
+                <mat-icon>edit</mat-icon>
+                <span>{{ 'COMMON.EDIT' | translate }}</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>group_add</mat-icon>
+                <span>{{ 'MEMBERSHIPS.ADD' | translate }}</span>
+              </button>
+              <mat-divider />
+              <button mat-menu-item (click)="confirmDelete(row)" class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>{{ 'COMMON.DELETE' | translate }}</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      @if (store.isEmpty()) {
+        <div class="asms-empty-state">
+          <mat-icon>business</mat-icon>
+          <p>{{ 'COMMON.NO_DATA' | translate }}</p>
+        </div>
+      }
+
+      <mat-paginator
+        [length]="store.totalElements()"
+        [pageSize]="store.pageSize()"
+        [pageIndex]="store.pageIndex()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPage($event)"
+        showFirstLastButtons />
+    </div>
+  }
+</div>

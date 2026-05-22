@@ -1,34 +1,198 @@
 <div [dir]="languageStore.direction()" class="asms-app-root">
   @if (authStore.isAuthenticated()) {
     <mat-sidenav-container class="asms-sidenav-container">
-      <mat-sidenav mode="side" opened class="asms-sidenav">
+
+      <!-- ===== SIDEBAR ===== -->
+      <mat-sidenav
+        mode="side"
+        [opened]="sidebarOpen()"
+        class="asms-sidenav"
+        [style.width]="sidebarOpen() ? 'var(--asms-sidebar-width)' : 'var(--asms-sidebar-collapsed-width)'">
+
+        <!-- Sidebar header: logo + collapse toggle -->
         <div class="asms-sidebar-header">
-          <span class="asms-logo">ASMS</span>
-          <asms-language-switcher />
-        </div>
-        <mat-nav-list>
-          @for (item of navItems; track item.route) {
-            <a mat-list-item [routerLink]="item.route" routerLinkActive="active-nav-item">
-              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-              <span matListItemTitle>{{ item.labelKey | translate }}</span>
-            </a>
+          @if (sidebarOpen()) {
+            <div class="asms-brand">
+              <div class="asms-brand-icon">
+                <mat-icon>security</mat-icon>
+              </div>
+              <div class="asms-brand-text">
+                <span class="asms-logo">ASMS</span>
+                <span class="asms-logo-sub">Security Platform</span>
+              </div>
+            </div>
+          } @else {
+            <div class="asms-brand-icon-only">
+              <mat-icon>security</mat-icon>
+            </div>
           }
-        </mat-nav-list>
-        <div class="asms-sidebar-footer">
-          <button mat-button (click)="logout()" class="asms-logout-btn">
-            <mat-icon>logout</mat-icon>
-            <span>{{ 'AUTH.LOGOUT' | translate }}</span>
+          <button mat-icon-button (click)="toggleSidebar()" class="asms-toggle-btn" [title]="'NAV.TOGGLE' | translate">
+            <mat-icon>{{ sidebarOpen() ? 'chevron_left' : 'chevron_right' }}</mat-icon>
           </button>
         </div>
+
+        <!-- Navigation groups -->
+        <div class="asms-nav-scroll">
+
+          @if (sidebarOpen()) {
+            <div class="asms-nav-section-label">{{ 'NAV.GROUP_OVERVIEW' | translate }}</div>
+          }
+          <nav>
+            @for (item of overviewNavItems; track item.route) {
+              <a class="asms-nav-item"
+                 [routerLink]="item.route"
+                 routerLinkActive="asms-nav-item--active"
+                 [title]="item.labelKey | translate">
+                <mat-icon class="asms-nav-icon">{{ item.icon }}</mat-icon>
+                @if (sidebarOpen()) {
+                  <span class="asms-nav-label">{{ item.labelKey | translate }}</span>
+                }
+              </a>
+            }
+          </nav>
+
+          @if (sidebarOpen()) {
+            <div class="asms-nav-section-label">{{ 'NAV.GROUP_IDENTITY' | translate }}</div>
+          }
+          <nav>
+            @for (item of identityNavItems; track item.route) {
+              <a class="asms-nav-item"
+                 [routerLink]="item.route"
+                 routerLinkActive="asms-nav-item--active"
+                 [title]="item.labelKey | translate">
+                <mat-icon class="asms-nav-icon">{{ item.icon }}</mat-icon>
+                @if (sidebarOpen()) {
+                  <span class="asms-nav-label">{{ item.labelKey | translate }}</span>
+                }
+              </a>
+            }
+          </nav>
+
+          @if (sidebarOpen()) {
+            <div class="asms-nav-section-label">{{ 'NAV.GROUP_ACCESS' | translate }}</div>
+          }
+          <nav>
+            @for (item of accessNavItems; track item.route) {
+              <a class="asms-nav-item"
+                 [routerLink]="item.route"
+                 routerLinkActive="asms-nav-item--active"
+                 [title]="item.labelKey | translate">
+                <mat-icon class="asms-nav-icon">{{ item.icon }}</mat-icon>
+                @if (sidebarOpen()) {
+                  <span class="asms-nav-label">{{ item.labelKey | translate }}</span>
+                }
+              </a>
+            }
+          </nav>
+
+          @if (sidebarOpen()) {
+            <div class="asms-nav-section-label">{{ 'NAV.GROUP_SECURITY' | translate }}</div>
+          }
+          <nav>
+            @for (item of securityNavItems; track item.route) {
+              <a class="asms-nav-item"
+                 [routerLink]="item.route"
+                 routerLinkActive="asms-nav-item--active"
+                 [title]="item.labelKey | translate">
+                <mat-icon class="asms-nav-icon">{{ item.icon }}</mat-icon>
+                @if (sidebarOpen()) {
+                  <span class="asms-nav-label">{{ item.labelKey | translate }}</span>
+                }
+              </a>
+            }
+          </nav>
+
+        </div>
+
+        <!-- Sidebar footer: user profile + logout -->
+        <div class="asms-sidebar-footer">
+          <div class="asms-sidebar-user" [class.collapsed]="!sidebarOpen()">
+            <div class="asms-user-avatar">
+              <mat-icon>account_circle</mat-icon>
+            </div>
+            @if (sidebarOpen()) {
+              <div class="asms-user-info">
+                <span class="asms-user-name">Admin User</span>
+                <span class="asms-user-role">{{ 'NAV.SYSTEM_ADMIN' | translate }}</span>
+              </div>
+              <button mat-icon-button (click)="logout()" class="asms-logout-icon" [title]="'AUTH.LOGOUT' | translate">
+                <mat-icon>logout</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
       </mat-sidenav>
+
+      <!-- ===== MAIN CONTENT ===== -->
       <mat-sidenav-content class="asms-main-content">
-        <mat-toolbar class="asms-topbar">
-          <span class="asms-topbar-title">{{ currentPageTitle() | translate }}</span>
-          <span class="spacer"></span>
-        </mat-toolbar>
+
+        <!-- Top bar -->
+        <div class="asms-topbar">
+          <div class="asms-topbar-left">
+            <span class="asms-topbar-title">{{ currentPageTitle() | translate }}</span>
+          </div>
+
+          <div class="asms-topbar-center">
+            <div class="asms-global-search">
+              <mat-icon class="asms-search-icon">search</mat-icon>
+              <input
+                class="asms-search-input"
+                [placeholder]="'NAV.SEARCH_PLACEHOLDER' | translate"
+                type="text" />
+            </div>
+          </div>
+
+          <div class="asms-topbar-right">
+            <!-- Organization switcher -->
+            <button mat-button class="asms-org-switcher" [matMenuTriggerFor]="orgMenu">
+              <mat-icon>corporate_fare</mat-icon>
+              <span class="asms-org-name">{{ 'NAV.ALL_ORGS' | translate }}</span>
+              <mat-icon class="asms-chevron">expand_more</mat-icon>
+            </button>
+            <mat-menu #orgMenu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>business</mat-icon>Northwind Bank
+              </button>
+              <button mat-menu-item>
+                <mat-icon>business</mat-icon>Globex Europe
+              </button>
+              <button mat-menu-item>
+                <mat-icon>business</mat-icon>Acme Retail
+              </button>
+            </mat-menu>
+
+            <!-- Notifications -->
+            <button mat-icon-button class="asms-topbar-icon-btn" [title]="'NAV.NOTIFICATIONS' | translate">
+              <mat-icon [matBadge]="'3'" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+            </button>
+
+            <!-- Language switcher -->
+            <asms-language-switcher />
+
+            <!-- User profile -->
+            <button mat-icon-button class="asms-topbar-icon-btn" [matMenuTriggerFor]="profileMenu" [title]="'NAV.PROFILE' | translate">
+              <mat-icon>account_circle</mat-icon>
+            </button>
+            <mat-menu #profileMenu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>person</mat-icon>{{ 'NAV.MY_PROFILE' | translate }}
+              </button>
+              <button mat-menu-item>
+                <mat-icon>settings</mat-icon>{{ 'NAV.SETTINGS' | translate }}
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="logout()" class="delete-action">
+                <mat-icon>logout</mat-icon>{{ 'AUTH.LOGOUT' | translate }}
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+
+        <!-- Page content -->
         <div class="asms-content-area">
           <router-outlet />
         </div>
+
       </mat-sidenav-content>
     </mat-sidenav-container>
   } @else {

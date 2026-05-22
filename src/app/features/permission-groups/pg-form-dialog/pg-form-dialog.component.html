@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>
+  {{ (data.isEdit ? 'PERMISSION_GROUPS.EDIT' : 'PERMISSION_GROUPS.ADD') | translate }}
+</h2>
+
+<mat-dialog-content style="min-width: 440px;">
+  <form [formGroup]="form" class="dialog-form-col">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'PERMISSION_GROUPS.NAME' | translate }}</mat-label>
+      <mat-icon matPrefix>admin_panel_settings</mat-icon>
+      <input matInput formControlName="name" [placeholder]="'e.g. Finance Approver'" />
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>Group name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+      <mat-icon matPrefix>description</mat-icon>
+      <textarea matInput formControlName="description" rows="3"
+        [placeholder]="'Describe the permissions and purpose of this group'"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'PERMISSION_GROUPS.RISK_LEVEL' | translate }}</mat-label>
+      <mat-icon matPrefix>warning</mat-icon>
+      <mat-select formControlName="riskLevel">
+        @for (opt of riskOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.labelKey | translate }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (isHighRisk) {
+      <div class="dialog-warning-banner">
+        <mat-icon>warning</mat-icon>
+        <span>{{ 'PERMISSION_GROUPS.HIGH_PRIVILEGE_WARNING' | translate }}</span>
+      </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="asms-dialog-actions">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
+    @if (isLoading) { <mat-spinner diameter="18" /> }
+    {{ (data.isEdit ? 'COMMON.SAVE' : 'PERMISSION_GROUPS.ADD') | translate }}
+  </button>
+</mat-dialog-actions>

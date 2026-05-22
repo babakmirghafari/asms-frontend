@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>
+  {{ (data.isEdit ? 'APPLICATIONS.EDIT' : 'APPLICATIONS.ADD') | translate }}
+</h2>
+
+<mat-dialog-content style="min-width: 480px;">
+  <form [formGroup]="form" class="dialog-form-col" autocomplete="off">
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'APPLICATIONS.NAME' | translate }}</mat-label>
+      <mat-icon matPrefix>apps</mat-icon>
+      <input matInput formControlName="name" placeholder="Legacy Core Banking" />
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>{{ 'APPLICATIONS.NAME' | translate }} is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+      <mat-icon matPrefix>description</mat-icon>
+      <textarea matInput formControlName="description" rows="2"
+        placeholder="Describe the application and its integration purpose"></textarea>
+    </mat-form-field>
+
+    @if (!data.isEdit) {
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'APPLICATIONS.CONNECTOR_TYPE' | translate }}</mat-label>
+        <mat-icon matPrefix>cable</mat-icon>
+        <mat-select formControlName="connectorType">
+          @for (ct of connectorTypes; track ct.value) {
+            <mat-option [value]="ct.value">{{ ct.label }}</mat-option>
+          }
+        </mat-select>
+        @if (form.get('connectorType')?.hasError('required')) {
+          <mat-error>Connector type is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'APPLICATIONS.OWNER' | translate }} (Organization ID)</mat-label>
+        <mat-icon matPrefix>business</mat-icon>
+        <input matInput formControlName="organizationId" placeholder="org-uuid" />
+        @if (form.get('organizationId')?.hasError('required')) {
+          <mat-error>Organization is required</mat-error>
+        }
+      </mat-form-field>
+
+      @if (form.get('connectorType')?.value === 'OIDC') {
+        <mat-form-field appearance="outline">
+          <mat-label>Redirect URIs (one per line)</mat-label>
+          <mat-icon matPrefix>link</mat-icon>
+          <textarea matInput formControlName="redirectUris" rows="3"
+            placeholder="https://app.example.com/callback"></textarea>
+          <mat-hint>Enter one redirect URI per line</mat-hint>
+        </mat-form-field>
+      }
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="asms-dialog-actions">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
+    @if (isLoading) { <mat-spinner diameter="18" /> }
+    {{ (data.isEdit ? 'COMMON.SAVE' : 'APPLICATIONS.ADD') | translate }}
+  </button>
+</mat-dialog-actions>
