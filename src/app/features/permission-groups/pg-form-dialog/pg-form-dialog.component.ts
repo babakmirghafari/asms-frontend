@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
+import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
 import { PermissionGroupDto, CreatePermissionGroupRequestDto } from '@babakmirghafari/asms-api-client';
 import { AuthStore } from '../../../core/store/auth.store';
 
@@ -22,14 +23,14 @@ export interface PgFormDialogData {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    TranslateModule
+    TranslateModule,
+    AsmsModalComponent
   ]
 })
 export class PgFormDialogComponent {

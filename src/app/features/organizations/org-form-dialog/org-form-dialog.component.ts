@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslateModule } from '@ngx-translate/core';
 import { OrganizationDto, CreateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
+import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
 
 export interface OrgFormDialogData {
   org?: OrganizationDto;
@@ -29,7 +30,6 @@ const AVATAR_COLORS = ['#3f51b5', '#009688', '#f57c00', '#7b1fa2', '#c62828', '#
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatFormFieldModule,
@@ -40,7 +40,8 @@ const AVATAR_COLORS = ['#3f51b5', '#009688', '#f57c00', '#7b1fa2', '#c62828', '#
     MatProgressSpinnerModule,
     MatExpansionModule,
     MatDividerModule,
-    TranslateModule
+    TranslateModule,
+    AsmsModalComponent
   ]
 })
 export class OrgFormDialogComponent {

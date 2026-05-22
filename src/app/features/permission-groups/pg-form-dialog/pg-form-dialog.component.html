@@ -1,9 +1,16 @@
-<h2 mat-dialog-title>
-  {{ (data.isEdit ? 'PERMISSION_GROUPS.EDIT' : 'PERMISSION_GROUPS.ADD') | translate }}
-</h2>
+<asms-modal
+  [title]="data.isEdit ? 'PERMISSION_GROUPS.EDIT' : 'PERMISSION_GROUPS.ADD'"
+  [steps]="[]"
+  [canProceed]="form.valid"
+  [isLoading]="isLoading"
+  [isFirstStep]="true"
+  [isLastStep]="true"
+  [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'PERMISSION_GROUPS.ADD'"
+  (cancelled)="cancel()"
+  (submitted)="submit()">
 
-<mat-dialog-content style="min-width: 440px;">
   <form [formGroup]="form" class="dialog-form-col">
+
     <mat-form-field appearance="outline">
       <mat-label>{{ 'PERMISSION_GROUPS.NAME' | translate }}</mat-label>
       <mat-icon matPrefix>admin_panel_settings</mat-icon>
@@ -36,13 +43,7 @@
         <span>{{ 'PERMISSION_GROUPS.HIGH_PRIVILEGE_WARNING' | translate }}</span>
       </div>
     }
-  </form>
-</mat-dialog-content>
 
-<mat-dialog-actions align="end" class="asms-dialog-actions">
-  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
-    @if (isLoading) { <mat-spinner diameter="18" /> }
-    {{ (data.isEdit ? 'COMMON.SAVE' : 'PERMISSION_GROUPS.ADD') | translate }}
-  </button>
-</mat-dialog-actions>
+  </form>
+
+</asms-modal>

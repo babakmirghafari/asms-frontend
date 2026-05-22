@@ -1,19 +1,24 @@
-<!-- Dialog header with colored org avatar -->
-<div class="org-dialog-header">
-  <div class="org-dialog-avatar" [style.background]="avatarColor">
-    <span class="org-dialog-avatar-letter">{{ nameInitial }}</span>
-  </div>
-  <div class="org-dialog-header-text">
-    <h2 mat-dialog-title class="org-dialog-title">
-      {{ (data.isEdit ? 'ORGANIZATIONS.EDIT' : 'ORGANIZATIONS.ADD') | translate }}
-    </h2>
+<asms-modal
+  [title]="data.isEdit ? 'ORGANIZATIONS.EDIT' : 'ORGANIZATIONS.ADD'"
+  [steps]="[]"
+  [canProceed]="form.valid"
+  [isLoading]="isLoading"
+  [isFirstStep]="true"
+  [isLastStep]="true"
+  [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.ADD'"
+  (cancelled)="cancel()"
+  (submitted)="submit()">
+
+  <!-- Org avatar header inside content slot -->
+  <div class="org-dialog-avatar-row">
+    <div class="org-dialog-avatar" [style.background]="avatarColor">
+      <span class="org-dialog-avatar-letter">{{ nameInitial }}</span>
+    </div>
     @if (form.get('name')?.value) {
       <p class="org-dialog-subtitle">{{ form.get('name')?.value }}</p>
     }
   </div>
-</div>
 
-<mat-dialog-content class="org-dialog-content">
   <form [formGroup]="form" autocomplete="off">
 
     <!-- Two-column main fields -->
@@ -150,12 +155,5 @@
     </mat-expansion-panel>
 
   </form>
-</mat-dialog-content>
 
-<mat-dialog-actions align="end" class="asms-dialog-actions">
-  <button mat-stroked-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-raised-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
-    @if (isLoading) { <mat-spinner diameter="18" /> }
-    {{ (data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.ADD') | translate }}
-  </button>
-</mat-dialog-actions>
+</asms-modal>

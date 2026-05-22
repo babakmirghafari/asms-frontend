@@ -1,10 +1,11 @@
 // Org form dialog styles
 
-.org-dialog-header {
+// Avatar row inside asms-modal content
+.org-dialog-avatar-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px 24px 0;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .org-dialog-avatar {

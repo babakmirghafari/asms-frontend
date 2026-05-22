@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
+import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
 import { CreatePermissionRequestDto } from '@babakmirghafari/asms-api-client';
 
 export interface PermissionFormDialogData {
@@ -20,14 +21,14 @@ export interface PermissionFormDialogData {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatSelectModule,
     MatProgressSpinnerModule,
-    TranslateModule
+    TranslateModule,
+    AsmsModalComponent
   ]
 })
 export class PermissionFormDialogComponent {

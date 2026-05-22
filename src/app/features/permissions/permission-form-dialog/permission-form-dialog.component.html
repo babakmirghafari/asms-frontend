@@ -1,6 +1,14 @@
-<h2 mat-dialog-title>{{ 'PERMISSIONS.ADD' | translate }}</h2>
+<asms-modal
+  [title]="'PERMISSIONS.ADD'"
+  [steps]="[]"
+  [canProceed]="form.valid"
+  [isLoading]="isLoading"
+  [isFirstStep]="true"
+  [isLastStep]="true"
+  [submitLabel]="'PERMISSIONS.ADD'"
+  (cancelled)="cancel()"
+  (submitted)="submit()">
 
-<mat-dialog-content style="min-width: 480px;">
   <form [formGroup]="form" class="dialog-form-col" autocomplete="off">
 
     <mat-form-field appearance="outline">
@@ -52,12 +60,5 @@
     </mat-form-field>
 
   </form>
-</mat-dialog-content>
 
-<mat-dialog-actions align="end" class="asms-dialog-actions">
-  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-flat-button color="primary" (click)="submit()" [disabled]="form.invalid || isLoading">
-    @if (isLoading) { <mat-spinner diameter="18" /> }
-    {{ 'PERMISSIONS.ADD' | translate }}
-  </button>
-</mat-dialog-actions>
+</asms-modal>
