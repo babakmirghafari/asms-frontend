@@ -458,6 +458,12 @@ body {
 .user-dialog-content {
   min-width: min(560px, 95vw);
   padding: var(--asms-space-md) var(--asms-space-lg) !important;
+
+  @media (max-width: 600px) {
+    min-width: unset;
+    width: 100%;
+    padding: var(--asms-space-sm) var(--asms-space-md) !important;
+  }
 }
 
 .user-wizard-content {
@@ -465,6 +471,10 @@ body {
   max-height: 75vh !important;
   padding: 0 var(--asms-space-lg) var(--asms-space-md) !important;
   overflow-y: auto;
+
+  @media (max-width: 600px) {
+    padding: 0 var(--asms-space-sm) var(--asms-space-sm) !important;
+  }
 }
 
 .wizard-dialog-title {
@@ -1044,7 +1054,7 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: var(--asms-space-md);
 
-  @media (max-width: 540px) {
+  @media (max-width: 640px) {
     grid-template-columns: 1fr;
   }
 }
@@ -1138,6 +1148,49 @@ body {
 }
 
 // ============================================================
+// Global dialog responsive overrides
+// ============================================================
+
+@media (max-width: 600px) {
+  // Force all dialogs to near-full-width
+  .cdk-overlay-pane {
+    max-width: 95vw !important;
+    width: 95vw !important;
+  }
+
+  // Reduce mat-dialog-content padding
+  .mat-mdc-dialog-content {
+    padding: 12px 16px !important;
+  }
+
+  // Reduce mat-dialog-actions padding
+  .mat-mdc-dialog-actions {
+    padding: 8px 16px !important;
+  }
+
+  // Org form dialog two-col header area
+  .org-dialog-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  // Station policy day chips — smaller on mobile
+  .day-chip {
+    width: 34px;
+    height: 30px;
+    font-size: 11px;
+  }
+
+  // asms-dialog-actions — stack on mobile
+  .asms-dialog-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    button { width: 100%; }
+  }
+}
+
+// ============================================================
 // Text utility helpers
 // ============================================================
 
@@ -1183,6 +1236,11 @@ body {
   .wizard-close-btn {
     color: var(--asms-text-secondary);
   }
+
+  @media (max-width: 600px) {
+    padding: 14px 16px 0;
+    .wizard-dialog-title { font-size: 16px; }
+  }
 }
 
 // Custom step indicator row
@@ -1194,9 +1252,20 @@ body {
   flex-shrink: 0;
   scrollbar-width: none;
 
-  &::-webkit-scrollbar {
-    display: none;
+  &::-webkit-scrollbar { display: none; }
+
+  @media (max-width: 600px) {
+    padding: 12px 16px 10px;
   }
+}
+
+// Compact step circles on mobile — hide labels, shrink circles
+@media (max-width: 600px) {
+  .wsi-label { display: none; }
+  .wsi-circle { width: 28px; height: 28px; }
+  .wsi-circle .wsi-step-icon,
+  .wsi-circle .wsi-check-icon { font-size: 14px; height: 14px; width: 14px; }
+  .wsi-connector { margin-bottom: 0; }
 }
 
 .wsi-step {
@@ -1286,6 +1355,11 @@ body {
   border-top: 1px solid var(--asms-border);
   flex-shrink: 0;
   gap: 12px;
+
+  @media (max-width: 600px) {
+    padding: 12px 16px;
+    .wizard-step-counter { font-size: 12px; }
+  }
 }
 
 .wizard-cancel-btn {
@@ -1331,7 +1405,7 @@ body {
   gap: 16px;
   margin-bottom: 16px;
 
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     grid-template-columns: 1fr;
   }
 }
