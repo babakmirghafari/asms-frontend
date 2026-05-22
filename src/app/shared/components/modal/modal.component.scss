@@ -1,0 +1,200 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.asms-modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  background: #fff;
+  border-radius: 12px;
+}
+
+// ── Header ──────────────────────────────────────────────────
+.asms-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+  flex-shrink: 0;
+}
+
+.asms-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.asms-modal-close {
+  color: #9CA3AF;
+  flex-shrink: 0;
+}
+
+// ── Step indicator ───────────────────────────────────────────
+.asms-modal-steps {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px 4px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.asms-modal-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.asms-modal-step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F3F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+
+  .asms-modal-step-icon,
+  .asms-modal-step-check {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    color: #9CA3AF;
+  }
+
+  .asms-modal-step--active & {
+    background: #F97316;
+
+    .asms-modal-step-icon { color: #fff; }
+  }
+
+  .asms-modal-step--done & {
+    background: #D1FAE5;
+
+    .asms-modal-step-check { color: #059669; }
+  }
+}
+
+.asms-modal-step-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9CA3AF;
+  white-space: nowrap;
+  text-align: center;
+
+  .asms-modal-step--active & { color: #F97316; font-weight: 600; }
+  .asms-modal-step--done &   { color: #374151; }
+}
+
+.asms-modal-connector {
+  flex: 1;
+  height: 1px;
+  background: #E5E7EB;
+  margin: 0 4px 18px;
+
+  &--done { background: #F97316; }
+}
+
+// ── Content ──────────────────────────────────────────────────
+.asms-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  max-height: 65vh;
+
+  @media (max-width: 600px) {
+    padding: 12px 16px;
+    max-height: 60vh;
+  }
+}
+
+// ── Footer ───────────────────────────────────────────────────
+.asms-modal-footer {
+  display: flex;
+  align-items: center;
+  padding: 14px 24px;
+  border-top: 1px solid #F3F4F6;
+  gap: 8px;
+  flex-shrink: 0;
+  position: relative;
+
+  @media (max-width: 600px) { padding: 10px 16px; }
+}
+
+.asms-modal-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+.asms-modal-step-counter {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: #6B7280;
+  pointer-events: none;
+
+  @media (max-width: 600px) { display: none; }
+}
+
+:host-context([dir="rtl"]) .asms-modal-step-counter {
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.asms-modal-cancel-btn {
+  color: #6B7280 !important;
+}
+
+.asms-modal-back-btn {
+  border-color: #E5E7EB !important;
+  color: #374151 !important;
+  border-radius: 10px !important;
+}
+
+.asms-modal-next-btn,
+.asms-modal-submit-btn {
+  background: linear-gradient(135deg, #F97316, #EA580C) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3) !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon { font-size: 18px; height: 18px; width: 18px; }
+  mat-spinner { --mdc-circular-progress-active-indicator-color: #fff; }
+}
+
+// Mobile: hide step labels, shrink circles
+@media (max-width: 600px) {
+  .asms-modal-step-label { display: none; }
+  .asms-modal-step-circle { width: 28px; height: 28px; }
+
+  .asms-modal-step-circle .asms-modal-step-icon,
+  .asms-modal-step-circle .asms-modal-step-check {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+  }
+
+  .asms-modal-connector { margin-bottom: 0; }
+}

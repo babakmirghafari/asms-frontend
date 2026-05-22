@@ -1,0 +1,84 @@
+<div class="asms-modal-wrapper">
+
+  <!-- Header -->
+  <div class="asms-modal-header">
+    <h2 class="asms-modal-title">{{ title | translate }}</h2>
+    <button mat-icon-button class="asms-modal-close" type="button" (click)="cancelled.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Step indicator (only when steps provided) -->
+  @if (steps.length > 0) {
+    <div class="asms-modal-steps">
+      @for (step of steps; track step.icon; let i = $index) {
+        <!-- Connector before each step except the first -->
+        @if (i > 0) {
+          <div class="asms-modal-connector" [class.asms-modal-connector--done]="i <= currentStep"></div>
+        }
+        <div class="asms-modal-step"
+             [class.asms-modal-step--active]="i === currentStep"
+             [class.asms-modal-step--done]="i < currentStep">
+          <div class="asms-modal-step-circle">
+            @if (i < currentStep) {
+              <mat-icon class="asms-modal-step-check">check</mat-icon>
+            } @else {
+              <mat-icon class="asms-modal-step-icon">{{ step.icon }}</mat-icon>
+            }
+          </div>
+          <span class="asms-modal-step-label">{{ step.label | translate }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Content slot -->
+  <div class="asms-modal-content">
+    <ng-content />
+  </div>
+
+  <!-- Footer -->
+  <div class="asms-modal-footer">
+    <button mat-button type="button" class="asms-modal-cancel-btn" (click)="cancelled.emit()">
+      {{ 'COMMON.CANCEL' | translate }}
+    </button>
+
+    <div class="asms-modal-footer-right">
+      @if (steps.length > 0 && !isFirstStep) {
+        <button mat-stroked-button type="button" class="asms-modal-back-btn" (click)="backed.emit()">
+          <mat-icon>arrow_back</mat-icon>
+          {{ 'COMMON.BACK' | translate }}
+        </button>
+      }
+
+      @if (!isLastStep && steps.length > 0) {
+        <button mat-raised-button type="button" class="asms-modal-next-btn"
+                [disabled]="!canProceed || isLoading"
+                (click)="nexted.emit()">
+          @if (isLoading) {
+            <mat-spinner diameter="18" />
+          } @else {
+            <ng-container>{{ 'COMMON.NEXT' | translate }} <mat-icon iconPositionEnd>arrow_forward</mat-icon></ng-container>
+          }
+        </button>
+      } @else {
+        <button mat-raised-button type="button" class="asms-modal-submit-btn"
+                [disabled]="!canProceed || isLoading"
+                (click)="submitted.emit()">
+          @if (isLoading) {
+            <mat-spinner diameter="18" />
+          } @else {
+            {{ submitLabel | translate }}
+          }
+        </button>
+      }
+    </div>
+
+    @if (steps.length > 0) {
+      <span class="asms-modal-step-counter">
+        {{ 'COMMON.STEP' | translate }} {{ currentStep + 1 }} {{ 'COMMON.OF' | translate }} {{ steps.length }}
+      </span>
+    }
+  </div>
+
+</div>
