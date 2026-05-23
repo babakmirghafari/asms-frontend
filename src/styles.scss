@@ -1,22 +1,22 @@
 // ASMS Global Styles — light enterprise IAM platform
 // Design source: ASMS_Figma_Product_UI_Prompt.md
-// Theme: Light theme, deep indigo primary, teal accent
-// Sync date: 2026-05-22
+// Theme: Light orange primary — matches login page
+// Sync date: 2026-05-23
 
 @use './styles/theme' as *;
 
 // CSS custom properties — DESIGN_SYSTEM tokens
 :root {
-  // Backgrounds
-  --asms-bg: #f5f6fa;
+  // Backgrounds — warm light tint matches orange brand
+  --asms-bg: #fff8f5;
   --asms-surface: #ffffff;
-  --asms-surface-variant: #f0f2f5;
-  --asms-surface-hover: #e8eaf6;
+  --asms-surface-variant: #fff3ec;
+  --asms-surface-hover: #ffe8d6;
 
-  // Sidebar — dark navy for enterprise security feel
-  --asms-sidebar: #1a237e;
-  --asms-sidebar-hover: #283593;
-  --asms-sidebar-active: #3949ab;
+  // Sidebar — dark warm (matches login right panel feel)
+  --asms-sidebar: #1c1007;
+  --asms-sidebar-hover: #2d1a08;
+  --asms-sidebar-active: #F97316;
   --asms-sidebar-text: rgba(255, 255, 255, 0.87);
   --asms-sidebar-text-secondary: rgba(255, 255, 255, 0.54);
   --asms-sidebar-icon: rgba(255, 255, 255, 0.7);
@@ -25,33 +25,33 @@
   --asms-topbar: #ffffff;
 
   // Borders
-  --asms-border: #e0e0e0;
-  --asms-border-light: #f0f0f0;
+  --asms-border: #ffe0cc;
+  --asms-border-light: #fff3ec;
 
-  // Brand colors
-  --asms-primary: #3f51b5;
-  --asms-primary-dark: #1a237e;
-  --asms-primary-hover: #303f9f;
-  --asms-primary-light: #e8eaf6;
-  --asms-accent: #009688;
-  --asms-accent-hover: #00796b;
+  // Brand colors — orange, matching login CTA exactly
+  --asms-primary: #F97316;
+  --asms-primary-dark: #EA580C;
+  --asms-primary-hover: #C2410C;
+  --asms-primary-light: #fff7ed;
+  --asms-accent: #F59E0B;
+  --asms-accent-hover: #D97706;
 
   // Semantic colors
   --asms-success: #2e7d32;
   --asms-success-bg: #e8f5e9;
-  --asms-warning: #f57c00;
-  --asms-warning-bg: #fff3e0;
+  --asms-warning: #D97706;
+  --asms-warning-bg: #fffbeb;
   --asms-danger: #c62828;
   --asms-danger-bg: #ffebee;
   --asms-info: #1565c0;
   --asms-info-bg: #e3f2fd;
   --asms-locked: #b71c1c;
-  --asms-pending: #e65100;
-  --asms-pending-bg: #fff3e0;
+  --asms-pending: #EA580C;
+  --asms-pending-bg: #fff7ed;
 
   // Text
   --asms-text-primary: #1a1a2e;
-  --asms-text-secondary: #546e7a;
+  --asms-text-secondary: #6B7280;
   --asms-text-disabled: #9e9e9e;
   --asms-text-on-primary: #ffffff;
   --asms-text-on-dark: rgba(255, 255, 255, 0.87);
