@@ -98,6 +98,29 @@
 }
 .mat-mdc-icon-button { border-radius: 50% !important; }
 
+// Primary raised buttons — orange gradient matching the Sign In button
+.mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(135deg, #F97316, #EA580C) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35) !important;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #EA580C, #C2410C) !important;
+    box-shadow: 0 6px 18px rgba(249, 115, 22, 0.45) !important;
+  }
+
+  &:disabled {
+    background: #E5E7EB !important;
+    color: #9CA3AF !important;
+    box-shadow: none !important;
+  }
+
+  .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: #ffffff;
+  }
+}
+
 // Rounder chips
 .mat-mdc-chip { border-radius: 8px !important; }
 
