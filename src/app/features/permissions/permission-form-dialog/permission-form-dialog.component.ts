@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
 import { CreatePermissionRequestDto } from '@babakmirghafari/asms-api-client';
+import { OrganizationsStore } from '../../organizations/organizations.store';
 
 export interface PermissionFormDialogData {
   organizationId?: string;
@@ -31,12 +32,20 @@ export interface PermissionFormDialogData {
     AsmsModalComponent
   ]
 })
-export class PermissionFormDialogComponent {
+export class PermissionFormDialogComponent implements OnInit {
   readonly data: PermissionFormDialogData = inject(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<PermissionFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
+  private readonly orgsStore = inject(OrganizationsStore);
+
+  readonly availableOrgs = computed(() => this.orgsStore.items());
+  readonly orgsLoading   = computed(() => this.orgsStore.loading());
 
   isLoading = false;
+
+  ngOnInit(): void {
+    this.orgsStore.loadAll(0, 100);
+  }
 
   readonly actions = [
     { value: 'READ', label: 'READ — View and list resources' },

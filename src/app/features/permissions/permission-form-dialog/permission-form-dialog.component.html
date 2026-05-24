@@ -51,10 +51,18 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }} (Organization ID)</mat-label>
+      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }}</mat-label>
       <mat-icon matPrefix>business</mat-icon>
-      <input matInput formControlName="organizationId" placeholder="org-uuid" />
-      @if (form.get('organizationId')?.hasError('required')) {
+      <mat-select formControlName="organizationId">
+        @if (orgsLoading()) {
+          <mat-option [value]="null" disabled>Loading organizations…</mat-option>
+        } @else {
+          @for (org of availableOrgs(); track org.id) {
+            <mat-option [value]="org.id">{{ org.name }}</mat-option>
+          }
+        }
+      </mat-select>
+      @if (form.get('organizationId')?.hasError('required') && form.get('organizationId')?.touched) {
         <mat-error>Organization is required</mat-error>
       }
     </mat-form-field>
