@@ -14,6 +14,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { LanguageStore } from './core/store/language.store';
 import { AuthStore } from './core/store/auth.store';
+import { AuthFeatureStore } from './features/auth/auth.store';
 import { LanguageSwitcherComponent } from './shared/components/language-switcher/language-switcher.component';
 
 interface NavItem {
@@ -46,6 +47,7 @@ interface NavItem {
 export class AppComponent implements OnInit {
   protected readonly languageStore = inject(LanguageStore);
   protected readonly authStore = inject(AuthStore);
+  private readonly authFeatureStore = inject(AuthFeatureStore);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
 
@@ -122,5 +124,6 @@ export class AppComponent implements OnInit {
 
   logout(): void {
     this.authStore.clearToken();
+    this.authFeatureStore.resetToLogin();
   }
 }

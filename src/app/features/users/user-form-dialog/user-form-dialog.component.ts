@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,8 +14,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { UserDto, CreateUserRequestDto, UpdateUserRequestDto } from '@babakmirghafari/asms-api-client';
+import { UserDto, CreateUserRequestDto, UpdateUserRequestDto, OrganizationDto, PermissionDto } from '@babakmirghafari/asms-api-client';
 import { AsmsModalComponent, ModalStep } from '../../../shared/components/modal/modal.component';
+import { OrganizationsStore } from '../../organizations/organizations.store';
+import { PermissionsStore } from '../../permissions/permissions.store';
 
 export interface UserFormDialogData {
   user?: UserDto;
@@ -47,10 +49,12 @@ export type UserFormResult = CreateUserRequestDto | UpdateUserRequestDto;
     AsmsModalComponent
   ]
 })
-export class UserFormDialogComponent {
+export class UserFormDialogComponent implements OnInit {
   readonly data: UserFormDialogData = inject(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<UserFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
+  private readonly orgsStore = inject(OrganizationsStore);
+  private readonly permissionsStore = inject(PermissionsStore);
 
   isLoading = false;
 
@@ -77,7 +81,7 @@ export class UserFormDialogComponent {
     switch (this.currentStep()) {
       case 0: return this.identityForm.valid;
       case 1: return this.passwordForm.valid;
-      default: return true;   // optional steps — always allow proceeding
+      default: return true;
     }
   });
 
@@ -112,14 +116,11 @@ export class UserFormDialogComponent {
   });
 
   // ──────────────────────────────────────────
-  // Step 3 — Organization assignment
+  // Step 3 — Organization assignment (real data)
   // ──────────────────────────────────────────
 
-  readonly sampleOrgs = [
-    { id: 'org-northwind', name: 'Northwind Bank', members: 1284, color: '#3f51b5' },
-    { id: 'org-globex',    name: 'Globex Europe',  members: 642,  color: '#009688' },
-    { id: 'org-acme',      name: 'Acme Retail',    members: 328,  color: '#f57c00' }
-  ];
+  readonly availableOrgs = computed(() => this.orgsStore.items());
+  readonly orgsLoading   = computed(() => this.orgsStore.loading());
 
   selectedOrgIds: string[] = [];
   primaryOrgId: string | null = null;
@@ -141,77 +142,48 @@ export class UserFormDialogComponent {
       if (!this.primaryOrgId) this.primaryOrgId = orgId;
     }
     this.showOrgSelectionAfterLogin = this.selectedOrgIds.length >= 2;
+    // Reload permissions for newly selected orgs and clear current permission selection
+    this.permissionsStore.loadByOrganizationIds(this.selectedOrgIds);
+    this.selectedDirectPermissions = [];
   }
 
   getOrgName(orgId: string): string {
-    return this.sampleOrgs.find(o => o.id === orgId)?.name ?? orgId;
+    return this.availableOrgs().find(o => o.id === orgId)?.name ?? orgId;
+  }
+
+  getOrgMemberCount(orgId: string): number {
+    return this.availableOrgs().find(o => o.id === orgId)?.memberCount ?? 0;
   }
 
   // ──────────────────────────────────────────
-  // Step 4 — Permission assignment
+  // Step 4 — Permission assignment (real data)
   // ──────────────────────────────────────────
 
-  readonly permissionGroups = [
-    { id: 'pg-finance',  name: 'Finance Approver' },
-    { id: 'pg-audit',    name: 'Audit Viewer' },
-    { id: 'pg-security', name: 'Security Admin' },
-    { id: 'pg-branch',   name: 'Branch Operator' },
-    { id: 'pg-appowner', name: 'Application Owner' }
-  ];
+  readonly availablePermissions = computed(() => this.permissionsStore.orgFilteredItems());
+  readonly permissionsLoading   = computed(() => this.permissionsStore.loading());
 
-  readonly availablePermissions = [
-    'corebanking.accounts.read',
-    'corebanking.accounts.approve',
-    'corebanking.payments.manage',
-    'claims.case.read',
-    'claims.case.update',
-    'iam.users.manage',
-    'iam.permissions.import'
-  ];
-
-  selectedGroupIds: string[] = [];
-  selectedDirectPermissions: string[] = [];
+  selectedDirectPermissions: PermissionDto[] = [];
   directPermissionToAdd: string | null = null;
 
-  isGroupSelected(groupId: string): boolean {
-    return this.selectedGroupIds.includes(groupId);
-  }
-
-  toggleGroup(groupId: string): void {
-    const idx = this.selectedGroupIds.indexOf(groupId);
-    if (idx >= 0) {
-      this.selectedGroupIds = this.selectedGroupIds.filter(id => id !== groupId);
-    } else {
-      this.selectedGroupIds = [...this.selectedGroupIds, groupId];
-    }
-  }
-
-  getGroupName(groupId: string): string {
-    return this.permissionGroups.find(g => g.id === groupId)?.name ?? groupId;
-  }
-
-  addDirectPermission(perm: string | null): void {
-    if (!perm) return;
-    if (!this.selectedDirectPermissions.includes(perm)) {
+  addDirectPermission(permId: string | null): void {
+    if (!permId) return;
+    const perm = this.availablePermissions().find(p => p.id === permId);
+    if (perm && !this.selectedDirectPermissions.some(p => p.id === permId)) {
       this.selectedDirectPermissions = [...this.selectedDirectPermissions, perm];
     }
     setTimeout(() => { this.directPermissionToAdd = null; }, 50);
   }
 
-  removeDirectPermission(perm: string): void {
-    this.selectedDirectPermissions = this.selectedDirectPermissions.filter(p => p !== perm);
+  removeDirectPermission(permId: string): void {
+    this.selectedDirectPermissions = this.selectedDirectPermissions.filter(p => p.id !== permId);
   }
 
-  isSensitivePermission(perm: string): boolean {
-    return perm.endsWith('.manage') || perm.endsWith('.approve');
+  isSensitivePermission(perm: PermissionDto): boolean {
+    return perm.action === 'ADMIN' || perm.action === 'DELETE';
   }
 
   hasSensitivePermissions(): boolean {
     return this.selectedDirectPermissions.some(p => this.isSensitivePermission(p));
-  }
-
-  get effectivePermissions(): string[] {
-    return [...new Set([...this.selectedDirectPermissions])];
   }
 
   // ──────────────────────────────────────────
@@ -293,6 +265,14 @@ export class UserFormDialogComponent {
   });
 
   // ──────────────────────────────────────────
+  // Lifecycle
+  // ──────────────────────────────────────────
+
+  ngOnInit(): void {
+    this.orgsStore.loadAll(0, 100);
+  }
+
+  // ──────────────────────────────────────────
   // Wizard navigation
   // ──────────────────────────────────────────
 
@@ -371,21 +351,24 @@ export class UserFormDialogComponent {
         .map(d => d.value as CreateUserRequestDto.WorkdaysEnum);
 
       const dto: CreateUserRequestDto = {
-        username:        this.identityForm.value.username!,
-        email:           this.identityForm.value.email!,
-        fullName:        fullNameVal || undefined,
-        phoneNumber:     this.identityForm.value.phoneNumber?.trim() || undefined,
-        department:      this.identityForm.value.department?.trim() || undefined,
-        organizationIds: this.selectedOrgIds.length > 0 ? this.selectedOrgIds : undefined,
-        workdays:        workdayValues.length > 0 && this.stationForm.get('applyStationPolicy')?.value
-                           ? workdayValues : undefined,
-        ipRestriction:   (this.stationForm.get('applyStationPolicy')?.value && this.allowedIPs.length > 0)
-                           ? this.allowedIPs.join(',') : undefined,
-        workHours:       this.stationForm.get('applyStationPolicy')?.value
-                           ? { start: this.stationForm.value.workStartTime ?? '09:00',
-                               end:   this.stationForm.value.workEndTime   ?? '18:00' }
-                           : undefined,
-        sendTempPassword: this.statusForm.value.sendTempPassword ?? true
+        username:             this.identityForm.value.username!,
+        email:                this.identityForm.value.email!,
+        fullName:             fullNameVal || undefined,
+        phoneNumber:          this.identityForm.value.phoneNumber?.trim() || undefined,
+        department:           this.identityForm.value.department?.trim() || undefined,
+        organizationIds:      this.selectedOrgIds.length > 0 ? this.selectedOrgIds : undefined,
+        directPermissionIds:  this.selectedDirectPermissions.length > 0
+                                ? this.selectedDirectPermissions.map(p => p.id!)
+                                : undefined,
+        workdays:             workdayValues.length > 0 && this.stationForm.get('applyStationPolicy')?.value
+                                ? workdayValues : undefined,
+        ipRestriction:        (this.stationForm.get('applyStationPolicy')?.value && this.allowedIPs.length > 0)
+                                ? this.allowedIPs.join(',') : undefined,
+        workHours:            this.stationForm.get('applyStationPolicy')?.value
+                                ? { start: this.stationForm.value.workStartTime ?? '09:00',
+                                    end:   this.stationForm.value.workEndTime   ?? '18:00' }
+                                : undefined,
+        sendTempPassword:     this.statusForm.value.sendTempPassword ?? true
       };
       this.dialogRef.close(dto);
     }

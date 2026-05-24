@@ -7,6 +7,8 @@ import {
 
 export interface PermissionsState {
   items: PermissionDto[];
+  /** Permissions filtered by selected org IDs — used in wizard step 4 */
+  orgFilteredItems: PermissionDto[];
   totalElements: number;
   pageIndex: number;
   pageSize: number;
@@ -18,6 +20,7 @@ export const PermissionsStore = signalStore(
   { providedIn: 'root' },
   withState<PermissionsState>({
     items: [],
+    orgFilteredItems: [],
     totalElements: 0,
     pageIndex: 0,
     pageSize: 20,
@@ -34,8 +37,21 @@ export const PermissionsStore = signalStore(
       async loadAll(page = 0, size = 20, resource?: string): Promise<void> {
         patchState(store, { loading: true, error: null, pageIndex: page, pageSize: size });
         try {
-          const res: PagedResponseDto = await firstValueFrom(svc.listPermissions(page, size, undefined, resource));
+          const res = await firstValueFrom(svc.listPermissions(page, size, undefined, undefined, resource)) as PagedResponseDto;
           patchState(store, { items: res.content as PermissionDto[], totalElements: res.totalElements, loading: false });
+        } catch {
+          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        }
+      },
+      async loadByOrganizationIds(organizationIds: string[], size = 100): Promise<void> {
+        if (!organizationIds.length) {
+          patchState(store, { orgFilteredItems: [] });
+          return;
+        }
+        patchState(store, { loading: true, error: null });
+        try {
+          const res = await firstValueFrom(svc.listPermissions(0, size, undefined, organizationIds)) as PagedResponseDto;
+          patchState(store, { orgFilteredItems: res.content as PermissionDto[], loading: false });
         } catch {
           patchState(store, { loading: false, error: 'COMMON.ERROR' });
         }

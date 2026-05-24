@@ -243,26 +243,32 @@
         <div class="wizard-step-content dialog-form-col">
           <div class="dialog-section-label">Select Organizations</div>
 
+          @if (orgsLoading()) {
+            <div class="loading-spinner-wrap">
+              <mat-progress-spinner mode="indeterminate" diameter="32" />
+            </div>
+          } @else {
           <div class="org-checkbox-list">
-            @for (org of sampleOrgs; track org.id) {
-              <label class="org-checkbox-item" [class.org-checkbox-item--selected]="isOrgSelected(org.id)">
+            @for (org of availableOrgs(); track org.id) {
+              <label class="org-checkbox-item" [class.org-checkbox-item--selected]="isOrgSelected(org.id!)">
                 <input type="checkbox"
-                       [checked]="isOrgSelected(org.id)"
-                       (change)="toggleOrg(org.id)"
+                       [checked]="isOrgSelected(org.id!)"
+                       (change)="toggleOrg(org.id!)"
                        class="org-checkbox-input" />
-                <div class="org-checkbox-avatar" [style.background]="org.color">
-                  {{ org.name[0] }}
+                <div class="org-checkbox-avatar">
+                  {{ org.name?.[0] }}
                 </div>
                 <div class="org-checkbox-info">
                   <span class="org-checkbox-name">{{ org.name }}</span>
-                  <span class="org-checkbox-meta">{{ org.members | number }} members</span>
+                  <span class="org-checkbox-meta">{{ getOrgMemberCount(org.id!) | number }} members</span>
                 </div>
-                @if (isOrgSelected(org.id)) {
+                @if (isOrgSelected(org.id!)) {
                   <mat-icon class="org-checkbox-check">check_circle</mat-icon>
                 }
               </label>
             }
           </div>
+          }
 
           @if (selectedOrgIds.length >= 2) {
             <mat-form-field appearance="outline">
@@ -293,37 +299,38 @@
       @case (3) {
         <div class="wizard-step-content dialog-form-col">
 
-          <div class="dialog-section-label">Permission Groups</div>
-          <div class="permission-chip-grid">
-            @for (pg of permissionGroups; track pg.id) {
-              <button type="button"
-                      class="perm-chip"
-                      [class.perm-chip--selected]="isGroupSelected(pg.id)"
-                      (click)="toggleGroup(pg.id)">
-                <mat-icon class="perm-chip-icon">{{ isGroupSelected(pg.id) ? 'check' : 'add' }}</mat-icon>
-                {{ pg.name }}
-              </button>
-            }
-          </div>
+          @if (selectedOrgIds.length === 0) {
+            <div class="dialog-warning-banner dialog-warning-banner--orange">
+              <mat-icon>info</mat-icon>
+              <span>Select at least one organization in the previous step to see available permissions.</span>
+            </div>
+          }
 
           <div class="dialog-section-label">Direct Permissions</div>
-          <mat-form-field appearance="outline">
-            <mat-label>Add permission</mat-label>
-            <mat-icon matPrefix>security</mat-icon>
-            <mat-select [(ngModel)]="directPermissionToAdd" (ngModelChange)="addDirectPermission($event)">
-              @for (p of availablePermissions; track p) {
-                <mat-option [value]="p">{{ p }}</mat-option>
-              }
-            </mat-select>
-            <mat-hint>Search and select permissions to grant directly</mat-hint>
-          </mat-form-field>
+
+          @if (permissionsLoading()) {
+            <div class="loading-spinner-wrap">
+              <mat-progress-spinner mode="indeterminate" diameter="32" />
+            </div>
+          } @else {
+            <mat-form-field appearance="outline">
+              <mat-label>Add permission</mat-label>
+              <mat-icon matPrefix>security</mat-icon>
+              <mat-select [(ngModel)]="directPermissionToAdd" (ngModelChange)="addDirectPermission($event)">
+                @for (p of availablePermissions(); track p.id) {
+                  <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                }
+              </mat-select>
+              <mat-hint>Permissions are filtered by selected organizations</mat-hint>
+            </mat-form-field>
+          }
 
           @if (selectedDirectPermissions.length > 0) {
             <div class="direct-perms-chips">
-              @for (p of selectedDirectPermissions; track p) {
-                <div class="direct-perm-chip" [class.direct-perm-chip--sensitive]="isSensitivePermission(p)">
-                  <span>{{ p }}</span>
-                  <button type="button" mat-icon-button class="perm-remove-btn" (click)="removeDirectPermission(p)">
+              @for (perm of selectedDirectPermissions; track perm.id) {
+                <div class="direct-perm-chip" [class.direct-perm-chip--sensitive]="isSensitivePermission(perm)">
+                  <span>{{ perm.name }}</span>
+                  <button type="button" mat-icon-button class="perm-remove-btn" (click)="removeDirectPermission(perm.id!)">
                     <mat-icon>close</mat-icon>
                   </button>
                 </div>
@@ -334,16 +341,7 @@
           @if (hasSensitivePermissions()) {
             <div class="dialog-warning-banner dialog-warning-banner--red">
               <mat-icon>gpp_bad</mat-icon>
-              <span>One or more sensitive permissions are selected (*.manage / *.approve). These require elevated approval and will be logged.</span>
-            </div>
-          }
-
-          @if (effectivePermissions.length > 0) {
-            <div class="dialog-section-label">Effective Permissions Preview</div>
-            <div class="effective-perms-preview">
-              @for (p of effectivePermissions; track p) {
-                <span class="effective-perm-chip asms-chip chip-active">{{ p }}</span>
-              }
+              <span>One or more sensitive permissions are selected (ADMIN / DELETE). These require elevated approval and will be logged.</span>
             </div>
           }
         </div>
@@ -575,21 +573,13 @@
                 <span>Permissions</span>
                 <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(3)">Edit</button>
               </div>
-              @if (selectedGroupIds.length === 0 && selectedDirectPermissions.length === 0) {
+              @if (selectedDirectPermissions.length === 0) {
                 <span class="review-empty">No permissions assigned</span>
               } @else {
-                @if (selectedGroupIds.length > 0) {
-                  <div class="review-row">
-                    <span class="review-label">Groups</span>
-                    <span class="review-value">{{ selectedGroupIds.map(id => getGroupName(id)).join(', ') }}</span>
-                  </div>
-                }
-                @if (selectedDirectPermissions.length > 0) {
-                  <div class="review-row">
-                    <span class="review-label">Direct</span>
-                    <span class="review-value">{{ selectedDirectPermissions.join(', ') }}</span>
-                  </div>
-                }
+                <div class="review-row">
+                  <span class="review-label">Direct</span>
+                  <span class="review-value">{{ selectedDirectPermissions.map(p => p.name).join(', ') }}</span>
+                </div>
               }
             </div>
 
