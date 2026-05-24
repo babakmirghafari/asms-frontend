@@ -1,27 +1,24 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatDividerModule } from '@angular/material/divider';
 import { TranslateModule } from '@ngx-translate/core';
-import { OrganizationDto, CreateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
+import { firstValueFrom } from 'rxjs';
+import {
+  OrganizationDto, CreateOrganizationRequestDto,
+  UsersService, UserSummaryDto, PagedResponseDto
+} from '@babakmirghafari/asms-api-client';
 import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
 
 export interface OrgFormDialogData {
   org?: OrganizationDto;
   isEdit: boolean;
 }
-
-/** Avatar background colours to cycle through for new orgs */
-const AVATAR_COLORS = ['#3f51b5', '#009688', '#f57c00', '#7b1fa2', '#c62828', '#2e7d32'];
 
 @Component({
   selector: 'asms-org-form-dialog',
@@ -31,78 +28,64 @@ const AVATAR_COLORS = ['#3f51b5', '#009688', '#f57c00', '#7b1fa2', '#c62828', '#
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
-    MatButtonToggleModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatIconModule,
-    MatSlideToggleModule,
     MatProgressSpinnerModule,
-    MatExpansionModule,
-    MatDividerModule,
     TranslateModule,
     AsmsModalComponent
   ]
 })
-export class OrgFormDialogComponent {
+export class OrgFormDialogComponent implements OnInit {
   readonly data: OrgFormDialogData = inject(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<OrgFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
+  private readonly usersService = inject(UsersService);
 
   isLoading = false;
+  logoPreviewUrl: string | null = this.data.org?.logoUrl ?? null;
 
-  /** Compliance tag options */
-  readonly complianceTags = ['SOC2', 'ISO 27001', 'GDPR', 'HIPAA'];
-  selectedTags: string[] = [];
+  readonly users = signal<UserSummaryDto[]>([]);
+  readonly usersLoading = signal(false);
 
-  /** Avatar color derived from name or random */
-  private colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
-
-  get avatarColor(): string {
-    return AVATAR_COLORS[this.colorIndex % AVATAR_COLORS.length];
-  }
-
-  get nameInitial(): string {
-    return (this.form.get('name')?.value?.trim()?.[0] ?? 'O').toUpperCase();
-  }
+  readonly plans = [
+    { value: 'STARTER',      label: 'Starter' },
+    { value: 'PROFESSIONAL', label: 'Professional' },
+    { value: 'ENTERPRISE',   label: 'Enterprise' }
+  ];
 
   readonly form = this.fb.group({
-    name: [this.data.org?.name ?? '', [Validators.required, Validators.minLength(2)]],
+    name:        [this.data.org?.name ?? '',        [Validators.required, Validators.minLength(2)]],
+    domain:      ['',                               [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/)]],
     description: [this.data.org?.description ?? ''],
-    orgCode: ['', [Validators.pattern(/^[A-Z0-9-]*$/)]],
-    status: ['ACTIVE'],
-    dataResidency: ['EU'],
-    adminEmail: ['', [Validators.email]],
-    website: ['', [Validators.pattern(/^(https?:\/\/.+)?$/)]],
-    useGlobalAuthPolicy: [true],
-    useGlobalStationPolicy: [true]
+    plan:        ['STARTER'],
+    country:     [''],
+    ownerUserId: ['']
   });
 
-  constructor() {
-    // Auto-generate org code from name
-    this.form.get('name')?.valueChanges.subscribe(val => {
-      const code = (val ?? '')
-        .trim()
-        .toUpperCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^A-Z0-9-]/g, '');
-      this.form.get('orgCode')?.setValue(code, { emitEvent: false });
-      // Cycle avatar color based on first letter code point
-      this.colorIndex = (val?.charCodeAt(0) ?? 0) % AVATAR_COLORS.length;
-    });
+  ngOnInit(): void {
+    this.loadUsers();
   }
 
-  isTagSelected(tag: string): boolean {
-    return this.selectedTags.includes(tag);
-  }
-
-  toggleTag(tag: string): void {
-    const idx = this.selectedTags.indexOf(tag);
-    if (idx >= 0) {
-      this.selectedTags = this.selectedTags.filter(t => t !== tag);
-    } else {
-      this.selectedTags = [...this.selectedTags, tag];
+  private async loadUsers(): Promise<void> {
+    this.usersLoading.set(true);
+    try {
+      const res = await firstValueFrom(this.usersService.listUsers(0, 100, 'ACTIVE')) as PagedResponseDto;
+      this.users.set(res.content as UserSummaryDto[]);
+    } catch {
+      // non-critical — owner dropdown stays empty
+    } finally {
+      this.usersLoading.set(false);
     }
+  }
+
+  onLogoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { this.logoPreviewUrl = reader.result as string; };
+    reader.readAsDataURL(file);
   }
 
   cancel(): void {
@@ -116,10 +99,9 @@ export class OrgFormDialogComponent {
     }
 
     const dto: CreateOrganizationRequestDto = {
-      name: this.form.value.name!,
-      description: this.form.value.description?.trim() || undefined
-      // Additional fields (orgCode, dataResidency, compliance, adminEmail) would go
-      // into extended DTO fields when backend supports them
+      name:        this.form.value.name!,
+      description: this.form.value.description?.trim() || undefined,
+      logoUrl:     this.logoPreviewUrl ?? undefined
     };
 
     this.dialogRef.close(dto);

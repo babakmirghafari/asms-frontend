@@ -5,154 +5,97 @@
   [isLoading]="isLoading"
   [isFirstStep]="true"
   [isLastStep]="true"
-  [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.ADD'"
+  [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.CREATE'"
   (cancelled)="cancel()"
   (submitted)="submit()">
 
-  <!-- Org avatar header inside content slot -->
-  <div class="org-dialog-avatar-row">
-    <div class="org-dialog-avatar" [style.background]="avatarColor">
-      <span class="org-dialog-avatar-letter">{{ nameInitial }}</span>
-    </div>
-    @if (form.get('name')?.value) {
-      <p class="org-dialog-subtitle">{{ form.get('name')?.value }}</p>
-    }
-  </div>
+  <form [formGroup]="form" class="org-form" autocomplete="off">
 
-  <form [formGroup]="form" autocomplete="off">
-
-    <!-- Two-column main fields -->
-    <div class="org-dialog-columns">
-
-      <!-- Left column -->
-      <div class="org-dialog-col">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }}</mat-label>
-          <mat-icon matPrefix>business</mat-icon>
-          <input matInput formControlName="name" placeholder="e.g. Northwind Bank" />
-          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
-            <mat-error>Organization name is required</mat-error>
-          }
-          @if (form.get('name')?.hasError('minlength') && form.get('name')?.touched) {
-            <mat-error>Minimum 2 characters required</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
-          <mat-icon matPrefix>description</mat-icon>
-          <textarea matInput formControlName="description" rows="3"
-                    placeholder="Brief description of this organization"></textarea>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Organization Code</mat-label>
-          <mat-icon matPrefix>tag</mat-icon>
-          <input matInput formControlName="orgCode" class="mono-text"
-                 placeholder="e.g. NORTHWIND-BANK" />
-          <mat-hint>Used as tenant identifier — auto-generated from name</mat-hint>
-          @if (form.get('orgCode')?.hasError('pattern') && form.get('orgCode')?.touched) {
-            <mat-error>Only uppercase letters, numbers, and hyphens</mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <!-- Right column -->
-      <div class="org-dialog-col">
-
-        <!-- Status toggle -->
-        <div class="dialog-section-label">Status</div>
-        <mat-button-toggle-group formControlName="status" class="org-status-toggle">
-          <mat-button-toggle value="ACTIVE">
-            <mat-icon>check_circle</mat-icon>
-            {{ 'USERS.ACTIVE_STATUS' | translate }}
-          </mat-button-toggle>
-          <mat-button-toggle value="INACTIVE">
-            <mat-icon>cancel</mat-icon>
-            {{ 'USERS.INACTIVE_STATUS' | translate }}
-          </mat-button-toggle>
-        </mat-button-toggle-group>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'ORGANIZATIONS.DATA_RESIDENCY' | translate }}</mat-label>
-          <mat-icon matPrefix>public</mat-icon>
-          <mat-select formControlName="dataResidency">
-            <mat-option value="EU">EU</mat-option>
-            <mat-option value="US">US</mat-option>
-            <mat-option value="APAC">APAC</mat-option>
-            <mat-option value="GLOBAL">Global</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- Compliance tags multi-select chips -->
-        <div class="dialog-section-label">Compliance</div>
-        <div class="compliance-chip-row">
-          @for (tag of complianceTags; track tag) {
-            <button type="button"
-                    class="compliance-chip"
-                    [class.compliance-chip--selected]="isTagSelected(tag)"
-                    (click)="toggleTag(tag)">
-              <mat-icon>{{ isTagSelected(tag) ? 'check' : 'add' }}</mat-icon>
-              {{ tag }}
-            </button>
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- Contact & Ownership section -->
-    <div class="dialog-section-label" style="margin-top: 8px;">Contact &amp; Ownership</div>
-    <div class="dialog-form-row">
-      <mat-form-field appearance="outline">
-        <mat-label>Admin Email</mat-label>
-        <mat-icon matPrefix>admin_panel_settings</mat-icon>
-        <input matInput formControlName="adminEmail" type="email" placeholder="admin@northwind.com" />
-        @if (form.get('adminEmail')?.hasError('email') && form.get('adminEmail')?.touched) {
-          <mat-error>Enter a valid email address</mat-error>
+    <!-- Logo upload -->
+    <div class="org-logo-row">
+      <div class="org-logo-preview">
+        @if (logoPreviewUrl) {
+          <img [src]="logoPreviewUrl" alt="Logo preview" class="org-logo-img" />
+        } @else {
+          <mat-icon class="org-logo-placeholder-icon">image</mat-icon>
         }
+      </div>
+      <div class="org-logo-meta">
+        <span class="org-logo-label">Organization Logo</span>
+        <label class="org-logo-upload-btn" for="org-logo-input">
+          <mat-icon>upload</mat-icon>
+          Upload Image
+        </label>
+        <input id="org-logo-input" type="file" accept="image/png,image/jpeg"
+               class="org-logo-file-input" (change)="onLogoSelected($event)" />
+        <span class="org-logo-hint">PNG, JPG up to 2MB. Used on login page.</span>
+      </div>
+    </div>
+
+    <!-- Name -->
+    <mat-form-field appearance="outline" class="org-form-field-full">
+      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }} <span class="org-required">*</span></mat-label>
+      <input matInput formControlName="name" placeholder="e.g. Acme Corp" />
+      @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+        <mat-error>Organization name is required</mat-error>
+      }
+      @if (form.get('name')?.hasError('minlength') && form.get('name')?.touched) {
+        <mat-error>Minimum 2 characters required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Domain -->
+    <mat-form-field appearance="outline" class="org-form-field-full">
+      <mat-label>{{ 'ORGANIZATIONS.DOMAIN' | translate }} <span class="org-required">*</span></mat-label>
+      <mat-icon matPrefix>language</mat-icon>
+      <input matInput formControlName="domain" placeholder="acmecorp.com" />
+      @if (form.get('domain')?.hasError('required') && form.get('domain')?.touched) {
+        <mat-error>Domain is required</mat-error>
+      }
+      @if (form.get('domain')?.hasError('pattern') && form.get('domain')?.touched) {
+        <mat-error>Enter a valid domain (e.g. acmecorp.com)</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="org-form-field-full">
+      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+      <input matInput formControlName="description" placeholder="Short description" />
+    </mat-form-field>
+
+    <!-- Plan + Country -->
+    <div class="org-form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'ORGANIZATIONS.PLAN' | translate }}</mat-label>
+        <mat-select formControlName="plan">
+          @for (p of plans; track p.value) {
+            <mat-option [value]="p.value">{{ p.label }}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Organization Website</mat-label>
-        <mat-icon matPrefix>language</mat-icon>
-        <input matInput formControlName="website" type="url" placeholder="https://northwind.com" />
-        @if (form.get('website')?.hasError('pattern') && form.get('website')?.touched) {
-          <mat-error>Enter a valid URL (https://...)</mat-error>
-        }
-        <mat-hint>Optional</mat-hint>
+        <mat-label>{{ 'ORGANIZATIONS.COUNTRY' | translate }}</mat-label>
+        <input matInput formControlName="country" placeholder="USA" />
       </mat-form-field>
     </div>
 
-    <!-- Policy Defaults — collapsible panel -->
-    <mat-expansion-panel class="org-policy-panel">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <mat-icon>policy</mat-icon>
-          <span>Policy Defaults</span>
-        </mat-panel-title>
-        <mat-panel-description>Authentication and station policy overrides</mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <div class="dialog-settings-section" style="margin-top: 12px;">
-        <div class="dialog-toggle-row">
-          <div class="toggle-label">
-            <span class="toggle-title">Use global authentication policy defaults</span>
-            <span class="toggle-hint">Override with organization-specific authentication rules if disabled</span>
-          </div>
-          <mat-slide-toggle formControlName="useGlobalAuthPolicy" color="primary" />
-        </div>
-
-        <mat-divider />
-
-        <div class="dialog-toggle-row">
-          <div class="toggle-label">
-            <span class="toggle-title">Use global station policy defaults</span>
-            <span class="toggle-hint">Override with organization-specific station access rules if disabled</span>
-          </div>
-          <mat-slide-toggle formControlName="useGlobalStationPolicy" color="primary" />
-        </div>
-      </div>
-    </mat-expansion-panel>
+    <!-- Owner / Admin -->
+    <mat-form-field appearance="outline" class="org-form-field-full">
+      <mat-label>{{ 'ORGANIZATIONS.OWNER' | translate }}</mat-label>
+      <mat-select formControlName="ownerUserId">
+        @if (usersLoading()) {
+          <mat-option [value]="null" disabled>Loading users…</mat-option>
+        } @else {
+          <mat-option value="">Select owner</mat-option>
+          @for (u of users(); track u.id) {
+            <mat-option [value]="u.id">
+              {{ u.displayName || u.username }} — {{ u.email }}
+            </mat-option>
+          }
+        }
+      </mat-select>
+    </mat-form-field>
 
   </form>
 

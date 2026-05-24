@@ -231,7 +231,11 @@
     "DELETED_SUCCESS": "Organization deleted successfully",
     "OWNER": "Owner",
     "COMPLIANCE": "Compliance",
-    "DATA_RESIDENCY": "Data Residency"
+    "DATA_RESIDENCY": "Data Residency",
+    "DOMAIN": "Domain",
+    "PLAN": "Plan",
+    "COUNTRY": "Country",
+    "CREATE": "Create Organization"
   },
   "MEMBERSHIPS": {
     "TITLE": "Memberships",
