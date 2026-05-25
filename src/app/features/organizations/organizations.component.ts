@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, computed, signal } from '@angular/core';
 import { DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -47,12 +47,22 @@ export class OrganizationsComponent implements OnInit {
 
   readonly displayedColumns = ['name', 'description', 'status', 'createdAt', 'actions'];
   readonly searchCtrl = this.fb.control('');
+  readonly searchTerm = signal('');
+
+  readonly filteredItems = computed(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.store.items();
+    return this.store.items().filter(o =>
+      o.name?.toLowerCase().includes(term) ||
+      o.description?.toLowerCase().includes(term)
+    );
+  });
 
   constructor() {
     this.searchCtrl.valueChanges.pipe(
       debounceTime(300),
       takeUntilDestroyed()
-    ).subscribe(() => this.store.loadAll(0, 20));
+    ).subscribe(val => this.searchTerm.set(val ?? ''));
   }
 
   ngOnInit(): void {
@@ -70,13 +80,17 @@ export class OrganizationsComponent implements OnInit {
       .afterClosed()
       .subscribe((dto: CreateOrganizationRequestDto | null) => {
         if (!dto) return;
-        this.store.create(dto).then(() => {
-          this.snackBar.open(
+        this.store.create(dto)
+          .then(() => this.snackBar.open(
             this.translate.instant('ORGANIZATIONS.CREATED_SUCCESS'),
             this.translate.instant('COMMON.CLOSE'),
             { duration: 4000, panelClass: 'snackbar-success' }
-          );
-        });
+          ))
+          .catch(() => this.snackBar.open(
+            this.translate.instant('COMMON.ERROR'),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 4000, panelClass: 'snackbar-error' }
+          ));
       });
   }
 
@@ -88,13 +102,17 @@ export class OrganizationsComponent implements OnInit {
       .subscribe((dto: CreateOrganizationRequestDto | null) => {
         if (!dto) return;
         // Map CreateOrganizationRequestDto to UpdateOrganizationRequestDto
-        this.store.update(org.id, { name: dto.name, description: dto.description }).then(() => {
-          this.snackBar.open(
+        this.store.update(org.id, { name: dto.name, description: dto.description })
+          .then(() => this.snackBar.open(
             this.translate.instant('ORGANIZATIONS.UPDATED_SUCCESS'),
             this.translate.instant('COMMON.CLOSE'),
             { duration: 4000, panelClass: 'snackbar-success' }
-          );
-        });
+          ))
+          .catch(() => this.snackBar.open(
+            this.translate.instant('COMMON.ERROR'),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 4000, panelClass: 'snackbar-error' }
+          ));
       });
   }
 
@@ -108,13 +126,17 @@ export class OrganizationsComponent implements OnInit {
     };
     this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
-      this.store.delete(org.id).then(() => {
-        this.snackBar.open(
+      this.store.delete(org.id)
+        .then(() => this.snackBar.open(
           this.translate.instant('ORGANIZATIONS.DELETED_SUCCESS'),
           this.translate.instant('COMMON.CLOSE'),
           { duration: 4000, panelClass: 'snackbar-success' }
-        );
-      });
+        ))
+        .catch(() => this.snackBar.open(
+          this.translate.instant('COMMON.ERROR'),
+          this.translate.instant('COMMON.CLOSE'),
+          { duration: 4000, panelClass: 'snackbar-error' }
+        ));
     });
   }
 }

@@ -27,7 +27,7 @@
     </div>
   } @else {
     <div class="asms-table-wrapper">
-      <table mat-table [dataSource]="store.items()" class="full-width">
+      <table mat-table [dataSource]="filteredItems()" class="full-width">
 
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>{{ 'ORGANIZATIONS.NAME' | translate }}</th>

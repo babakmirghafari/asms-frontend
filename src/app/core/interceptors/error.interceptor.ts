@@ -11,12 +11,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse) {
-        if (error.status === 401) {
-          // Token expired or invalid — clear auth state and redirect to login
+        if (error.status === 401 || error.status === 403) {
+          // 401 = token missing/expired; 403 = Spring Security fallback before backend fix
           authStore.clearToken();
           router.navigate(['/auth']);
         }
-        // TODO(angular-logic-implementer): add toast notifications for 403, 500, etc.
       }
       return throwError(() => error);
     })

@@ -57,7 +57,8 @@ export class OrgFormDialogComponent implements OnInit {
 
   readonly form = this.fb.group({
     name:        [this.data.org?.name ?? '',        [Validators.required, Validators.minLength(2)]],
-    domain:      ['',                               [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/)]],
+    // domain is only required on create — OrganizationDto has no domain field
+    domain:      ['',                               this.data.isEdit ? [] : [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/)]],
     description: [this.data.org?.description ?? ''],
     plan:        ['STARTER'],
     country:     [''],

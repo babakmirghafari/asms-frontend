@@ -34,7 +34,7 @@
 
     <!-- Name -->
     <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }} <span class="org-required">*</span></mat-label>
+      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }} </mat-label>
       <input matInput formControlName="name" placeholder="e.g. Acme Corp" />
       @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
         <mat-error>Organization name is required</mat-error>
@@ -44,18 +44,20 @@
       }
     </mat-form-field>
 
-    <!-- Domain -->
-    <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'ORGANIZATIONS.DOMAIN' | translate }} <span class="org-required">*</span></mat-label>
-      <mat-icon matPrefix>language</mat-icon>
-      <input matInput formControlName="domain" placeholder="acmecorp.com" />
-      @if (form.get('domain')?.hasError('required') && form.get('domain')?.touched) {
-        <mat-error>Domain is required</mat-error>
-      }
-      @if (form.get('domain')?.hasError('pattern') && form.get('domain')?.touched) {
-        <mat-error>Enter a valid domain (e.g. acmecorp.com)</mat-error>
-      }
-    </mat-form-field>
+    <!-- Domain (create-only) -->
+    @if (!data.isEdit) {
+      <mat-form-field appearance="outline" class="org-form-field-full">
+        <mat-label>{{ 'ORGANIZATIONS.DOMAIN' | translate }} </mat-label>
+        <mat-icon matPrefix>language</mat-icon>
+        <input matInput formControlName="domain" placeholder="acmecorp.com" />
+        @if (form.get('domain')?.hasError('required') && form.get('domain')?.touched) {
+          <mat-error>Domain is required</mat-error>
+        }
+        @if (form.get('domain')?.hasError('pattern') && form.get('domain')?.touched) {
+          <mat-error>Enter a valid domain (e.g. acmecorp.com)</mat-error>
+        }
+      </mat-form-field>
+    }
 
     <!-- Description -->
     <mat-form-field appearance="outline" class="org-form-field-full">
