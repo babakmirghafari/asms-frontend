@@ -43,6 +43,17 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="parentOrg">
+          <th mat-header-cell *matHeaderCellDef>{{ 'ORGANIZATIONS.PARENT' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            @if (row.parentOrganizationId) {
+              <span class="text-secondary text-sm">{{ store.orgById()[row.parentOrganizationId]?.name ?? row.parentOrganizationId }}</span>
+            } @else {
+              <span class="text-disabled text-sm">—</span>
+            }
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.DESCRIPTION' | translate }}</th>
           <td mat-cell *matCellDef="let row">

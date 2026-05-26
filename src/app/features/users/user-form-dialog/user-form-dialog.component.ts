@@ -14,7 +14,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { UserDto, CreateUserRequestDto, UpdateUserRequestDto, OrganizationDto, PermissionDto } from '@babakmirghafari/asms-api-client';
+import { UserDto, CreateUserRequestDto, UpdateUserRequestDto, PermissionDto } from '@babakmirghafari/asms-api-client';
 import { AsmsModalComponent, ModalStep } from '../../../shared/components/modal/modal.component';
 import { OrganizationsStore } from '../../organizations/organizations.store';
 import { PermissionsStore } from '../../permissions/permissions.store';

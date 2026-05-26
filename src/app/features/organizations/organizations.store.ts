@@ -17,7 +17,12 @@ export const OrganizationsStore = signalStore(
   withState<OrganizationsState>({ items: [], totalElements: 0, pageIndex: 0, pageSize: 20, loading: false, error: null }),
   withComputed((store) => ({
     isLoading: computed(() => store.loading()),
-    isEmpty: computed(() => store.items().length === 0 && !store.loading())
+    isEmpty: computed(() => store.items().length === 0 && !store.loading()),
+    orgById: computed(() => {
+      const map: Record<string, OrganizationDto> = {};
+      for (const o of store.items()) { map[o.id!] = o; }
+      return map;
+    })
   })),
   withMethods((store) => {
     const svc = inject(OrganizationsService);

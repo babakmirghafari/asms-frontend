@@ -11,7 +11,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import {
   OrganizationDto, CreateOrganizationRequestDto,
-  UsersService, UserSummaryDto, PagedResponseDto
+  UsersService, UserSummaryDto, PagedResponseDto,
+  OrganizationsService
 } from '@babakmirghafari/asms-api-client';
 import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
 
@@ -42,12 +43,16 @@ export class OrgFormDialogComponent implements OnInit {
   private readonly dialogRef = inject(MatDialogRef<OrgFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
   private readonly usersService = inject(UsersService);
+  private readonly orgsService = inject(OrganizationsService);
 
   isLoading = false;
   logoPreviewUrl: string | null = this.data.org?.logoUrl ?? null;
 
   readonly users = signal<UserSummaryDto[]>([]);
   readonly usersLoading = signal(false);
+
+  readonly organizations = signal<OrganizationDto[]>([]);
+  readonly orgsLoading = signal(false);
 
   readonly plans = [
     { value: 'STARTER',      label: 'Starter' },
@@ -56,17 +61,33 @@ export class OrgFormDialogComponent implements OnInit {
   ];
 
   readonly form = this.fb.group({
-    name:        [this.data.org?.name ?? '',        [Validators.required, Validators.minLength(2)]],
+    name:                 [this.data.org?.name ?? '',        [Validators.required, Validators.minLength(2)]],
     // domain is only required on create — OrganizationDto has no domain field
-    domain:      ['',                               this.data.isEdit ? [] : [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/)]],
-    description: [this.data.org?.description ?? ''],
-    plan:        ['STARTER'],
-    country:     [''],
-    ownerUserId: ['']
+    domain:               ['',                               this.data.isEdit ? [] : [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/)]],
+    description:          [this.data.org?.description ?? ''],
+    plan:                 ['STARTER'],
+    country:              [''],
+    ownerUserId:          [''],
+    parentOrganizationId: [this.data.org?.parentOrganizationId ?? null]
   });
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadOrganizations();
+  }
+
+  private async loadOrganizations(): Promise<void> {
+    this.orgsLoading.set(true);
+    try {
+      const res = await firstValueFrom(this.orgsService.listOrganizations(0, 200)) as PagedResponseDto;
+      const all = res.content as OrganizationDto[];
+      // exclude the current org from the parent dropdown to prevent self-reference
+      this.organizations.set(this.data.org?.id ? all.filter(o => o.id !== this.data.org!.id) : all);
+    } catch {
+      // non-critical — parent dropdown stays empty
+    } finally {
+      this.orgsLoading.set(false);
+    }
   }
 
   private async loadUsers(): Promise<void> {
@@ -102,7 +123,8 @@ export class OrgFormDialogComponent implements OnInit {
     const dto: CreateOrganizationRequestDto = {
       name:        this.form.value.name!,
       description: this.form.value.description?.trim() || undefined,
-      logoUrl:     this.logoPreviewUrl ?? undefined
+      logoUrl:     this.logoPreviewUrl ?? undefined,
+      ...(!this.data.isEdit && { parentOrganizationId: this.form.value.parentOrganizationId ?? undefined })
     };
 
     this.dialogRef.close(dto);

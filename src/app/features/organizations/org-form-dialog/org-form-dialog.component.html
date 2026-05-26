@@ -65,6 +65,24 @@
       <input matInput formControlName="description" placeholder="Short description" />
     </mat-form-field>
 
+    <!-- Parent Organization (create only, optional) -->
+    @if (!data.isEdit) {
+      <mat-form-field appearance="outline" class="org-form-field-full">
+        <mat-label>{{ 'ORGANIZATIONS.PARENT' | translate }}</mat-label>
+        <mat-icon matPrefix>account_tree</mat-icon>
+        <mat-select formControlName="parentOrganizationId">
+          <mat-option [value]="null">{{ 'ORGANIZATIONS.NO_PARENT' | translate }}</mat-option>
+          @if (orgsLoading()) {
+            <mat-option [value]="null" disabled>{{ 'COMMON.LOADING' | translate }}</mat-option>
+          } @else {
+            @for (o of organizations(); track o.id) {
+              <mat-option [value]="o.id">{{ o.name }}</mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
     <!-- Plan + Country -->
     <div class="org-form-row">
       <mat-form-field appearance="outline">

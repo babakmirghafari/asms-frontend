@@ -223,6 +223,7 @@
     "DESCRIPTION": "توضیحات",
     "STATUS": "وضعیت",
     "PARENT": "سازمان مادر",
+    "NO_PARENT": "بدون سازمان والد (سطح بالا)",
     "MEMBERS": "اعضا",
     "SEARCH_PLACEHOLDER": "جستجوی سازمان‌ها...",
     "MEMBER_COUNT": "تعداد اعضا",
@@ -231,7 +232,11 @@
     "DELETED_SUCCESS": "سازمان با موفقیت حذف شد",
     "OWNER": "مالک",
     "COMPLIANCE": "انطباق",
-    "DATA_RESIDENCY": "محل نگهداری داده"
+    "DATA_RESIDENCY": "محل نگهداری داده",
+    "DOMAIN": "دامنه",
+    "PLAN": "طرح",
+    "COUNTRY": "کشور",
+    "CREATE": "ایجاد سازمان"
   },
   "MEMBERSHIPS": {
     "TITLE": "عضویت‌ها",

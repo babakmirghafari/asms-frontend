@@ -223,6 +223,7 @@
     "DESCRIPTION": "Description",
     "STATUS": "Status",
     "PARENT": "Parent Organization",
+    "NO_PARENT": "None (Top-level)",
     "MEMBERS": "Members",
     "SEARCH_PLACEHOLDER": "Search organizations...",
     "MEMBER_COUNT": "Member Count",

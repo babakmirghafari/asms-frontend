@@ -45,7 +45,7 @@ export class OrganizationsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly fb = inject(FormBuilder);
 
-  readonly displayedColumns = ['name', 'description', 'status', 'createdAt', 'actions'];
+  readonly displayedColumns = ['name', 'parentOrg', 'description', 'status', 'createdAt', 'actions'];
   readonly searchCtrl = this.fb.control('');
   readonly searchTerm = signal('');
 
