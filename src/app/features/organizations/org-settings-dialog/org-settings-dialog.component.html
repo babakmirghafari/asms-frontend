@@ -1,0 +1,261 @@
+<!-- Dialog header -->
+<div class="sd-header">
+  <h2 class="sd-title">{{ 'ORGANIZATIONS.SETTINGS_TITLE' | translate }} — {{ data.org.name }}</h2>
+  <button mat-icon-button class="sd-close" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- Org banner -->
+<div class="sd-org-banner">
+  <div class="sd-org-avatar" [style.background-color]="data.avatarColor">
+    {{ data.initials }}
+  </div>
+  <div class="sd-org-info">
+    <div class="sd-org-name">{{ data.org.name }}</div>
+    <div class="sd-org-meta">
+      {{ data.org.memberCount ?? 0 }} {{ 'ORGANIZATIONS.MEMBERS' | translate | lowercase }}
+    </div>
+  </div>
+</div>
+
+<!-- Tab group -->
+<mat-tab-group class="sd-tabs" animationDuration="150ms">
+
+  <!-- ── Security ─────────────────────────────────── -->
+  <mat-tab [label]="'ORGANIZATIONS.TAB_SECURITY' | translate">
+    <form [formGroup]="securityForm" class="sd-tab-content">
+
+      <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_AUTHENTICATION' | translate }}</p>
+
+      <div class="sd-row">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.MFA_REQUIRE' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.MFA_REQUIRE_HINT' | translate }}</span>
+        </div>
+        <mat-slide-toggle formControlName="requireMfa" color="primary" />
+      </div>
+
+      <div class="sd-row">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.MFA_FORCE_SENSITIVE' | translate }}</span>
+        <mat-slide-toggle formControlName="forceMfaOnSensitive" color="primary" />
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.SESSION_TIMEOUT' | translate }}</span>
+        <mat-form-field appearance="outline" class="sd-num-field">
+          <input matInput type="number" formControlName="sessionTimeout" min="5" max="1440" />
+        </mat-form-field>
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.MAX_SESSIONS' | translate }}</span>
+        <mat-form-field appearance="outline" class="sd-num-field">
+          <input matInput type="number" formControlName="maxConcurrentSessions" min="1" max="20" />
+        </mat-form-field>
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.ALLOWED_IP_CIDRS' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.ALLOWED_IP_HINT' | translate }}</span>
+        </div>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <input matInput formControlName="allowedIpCidrs" placeholder="185.22.14.0/24, 91.45.201.0/24" />
+        </mat-form-field>
+      </div>
+
+    </form>
+  </mat-tab>
+
+  <!-- ── SSO ──────────────────────────────────────── -->
+  <mat-tab [label]="'ORGANIZATIONS.TAB_SSO' | translate">
+    <form [formGroup]="ssoForm" class="sd-tab-content">
+
+      <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_SSO_PROVIDER' | translate }}</p>
+
+      <div class="sd-row">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.SSO_ENABLED' | translate }}</span>
+        <mat-slide-toggle formControlName="ssoEnabled" color="primary" />
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.IDENTITY_PROVIDER' | translate }}</span>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <mat-select formControlName="identityProvider">
+            @for (p of identityProviders; track p) {
+              <mat-option [value]="p">{{ p }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="sd-row">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.SSO_AUTO_PROVISION' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.SSO_AUTO_PROVISION_HINT' | translate }}</span>
+        </div>
+        <mat-slide-toggle formControlName="autoProvision" color="primary" />
+      </div>
+
+      <div class="sd-row">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.SSO_AUTO_DEPROVISION' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.SSO_AUTO_DEPROVISION_HINT' | translate }}</span>
+        </div>
+        <mat-slide-toggle formControlName="autoDeprovision" color="primary" />
+      </div>
+
+      <!-- SSO Endpoints box -->
+      <div class="sd-endpoints-box">
+        <p class="sd-endpoints-label">{{ 'ORGANIZATIONS.SSO_ENDPOINTS' | translate }}</p>
+        <code class="sd-endpoint-line">SSO URL: https://asms.app/sso/{{ ssoSlug }}</code>
+        <code class="sd-endpoint-line">ACS: https://asms.app/sso/{{ ssoSlug }}/acs</code>
+        <code class="sd-endpoint-line">Audience: urn:asms:2</code>
+      </div>
+
+    </form>
+  </mat-tab>
+
+  <!-- ── Branding ──────────────────────────────────── -->
+  <mat-tab [label]="'ORGANIZATIONS.TAB_BRANDING' | translate">
+    <form [formGroup]="brandingForm" class="sd-tab-content">
+
+      <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_BRANDING' | translate }}</p>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.CUSTOM_LOGO' | translate }}</span>
+        <label class="sd-upload-btn" for="sd-logo-input">
+          <mat-icon>upload</mat-icon>
+          {{ 'ORGANIZATIONS.UPLOAD' | translate }}
+        </label>
+        <input id="sd-logo-input" type="file" accept="image/*" class="sd-file-hidden" />
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.PRIMARY_COLOR' | translate }}</span>
+        <input type="color" formControlName="primaryColor" class="sd-color-input" />
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.CUSTOM_LOGIN_URL' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.CUSTOM_LOGIN_URL_HINT' | translate }}</span>
+        </div>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <input matInput formControlName="customLoginUrl" [placeholder]="'ORGANIZATIONS.LOGIN_URL_PLACEHOLDER' | translate" />
+        </mat-form-field>
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.WELCOME_MESSAGE' | translate }}</span>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <input matInput formControlName="welcomeMessage" [placeholder]="'ORGANIZATIONS.WELCOME_PLACEHOLDER' | translate" />
+        </mat-form-field>
+      </div>
+
+    </form>
+  </mat-tab>
+
+  <!-- ── Compliance ────────────────────────────────── -->
+  <mat-tab [label]="'ORGANIZATIONS.TAB_COMPLIANCE' | translate">
+    <form [formGroup]="complianceForm" class="sd-tab-content">
+
+      <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_ACTIVE_FRAMEWORKS' | translate }}</p>
+
+      <div class="sd-frameworks">
+        <span class="sd-framework-chip">GDPR</span>
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.DATA_RESIDENCY' | translate }}</span>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <mat-select formControlName="dataResidency">
+            @for (r of dataResidencyRegions; track r.value) {
+              <mat-option [value]="r.value">{{ r.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="sd-row">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.ENFORCE_DATA_RESIDENCY' | translate }}</span>
+        <mat-slide-toggle formControlName="enforceDataResidencyOnExports" color="primary" />
+      </div>
+
+      <div class="sd-row">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.LONG_TERM_AUDIT' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.LONG_TERM_AUDIT_HINT' | translate }}</span>
+        </div>
+        <mat-slide-toggle formControlName="longTermAuditRetention" color="primary" />
+      </div>
+
+      <div class="sd-row">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.GDPR_EXPORT_ENDPOINT' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.GDPR_EXPORT_HINT' | translate }}</span>
+        </div>
+        <mat-slide-toggle formControlName="gdprDataExportEndpoint" color="primary" />
+      </div>
+
+    </form>
+  </mat-tab>
+
+  <!-- ── Danger Zone ───────────────────────────────── -->
+  <mat-tab [label]="'ORGANIZATIONS.TAB_DANGER_ZONE' | translate">
+    <div class="sd-tab-content">
+
+      <div class="sd-danger-warning">
+        <mat-icon class="sd-danger-icon">warning</mat-icon>
+        <span>{{ 'ORGANIZATIONS.DANGER_WARNING' | translate }}</span>
+      </div>
+
+      <div class="sd-danger-row">
+        <div class="sd-danger-row-text">
+          <span class="sd-danger-row-label">{{ 'ORGANIZATIONS.SUSPEND_ORG' | translate }}</span>
+          <span class="sd-danger-row-desc">{{ 'ORGANIZATIONS.SUSPEND_DESC' | translate }}</span>
+        </div>
+        <button mat-stroked-button class="sd-danger-btn-suspend" (click)="suspendOrg()">
+          <mat-icon>pause</mat-icon>
+          {{ 'ORGANIZATIONS.SUSPEND' | translate }}
+        </button>
+      </div>
+
+      <div class="sd-danger-row">
+        <div class="sd-danger-row-text">
+          <span class="sd-danger-row-label">{{ 'ORGANIZATIONS.TRANSFER_OWNERSHIP' | translate }}</span>
+          <span class="sd-danger-row-desc">{{ 'ORGANIZATIONS.TRANSFER_DESC' | translate }}</span>
+        </div>
+        <button mat-raised-button class="sd-danger-btn-transfer">
+          <mat-icon>arrow_forward</mat-icon>
+          {{ 'ORGANIZATIONS.TRANSFER' | translate }}
+        </button>
+      </div>
+
+      <div class="sd-danger-row sd-danger-row-delete">
+        <div class="sd-danger-row-text">
+          <span class="sd-danger-row-label sd-danger-delete-label">{{ 'ORGANIZATIONS.DELETE_ORG' | translate }}</span>
+          <span class="sd-danger-row-desc">{{ 'ORGANIZATIONS.DELETE_ORG_DESC' | translate }}</span>
+        </div>
+        <button mat-raised-button class="sd-danger-btn-delete" (click)="deleteOrg()">
+          <mat-icon>delete</mat-icon>
+          {{ 'COMMON.DELETE' | translate }}...
+        </button>
+      </div>
+
+    </div>
+  </mat-tab>
+
+</mat-tab-group>
+
+<mat-divider />
+
+<!-- Footer -->
+<div class="sd-footer">
+  <button mat-stroked-button (click)="close()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-raised-button color="primary" [disabled]="isSaving()" (click)="save()">
+    <mat-icon>save</mat-icon>
+    {{ 'COMMON.SAVE' | translate }}
+  </button>
+</div>

@@ -18,6 +18,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { OrgFormDialogComponent, OrgFormDialogData } from './org-form-dialog/org-form-dialog.component';
+import { OrgSettingsDialogComponent, OrgSettingsDialogData } from './org-settings-dialog/org-settings-dialog.component';
 import { OrganizationDto, CreateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
 
 @Component({
@@ -130,8 +131,20 @@ export class OrganizationsComponent implements OnInit {
     // Navigate to memberships filtered by this org — wired when memberships page is ready
   }
 
-  openSettings(_org: OrganizationDto): void {
-    // Opens org-level settings — sub-pages to be defined by user
+  openSettings(org: OrganizationDto): void {
+    const data: OrgSettingsDialogData = {
+      org,
+      avatarColor: this.getAvatarColor(org.name),
+      initials:    this.getInitials(org.name)
+    };
+    this.dialog
+      .open(OrgSettingsDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: false })
+      .afterClosed()
+      .subscribe(result => {
+        if (result === 'deleted' || result === 'suspended') {
+          this.store.loadAll(this.store.pageIndex(), this.store.pageSize());
+        }
+      });
   }
 
   confirmDelete(org: OrganizationDto): void {

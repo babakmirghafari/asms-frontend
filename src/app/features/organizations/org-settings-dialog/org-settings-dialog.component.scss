@@ -1,0 +1,348 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+
+.sd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--asms-border);
+  flex-shrink: 0;
+}
+
+.sd-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--asms-text-primary);
+  margin: 0;
+}
+
+.sd-close {
+  color: var(--asms-text-secondary) !important;
+}
+
+/* ── Org banner ──────────────────────────────────────────────────── */
+
+.sd-org-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 24px;
+  padding: 12px 16px;
+  background: var(--asms-surface-variant);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.sd-org-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sd-org-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--asms-text-primary);
+}
+
+.sd-org-meta {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────── */
+
+.sd-tabs {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep .mat-mdc-tab-body-wrapper {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  ::ng-deep .mat-mdc-tab-labels {
+    padding: 0 24px;
+    border-bottom: 1px solid var(--asms-border);
+  }
+
+  ::ng-deep .mdc-tab--active .mdc-tab__text-label {
+    color: var(--asms-primary) !important;
+  }
+
+  ::ng-deep .mdc-tab-indicator__content--underline {
+    border-color: var(--asms-primary) !important;
+  }
+
+  ::ng-deep .mat-mdc-tab {
+    padding: 0 4px;
+    min-width: 80px;
+  }
+
+  ::ng-deep .mdc-tab__text-label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+/* ── Tab content ─────────────────────────────────────────────────── */
+
+.sd-tab-content {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sd-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+
+/* ── Row layout ──────────────────────────────────────────────────── */
+
+.sd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--asms-border-light);
+
+  &:last-child { border-bottom: none; }
+}
+
+.sd-row-input {
+  align-items: flex-start;
+  padding: 12px 0;
+}
+
+.sd-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sd-row-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--asms-text-primary);
+}
+
+.sd-row-hint {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+}
+
+/* ── Form fields ─────────────────────────────────────────────────── */
+
+.sd-num-field {
+  width: 80px;
+  flex-shrink: 0;
+
+  ::ng-deep .mat-mdc-form-field-infix { padding: 6px 0 !important; }
+  ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 10px !important; }
+}
+
+.sd-wide-field {
+  width: 220px;
+  flex-shrink: 0;
+
+  ::ng-deep .mat-mdc-form-field-infix { padding: 6px 0 !important; }
+  ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 10px !important; }
+}
+
+.sd-color-input {
+  width: 48px;
+  height: 32px;
+  border: 1px solid var(--asms-border);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px;
+  background: transparent;
+}
+
+.sd-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--asms-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--asms-text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  mat-icon { font-size: 16px; height: 16px; width: 16px; }
+
+  &:hover { background: var(--asms-surface-variant); }
+}
+
+.sd-file-hidden { display: none; }
+
+/* ── SSO Endpoints box ───────────────────────────────────────────── */
+
+.sd-endpoints-box {
+  margin-top: 8px;
+  padding: 14px 16px;
+  background: var(--asms-surface-variant);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sd-endpoints-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--asms-text-secondary);
+  margin: 0 0 4px;
+}
+
+.sd-endpoint-line {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  color: var(--asms-text-primary);
+  display: block;
+}
+
+/* ── Compliance frameworks ───────────────────────────────────────── */
+
+.sd-frameworks {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.sd-framework-chip {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--asms-success-bg);
+  color: var(--asms-success);
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+/* ── Danger Zone ─────────────────────────────────────────────────── */
+
+.sd-danger-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--asms-danger-bg);
+  border: 1px solid rgba(198, 40, 40, 0.2);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--asms-danger);
+  margin-bottom: 16px;
+
+  .sd-danger-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.sd-danger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--asms-border-light);
+
+  &:last-child { border-bottom: none; }
+}
+
+.sd-danger-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sd-danger-row-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--asms-text-primary);
+}
+
+.sd-danger-delete-label {
+  color: var(--asms-danger);
+}
+
+.sd-danger-row-desc {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+}
+
+.sd-danger-btn-suspend {
+  flex-shrink: 0;
+  font-size: 13px !important;
+  border-color: var(--asms-border) !important;
+  color: var(--asms-text-primary) !important;
+
+  mat-icon { font-size: 16px; height: 16px; width: 16px; }
+}
+
+.sd-danger-btn-transfer {
+  flex-shrink: 0;
+  font-size: 13px !important;
+  background: var(--asms-primary) !important;
+  color: #fff !important;
+
+  mat-icon { font-size: 16px; height: 16px; width: 16px; }
+}
+
+.sd-danger-btn-delete {
+  flex-shrink: 0;
+  font-size: 13px !important;
+  background: var(--asms-danger) !important;
+  color: #fff !important;
+
+  mat-icon { font-size: 16px; height: 16px; width: 16px; }
+}
+
+/* ── Footer ──────────────────────────────────────────────────────── */
+
+.sd-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 24px;
+  flex-shrink: 0;
+
+  button[mat-stroked-button] {
+    border-color: var(--asms-border) !important;
+    color: var(--asms-text-primary) !important;
+  }
+}
