@@ -18,8 +18,8 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { OrgFormDialogComponent, OrgFormDialogData } from './org-form-dialog/org-form-dialog.component';
-import { OrgSettingsDialogComponent, OrgSettingsDialogData, OrgSecuritySettings } from './org-settings-dialog/org-settings-dialog.component';
-import { OrganizationDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
+import { OrgSettingsDialogComponent, OrgSettingsDialogData } from './org-settings-dialog/org-settings-dialog.component';
+import { OrganizationDto, OrganizationSettingsDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
 
 @Component({
   selector: 'asms-organizations',
@@ -50,7 +50,6 @@ export class OrganizationsComponent implements OnInit {
 
   readonly searchCtrl = this.fb.control('');
   readonly searchTerm = signal('');
-  readonly orgSettingsMap = signal<Map<string, OrgSecuritySettings>>(new Map());
 
   readonly filteredItems = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
@@ -127,8 +126,17 @@ export class OrganizationsComponent implements OnInit {
     return OrganizationsComponent.AVATAR_COLORS[idx];
   }
 
-  getOrgSettings(orgId: string): OrgSecuritySettings | undefined {
-    return this.orgSettingsMap().get(orgId);
+  getOrgSettings(orgId: string): OrganizationSettingsDto | undefined {
+    return this.store.settingsMap()[orgId];
+  }
+
+  private static readonly IDP_LABELS: Record<string, string> = {
+    OKTA: 'Okta', AZURE_AD: 'Azure AD', GOOGLE_WORKSPACE: 'Google Workspace',
+    AUTH0: 'Auth0', ONE_LOGIN: 'OneLogin', PING_IDENTITY: 'Ping Identity',
+  };
+
+  getIdpLabel(idp: string | undefined): string | undefined {
+    return idp ? (OrganizationsComponent.IDP_LABELS[idp] ?? idp) : undefined;
   }
 
   openMembersDialog(_org: OrganizationDto): void {
@@ -153,15 +161,9 @@ export class OrganizationsComponent implements OnInit {
         exitAnimationDuration:  '150ms'
       })
       .afterClosed()
-      .subscribe((result: OrgSecuritySettings | 'deleted' | 'suspended' | 'activated' | null) => {
-        if (result === 'deleted' || result === 'suspended' || result === 'activated') {
+      .subscribe((result: 'saved' | 'deleted' | 'suspended' | 'activated' | null) => {
+        if (result === 'deleted' || result === 'suspended' || result === 'activated' || result === 'saved') {
           this.store.loadAll(this.store.pageIndex(), this.store.pageSize());
-        } else if (result && typeof result === 'object') {
-          this.orgSettingsMap.update(map => {
-            const next = new Map(map);
-            next.set(org.id, result);
-            return next;
-          });
         }
       });
   }

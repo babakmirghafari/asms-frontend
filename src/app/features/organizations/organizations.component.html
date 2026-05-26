@@ -97,7 +97,7 @@
             </span>
             <span class="org-sec-badge" [class.org-sec-badge--on]="getOrgSettings(org.id)?.ssoEnabled">
               <mat-icon>key</mat-icon>
-              {{ getOrgSettings(org.id)?.ssoEnabled ? (getOrgSettings(org.id)?.identityProvider ?? 'SSO') : 'SSO Off' }}
+              {{ getOrgSettings(org.id)?.ssoEnabled ? (getIdpLabel(getOrgSettings(org.id)?.identityProvider) ?? 'SSO') : 'SSO Off' }}
             </span>
           </div>
 

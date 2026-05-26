@@ -1,10 +1,11 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { firstValueFrom, Observable } from 'rxjs';
-import { OrganizationsService, OrganizationDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto, PagedResponseDto } from '@babakmirghafari/asms-api-client';
+import { OrganizationsService, OrganizationDto, OrganizationSettingsDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto, UpdateOrganizationSettingsRequestDto, PagedResponseDto } from '@babakmirghafari/asms-api-client';
 
 export interface OrganizationsState {
   items: OrganizationDto[];
+  settingsMap: Record<string, OrganizationSettingsDto>;
   totalElements: number;
   pageIndex: number;
   pageSize: number;
@@ -14,7 +15,7 @@ export interface OrganizationsState {
 
 export const OrganizationsStore = signalStore(
   { providedIn: 'root' },
-  withState<OrganizationsState>({ items: [], totalElements: 0, pageIndex: 0, pageSize: 20, loading: false, error: null }),
+  withState<OrganizationsState>({ items: [], settingsMap: {}, totalElements: 0, pageIndex: 0, pageSize: 20, loading: false, error: null }),
   withComputed((store) => ({
     isLoading: computed(() => store.loading()),
     isEmpty: computed(() => store.items().length === 0 && !store.loading()),
@@ -58,6 +59,18 @@ export const OrganizationsStore = signalStore(
           await firstValueFrom(svc.deleteOrganization(id));
           patchState(store, { items: store.items().filter(o => o.id !== id), totalElements: store.totalElements() - 1, loading: false });
         } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); }
+      },
+      async loadSettings(orgId: string): Promise<OrganizationSettingsDto> {
+        const obs: Observable<OrganizationSettingsDto> = svc.getOrganizationSettings(orgId);
+        const settings = await firstValueFrom(obs);
+        patchState(store, { settingsMap: { ...store.settingsMap(), [orgId]: settings } });
+        return settings;
+      },
+      async saveSettings(orgId: string, dto: UpdateOrganizationSettingsRequestDto): Promise<OrganizationSettingsDto> {
+        const obs: Observable<OrganizationSettingsDto> = svc.updateOrganizationSettings(orgId, dto);
+        const updated = await firstValueFrom(obs);
+        patchState(store, { settingsMap: { ...store.settingsMap(), [orgId]: updated } });
+        return updated;
       }
     };
   })

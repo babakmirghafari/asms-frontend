@@ -27,8 +27,14 @@
   </div>
 </div>
 
+@if (isLoadingSettings()) {
+  <div class="sd-loading-center">
+    <mat-spinner diameter="40" />
+  </div>
+}
+
 <!-- Tab group -->
-<mat-tab-group class="sd-tabs" animationDuration="150ms">
+<mat-tab-group class="sd-tabs" animationDuration="150ms" [class.sd-tabs--hidden]="isLoadingSettings()">
 
   <!-- ── Security ─────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_SECURITY' | translate">
@@ -101,8 +107,8 @@
         <span class="sd-row-label">{{ 'ORGANIZATIONS.IDENTITY_PROVIDER' | translate }}</span>
         <mat-form-field appearance="outline" class="sd-wide-field">
           <mat-select formControlName="identityProvider">
-            @for (p of identityProviders; track p) {
-              <mat-option [value]="p">{{ p }}</mat-option>
+            @for (p of identityProviders; track p.value) {
+              <mat-option [value]="p.value">{{ p.label }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -308,7 +314,7 @@
 <!-- Footer -->
 <div class="sd-footer">
   <button mat-stroked-button (click)="close()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-raised-button color="primary" [disabled]="isSaving() || generalForm.invalid" (click)="save()">
+  <button mat-raised-button color="primary" [disabled]="isSaving() || isLoadingSettings()" (click)="save()">
     @if (isSaving()) {
       <mat-spinner diameter="16" class="sd-save-spinner" />
     } @else {

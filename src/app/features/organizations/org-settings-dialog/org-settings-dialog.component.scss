@@ -87,11 +87,23 @@
 
 /* ── Tabs ────────────────────────────────────────────────────────── */
 
+.sd-loading-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
 .sd-tabs {
   flex: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+
+  &--hidden {
+    display: none;
+  }
 
   ::ng-deep .mat-mdc-tab-body-wrapper {
     flex: 1;

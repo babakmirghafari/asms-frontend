@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { LowerCasePipe } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,20 +13,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { OrganizationDto, UpdateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
+import { OrganizationDto, OrganizationSettingsDto, UpdateOrganizationRequestDto, UpdateOrganizationSettingsRequestDto } from '@babakmirghafari/asms-api-client';
 import { OrganizationsStore } from '../organizations.store';
 
 export interface OrgSettingsDialogData {
   org: OrganizationDto;
   avatarColor: string;
   initials: string;
-}
-
-export interface OrgSecuritySettings {
-  requireMfa: boolean;
-  forceMfaOnSensitive: boolean;
-  ssoEnabled: boolean;
-  identityProvider: string;
 }
 
 @Component({
@@ -43,7 +36,7 @@ export interface OrgSecuritySettings {
     TranslateModule
   ]
 })
-export class OrgSettingsDialogComponent {
+export class OrgSettingsDialogComponent implements OnInit {
   readonly data: OrgSettingsDialogData = inject(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<OrgSettingsDialogComponent>);
   private readonly fb = inject(FormBuilder);
@@ -52,9 +45,18 @@ export class OrgSettingsDialogComponent {
   private readonly translate = inject(TranslateService);
 
   isSaving = signal(false);
+  isLoadingSettings = signal(true);
   readonly logoPreviewUrl = signal<string | null>(this.data.org.logoUrl ?? null);
 
-  readonly identityProviders = ['Okta', 'Azure AD', 'Google Workspace', 'Auth0', 'OneLogin', 'Ping Identity'];
+  readonly identityProviders: { value: OrganizationSettingsDto.IdentityProviderEnum; label: string }[] = [
+    { value: 'OKTA',             label: 'Okta' },
+    { value: 'AZURE_AD',         label: 'Azure AD' },
+    { value: 'GOOGLE_WORKSPACE', label: 'Google Workspace' },
+    { value: 'AUTH0',            label: 'Auth0' },
+    { value: 'ONE_LOGIN',        label: 'OneLogin' },
+    { value: 'PING_IDENTITY',    label: 'Ping Identity' },
+  ];
+
   readonly dataResidencyRegions = [
     { value: 'us-east-1',      label: 'US East (N. Virginia)' },
     { value: 'eu-central-1',   label: 'EU Central (Frankfurt)' },
@@ -71,7 +73,7 @@ export class OrgSettingsDialogComponent {
 
   readonly ssoForm = this.fb.group({
     ssoEnabled:       [false],
-    identityProvider: ['Okta'],
+    identityProvider: ['OKTA' as OrganizationSettingsDto.IdentityProviderEnum],
     autoProvision:    [false],
     autoDeprovision:  [false]
   });
@@ -93,6 +95,48 @@ export class OrgSettingsDialogComponent {
     return (this.data.org.name ?? '').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
   }
 
+  async ngOnInit(): Promise<void> {
+    try {
+      const existing = this.store.settingsMap()[this.data.org.id]
+        ?? await this.store.loadSettings(this.data.org.id);
+      this.patchForms(existing);
+    } catch {
+      // backend unavailable — forms stay at defaults
+    } finally {
+      this.isLoadingSettings.set(false);
+    }
+  }
+
+  private patchForms(s: OrganizationSettingsDto): void {
+    this.securityForm.patchValue({
+      requireMfa:            s.requireMfa,
+      forceMfaOnSensitive:   s.forceMfaOnSensitive,
+      sessionTimeout:        s.sessionTimeout,
+      maxConcurrentSessions: s.maxConcurrentSessions,
+      allowedIpCidrs:        s.allowedIpCidrs ?? '',
+    });
+    this.ssoForm.patchValue({
+      ssoEnabled:       s.ssoEnabled,
+      identityProvider: s.identityProvider ?? 'OKTA',
+      autoProvision:    s.autoProvision,
+      autoDeprovision:  s.autoDeprovision,
+    });
+    this.brandingForm.patchValue({
+      primaryColor:   s.primaryColor ?? '#2563EB',
+      customLoginUrl: s.customLoginUrl ?? '',
+      welcomeMessage: s.welcomeMessage ?? '',
+    });
+    this.complianceForm.patchValue({
+      dataResidency:                 s.dataResidency ?? 'eu-central-1',
+      enforceDataResidencyOnExports: s.enforceDataResidencyOnExports,
+      longTermAuditRetention:        s.longTermAuditRetention,
+      gdprDataExportEndpoint:        s.gdprDataExportEndpoint,
+    });
+    if (s.primaryColor) {
+      this.brandingForm.patchValue({ primaryColor: s.primaryColor });
+    }
+  }
+
   onLogoSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -108,24 +152,47 @@ export class OrgSettingsDialogComponent {
   async save(): Promise<void> {
     this.isSaving.set(true);
     try {
-      const dto: UpdateOrganizationRequestDto = {
+      const sv = this.securityForm.value;
+      const so = this.ssoForm.value;
+      const br = this.brandingForm.value;
+      const co = this.complianceForm.value;
+
+      const settingsDto: UpdateOrganizationSettingsRequestDto = {
+        requireMfa:                    sv.requireMfa            ?? false,
+        forceMfaOnSensitive:           sv.forceMfaOnSensitive   ?? false,
+        sessionTimeout:                sv.sessionTimeout        ?? 30,
+        maxConcurrentSessions:         sv.maxConcurrentSessions ?? 3,
+        allowedIpCidrs:                sv.allowedIpCidrs        || undefined,
+        ssoEnabled:                    so.ssoEnabled            ?? false,
+        identityProvider:              so.identityProvider as OrganizationSettingsDto.IdentityProviderEnum,
+        autoProvision:                 so.autoProvision         ?? false,
+        autoDeprovision:               so.autoDeprovision       ?? false,
+        primaryColor:                  br.primaryColor          || undefined,
+        customLoginUrl:                br.customLoginUrl        || undefined,
+        welcomeMessage:                br.welcomeMessage        || undefined,
+        dataResidency:                 co.dataResidency         || undefined,
+        enforceDataResidencyOnExports: co.enforceDataResidencyOnExports ?? false,
+        longTermAuditRetention:        co.longTermAuditRetention        ?? false,
+        gdprDataExportEndpoint:        co.gdprDataExportEndpoint        ?? false,
+      };
+
+      const orgDto: UpdateOrganizationRequestDto = {
         name:        this.data.org.name,
         description: this.data.org.description,
         logoUrl:     this.logoPreviewUrl() ?? undefined,
       };
-      await this.store.update(this.data.org.id, dto);
+
+      await Promise.all([
+        this.store.update(this.data.org.id, orgDto),
+        this.store.saveSettings(this.data.org.id, settingsDto),
+      ]);
+
       this.snackBar.open(
         this.translate.instant('ORGANIZATIONS.SETTINGS_SAVED'),
         this.translate.instant('COMMON.CLOSE'),
         { duration: 3000, panelClass: 'snackbar-success' }
       );
-      const result: OrgSecuritySettings = {
-        requireMfa:          this.securityForm.value.requireMfa          ?? false,
-        forceMfaOnSensitive: this.securityForm.value.forceMfaOnSensitive ?? false,
-        ssoEnabled:          this.ssoForm.value.ssoEnabled               ?? false,
-        identityProvider:    this.ssoForm.value.identityProvider         ?? 'Okta',
-      };
-      this.dialogRef.close(result);
+      this.dialogRef.close('saved');
     } catch {
       this.snackBar.open(
         this.translate.instant('COMMON.ERROR'),
@@ -138,10 +205,7 @@ export class OrgSettingsDialogComponent {
   }
 
   async suspendOrg(): Promise<void> {
-    await this.store.update(this.data.org.id, {
-      name:   this.data.org.name,
-      status: 'SUSPENDED'
-    });
+    await this.store.update(this.data.org.id, { name: this.data.org.name, status: 'SUSPENDED' });
     this.snackBar.open(
       this.translate.instant('ORGANIZATIONS.SUSPENDED_SUCCESS'),
       this.translate.instant('COMMON.CLOSE'),
@@ -151,10 +215,7 @@ export class OrgSettingsDialogComponent {
   }
 
   async activateOrg(): Promise<void> {
-    await this.store.update(this.data.org.id, {
-      name:   this.data.org.name,
-      status: 'ACTIVE'
-    });
+    await this.store.update(this.data.org.id, { name: this.data.org.name, status: 'ACTIVE' });
     this.snackBar.open(
       this.translate.instant('ORGANIZATIONS.ACTIVATED_SUCCESS'),
       this.translate.instant('COMMON.CLOSE'),
