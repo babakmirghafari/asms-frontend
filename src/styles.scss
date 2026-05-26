@@ -1,7 +1,7 @@
 // ASMS Global Styles — light enterprise IAM platform
 // Design source: ASMS_Figma_Product_UI_Prompt.md
-// Theme: Light orange primary — matches login page
-// Sync date: 2026-05-23
+// Theme: Blue primary
+// Sync date: 2026-05-26
 
 @use './styles/theme' as *;
 
@@ -13,10 +13,10 @@
   --asms-surface-variant: #f4f6f9;
   --asms-surface-hover: #eaeff5;
 
-  // Sidebar — dark warm (matches login right panel feel)
-  --asms-sidebar: #1c1007;
-  --asms-sidebar-hover: #2d1a08;
-  --asms-sidebar-active: #F97316;
+  // Sidebar — dark navy
+  --asms-sidebar: #0f172a;
+  --asms-sidebar-hover: #1e293b;
+  --asms-sidebar-active: #2563EB;
   --asms-sidebar-text: rgba(255, 255, 255, 0.87);
   --asms-sidebar-text-secondary: rgba(255, 255, 255, 0.54);
   --asms-sidebar-icon: rgba(255, 255, 255, 0.7);
@@ -28,13 +28,13 @@
   --asms-border: #dde3ec;
   --asms-border-light: #eef1f6;
 
-  // Brand colors — orange, matching login CTA exactly
-  --asms-primary: #F97316;
-  --asms-primary-dark: #EA580C;
-  --asms-primary-hover: #C2410C;
-  --asms-primary-light: #fff7ed;
-  --asms-accent: #F59E0B;
-  --asms-accent-hover: #D97706;
+  // Brand colors — blue
+  --asms-primary: #2563EB;
+  --asms-primary-dark: #1D4ED8;
+  --asms-primary-hover: #1E40AF;
+  --asms-primary-light: #EFF6FF;
+  --asms-accent: #3B82F6;
+  --asms-accent-hover: #2563EB;
 
   // Semantic colors
   --asms-success: #2e7d32;
@@ -46,8 +46,8 @@
   --asms-info: #1565c0;
   --asms-info-bg: #e3f2fd;
   --asms-locked: #b71c1c;
-  --asms-pending: #EA580C;
-  --asms-pending-bg: #fff7ed;
+  --asms-pending: #2563EB;
+  --asms-pending-bg: #EFF6FF;
 
   // Text
   --asms-text-primary: #1a1a2e;
@@ -98,16 +98,16 @@
 }
 .mat-mdc-icon-button { border-radius: 50% !important; }
 
-// Primary raised buttons — orange gradient matching the Sign In button
+// Primary raised buttons — blue gradient
 .mat-mdc-raised-button.mat-primary {
-  background: linear-gradient(135deg, #F97316, #EA580C) !important;
+  background: linear-gradient(135deg, #3B82F6, #2563EB) !important;
   color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #EA580C, #C2410C) !important;
-    box-shadow: 0 6px 18px rgba(249, 115, 22, 0.45) !important;
+    background: linear-gradient(135deg, #2563EB, #1D4ED8) !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45) !important;
   }
 
   &:disabled {
@@ -129,19 +129,24 @@
   border-radius: 16px !important;
 }
 
-// Settings sidebar panel — full-height drawer from the right
+// Settings sidebar panel — full-height drawer flush to the right edge
 .settings-sidebar-panel {
+  border-radius: 0 !important;
+
   .mat-mdc-dialog-container {
     padding: 0 !important;
     height: 100vh !important;
     max-height: 100vh !important;
+    border-radius: 0 !important;
   }
 
-  .mat-mdc-dialog-container .mdc-dialog__surface {
+  .mat-mdc-dialog-container .mdc-dialog__surface,
+  .mdc-dialog__surface {
     border-radius: 0 !important;
     height: 100vh !important;
     max-height: 100vh !important;
     overflow: hidden !important;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12) !important;
   }
 }
 
