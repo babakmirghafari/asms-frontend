@@ -138,7 +138,16 @@ export class OrganizationsComponent implements OnInit {
       initials:    this.getInitials(org.name)
     };
     this.dialog
-      .open(OrgSettingsDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: false })
+      .open(OrgSettingsDialogComponent, {
+        data,
+        position:              { right: '0', top: '0' },
+        height:                '100vh',
+        width:                 '540px',
+        maxWidth:              '95vw',
+        panelClass:            'settings-sidebar-panel',
+        enterAnimationDuration: '200ms',
+        exitAnimationDuration:  '150ms'
+      })
       .afterClosed()
       .subscribe(result => {
         if (result === 'deleted' || result === 'suspended') {

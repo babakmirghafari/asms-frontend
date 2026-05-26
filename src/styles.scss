@@ -129,6 +129,22 @@
   border-radius: 16px !important;
 }
 
+// Settings sidebar panel — full-height drawer from the right
+.settings-sidebar-panel {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    border-radius: 0 !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+}
+
 // Rounder cards
 .mat-mdc-card { border-radius: 12px !important; }
 
