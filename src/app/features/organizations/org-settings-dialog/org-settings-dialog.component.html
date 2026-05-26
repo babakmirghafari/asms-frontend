@@ -40,11 +40,6 @@
   <mat-tab [label]="'ORGANIZATIONS.TAB_SECURITY' | translate">
     <form [formGroup]="securityForm" class="sd-tab-content">
 
-      <div class="sd-api-notice">
-        <mat-icon>info</mat-icon>
-        <span>{{ 'ORGANIZATIONS.API_NOTICE' | translate }}</span>
-      </div>
-
       <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_AUTHENTICATION' | translate }}</p>
 
       <div class="sd-row">
@@ -90,11 +85,6 @@
   <!-- ── SSO ──────────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_SSO' | translate">
     <form [formGroup]="ssoForm" class="sd-tab-content">
-
-      <div class="sd-api-notice">
-        <mat-icon>info</mat-icon>
-        <span>{{ 'ORGANIZATIONS.API_NOTICE' | translate }}</span>
-      </div>
 
       <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_SSO_PROVIDER' | translate }}</p>
 
@@ -167,10 +157,6 @@
         </div>
       </div>
 
-      <div class="sd-api-notice" style="margin-top: 8px">
-        <mat-icon>info</mat-icon>
-        <span>{{ 'ORGANIZATIONS.BRANDING_NOTICE' | translate }}</span>
-      </div>
 
       <form [formGroup]="brandingForm">
         <div class="sd-row sd-row-input">
@@ -202,11 +188,6 @@
   <!-- ── Compliance ────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_COMPLIANCE' | translate">
     <form [formGroup]="complianceForm" class="sd-tab-content">
-
-      <div class="sd-api-notice">
-        <mat-icon>info</mat-icon>
-        <span>{{ 'ORGANIZATIONS.API_NOTICE' | translate }}</span>
-      </div>
 
       <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_ACTIVE_FRAMEWORKS' | translate }}</p>
 
