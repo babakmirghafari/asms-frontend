@@ -21,6 +21,13 @@ export interface OrgSettingsDialogData {
   initials: string;
 }
 
+export interface OrgSecuritySettings {
+  requireMfa: boolean;
+  forceMfaOnSensitive: boolean;
+  ssoEnabled: boolean;
+  identityProvider: string;
+}
+
 @Component({
   selector: 'asms-org-settings-dialog',
   templateUrl: './org-settings-dialog.component.html',
@@ -92,17 +99,24 @@ export class OrgSettingsDialogComponent {
   async save(): Promise<void> {
     this.isSaving.set(true);
     try {
-      // Only logoUrl from branding is in the contract UpdateOrganizationRequestDto
       const logoUrl = this.brandingForm.value.logoUrl?.trim() || undefined;
       await this.store.update(this.data.org.id, {
         name:        this.data.org.name,
         description: this.data.org.description,
+        logoUrl,
       });
       this.snackBar.open(
         this.translate.instant('ORGANIZATIONS.SETTINGS_SAVED'),
         this.translate.instant('COMMON.CLOSE'),
         { duration: 3000, panelClass: 'snackbar-success' }
       );
+      const result: OrgSecuritySettings = {
+        requireMfa:          this.securityForm.value.requireMfa          ?? false,
+        forceMfaOnSensitive: this.securityForm.value.forceMfaOnSensitive ?? false,
+        ssoEnabled:          this.ssoForm.value.ssoEnabled               ?? false,
+        identityProvider:    this.ssoForm.value.identityProvider         ?? 'Okta',
+      };
+      this.dialogRef.close(result);
     } catch {
       this.snackBar.open(
         this.translate.instant('COMMON.ERROR'),

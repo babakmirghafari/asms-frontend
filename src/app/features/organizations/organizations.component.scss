@@ -149,6 +149,45 @@
   font-style: italic;
 }
 
+/* ── Security & SSO badges ──────────────────────────────────────── */
+
+.org-card-security {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.org-sec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--asms-surface-variant);
+  color: var(--asms-text-secondary);
+  border: 1px solid var(--asms-border);
+
+  mat-icon {
+    font-size: 12px;
+    height: 12px;
+    width: 12px;
+  }
+
+  &--on {
+    background: var(--asms-primary-light);
+    color: var(--asms-primary);
+    border-color: rgba(37, 99, 235, 0.25);
+  }
+
+  &--warn {
+    background: var(--asms-warning-bg);
+    color: var(--asms-warning);
+    border-color: rgba(217, 119, 6, 0.25);
+  }
+}
+
 /* ── Footer actions ─────────────────────────────────────────────── */
 
 .org-card-actions {

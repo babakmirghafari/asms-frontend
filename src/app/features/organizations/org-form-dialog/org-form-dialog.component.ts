@@ -14,7 +14,7 @@ import {
   UsersService, UserSummaryDto, PagedResponseDto,
   OrganizationsService
 } from '@babakmirghafari/asms-api-client';
-import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
+import { AsmsModalComponent } from '../../../shared/components/modal';
 
 export interface OrgFormDialogData {
   org?: OrganizationDto;
@@ -61,11 +61,10 @@ export class OrgFormDialogComponent implements OnInit {
   ];
 
   readonly form = this.fb.group({
-    name:                 [this.data.org?.name ?? '',        [Validators.required, Validators.minLength(2)]],
-    // domain is only required on create — OrganizationDto has no domain field
-    domain:               ['',                               this.data.isEdit ? [] : [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/)]],
+    name:                 [this.data.org?.name ?? '',       [Validators.required, Validators.minLength(2)]],
+    domain:               [this.data.org?.domain ?? '',     this.data.isEdit ? [] : [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/)]],
     description:          [this.data.org?.description ?? ''],
-    plan:                 ['STARTER'],
+    plan:                 ['Starter'],
     country:              [''],
     ownerUserId:          [''],
     parentOrganizationId: [this.data.org?.parentOrganizationId ?? null]
@@ -120,24 +119,24 @@ export class OrgFormDialogComponent implements OnInit {
       return;
     }
 
-    const v = this.form.value;
+    const value = this.form.value;
 
     if (this.data.isEdit) {
       const dto: UpdateOrganizationRequestDto = {
-        name:        v.name!,
-        description: v.description?.trim() || undefined,
+        name:        value.name!,
+        description: value.description?.trim() || undefined,
         logoUrl:     this.logoPreviewUrl ?? undefined,
       };
       this.dialogRef.close(dto);
     } else {
       const dto: CreateOrganizationRequestDto = {
-        name:                 v.name!,
-        domain:               v.domain?.trim() || undefined,
-        description:          v.description?.trim() || undefined,
-        plan:                 (v.plan as CreateOrganizationRequestDto.PlanEnum) || undefined,
-        country:              v.country?.trim() || undefined,
-        ownerUserId:          v.ownerUserId || undefined,
-        parentOrganizationId: v.parentOrganizationId || undefined,
+        name:                 value.name!,
+        domain:               value.domain?.trim() || undefined,
+        description:          value.description?.trim() || undefined,
+        plan:                 (value.plan as CreateOrganizationRequestDto.PlanEnum) || undefined,
+        country:              value.country?.trim() || undefined,
+        ownerUserId:          value.ownerUserId || undefined,
+        parentOrganizationId: value.parentOrganizationId || undefined,
         logoUrl:              this.logoPreviewUrl ?? undefined,
       };
       this.dialogRef.close(dto);

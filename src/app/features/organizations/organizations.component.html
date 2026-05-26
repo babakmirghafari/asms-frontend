@@ -85,6 +85,22 @@
             <p class="org-card-description">{{ org.description | slice:0:80 }}{{ (org.description?.length ?? 0) > 80 ? '...' : '' }}</p>
           }
 
+          <!-- Security & SSO summary -->
+          <div class="org-card-security">
+            <span class="org-sec-badge" [class.org-sec-badge--on]="getOrgSettings(org.id)?.requireMfa">
+              <mat-icon>security</mat-icon>
+              MFA {{ getOrgSettings(org.id)?.requireMfa ? 'On' : 'Off' }}
+            </span>
+            <span class="org-sec-badge" [class.org-sec-badge--warn]="getOrgSettings(org.id)?.forceMfaOnSensitive">
+              <mat-icon>verified_user</mat-icon>
+              Sensitive {{ getOrgSettings(org.id)?.forceMfaOnSensitive ? 'Enforced' : 'Off' }}
+            </span>
+            <span class="org-sec-badge" [class.org-sec-badge--on]="getOrgSettings(org.id)?.ssoEnabled">
+              <mat-icon>key</mat-icon>
+              {{ getOrgSettings(org.id)?.ssoEnabled ? (getOrgSettings(org.id)?.identityProvider ?? 'SSO') : 'SSO Off' }}
+            </span>
+          </div>
+
           <mat-divider />
 
           <!-- Footer actions -->

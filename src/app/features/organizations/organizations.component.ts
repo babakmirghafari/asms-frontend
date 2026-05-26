@@ -18,8 +18,8 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { OrgFormDialogComponent, OrgFormDialogData } from './org-form-dialog/org-form-dialog.component';
-import { OrgSettingsDialogComponent, OrgSettingsDialogData } from './org-settings-dialog/org-settings-dialog.component';
-import { OrganizationDto, CreateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
+import { OrgSettingsDialogComponent, OrgSettingsDialogData, OrgSecuritySettings } from './org-settings-dialog/org-settings-dialog.component';
+import { OrganizationDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
 
 @Component({
   selector: 'asms-organizations',
@@ -50,6 +50,7 @@ export class OrganizationsComponent implements OnInit {
 
   readonly searchCtrl = this.fb.control('');
   readonly searchTerm = signal('');
+  readonly orgSettingsMap = signal<Map<string, OrgSecuritySettings>>(new Map());
 
   readonly filteredItems = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
@@ -101,10 +102,9 @@ export class OrganizationsComponent implements OnInit {
     this.dialog
       .open(OrgFormDialogComponent, { data, width: 'min(560px, 95vw)', maxWidth: '95vw', disableClose: true })
       .afterClosed()
-      .subscribe((dto: CreateOrganizationRequestDto | null) => {
+      .subscribe((dto: UpdateOrganizationRequestDto | null) => {
         if (!dto) return;
-        // Map CreateOrganizationRequestDto to UpdateOrganizationRequestDto
-        this.store.update(org.id, { name: dto.name, description: dto.description })
+        this.store.update(org.id, { name: dto.name, description: dto.description, logoUrl: dto.logoUrl })
           .then(() => this.snackBar.open(
             this.translate.instant('ORGANIZATIONS.UPDATED_SUCCESS'),
             this.translate.instant('COMMON.CLOSE'),
@@ -125,6 +125,10 @@ export class OrganizationsComponent implements OnInit {
   getAvatarColor(name: string): string {
     const idx = (name?.charCodeAt(0) ?? 0) % OrganizationsComponent.AVATAR_COLORS.length;
     return OrganizationsComponent.AVATAR_COLORS[idx];
+  }
+
+  getOrgSettings(orgId: string): OrgSecuritySettings | undefined {
+    return this.orgSettingsMap().get(orgId);
   }
 
   openMembersDialog(_org: OrganizationDto): void {
@@ -149,9 +153,15 @@ export class OrganizationsComponent implements OnInit {
         exitAnimationDuration:  '150ms'
       })
       .afterClosed()
-      .subscribe(result => {
+      .subscribe((result: OrgSecuritySettings | 'deleted' | 'suspended' | null) => {
         if (result === 'deleted' || result === 'suspended') {
           this.store.loadAll(this.store.pageIndex(), this.store.pageSize());
+        } else if (result && typeof result === 'object') {
+          this.orgSettingsMap.update(map => {
+            const next = new Map(map);
+            next.set(org.id, result);
+            return next;
+          });
         }
       });
   }
