@@ -16,12 +16,12 @@
     </div>
   }
   <div class="sd-org-info">
-    <div class="sd-org-name">{{ generalForm.value.name || data.org.name }}</div>
+    <div class="sd-org-name">{{ data.org.name }}</div>
     <div class="sd-org-meta">
       {{ data.org.memberCount ?? 0 }} {{ 'ORGANIZATIONS.MEMBERS' | translate | lowercase }}
       &nbsp;·&nbsp;
-      <span [class]="'sd-status sd-status--' + (generalForm.value.status ?? data.org.status | lowercase)">
-        {{ generalForm.value.status ?? data.org.status }}
+      <span [class]="'sd-status sd-status--' + (data.org.status | lowercase)">
+        {{ data.org.status }}
       </span>
     </div>
   </div>
@@ -29,68 +29,6 @@
 
 <!-- Tab group -->
 <mat-tab-group class="sd-tabs" animationDuration="150ms">
-
-  <!-- ── General ──────────────────────────────────────── -->
-  <mat-tab [label]="'ORGANIZATIONS.TAB_GENERAL' | translate">
-    <form [formGroup]="generalForm" class="sd-tab-content">
-
-      <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_GENERAL' | translate }}</p>
-
-      <div class="sd-row sd-row-input">
-        <span class="sd-row-label">{{ 'ORGANIZATIONS.NAME' | translate }}</span>
-        <mat-form-field appearance="outline" class="sd-wide-field">
-          <input matInput formControlName="name" />
-          @if (generalForm.get('name')?.hasError('required') && generalForm.get('name')?.touched) {
-            <mat-error>Name is required</mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <div class="sd-row sd-row-input">
-        <span class="sd-row-label">{{ 'COMMON.DESCRIPTION' | translate }}</span>
-        <mat-form-field appearance="outline" class="sd-wide-field">
-          <textarea matInput formControlName="description" rows="3" placeholder="Brief description of this org"></textarea>
-        </mat-form-field>
-      </div>
-
-      <div class="sd-row sd-row-input">
-        <div class="sd-row-text">
-          <span class="sd-row-label">{{ 'ORGANIZATIONS.STATUS' | translate }}</span>
-          <span class="sd-row-hint">{{ 'ORGANIZATIONS.STATUS_HINT' | translate }}</span>
-        </div>
-        <mat-form-field appearance="outline" class="sd-wide-field">
-          <mat-select formControlName="status">
-            <mat-option value="ACTIVE">Active</mat-option>
-            <mat-option value="INACTIVE">Inactive</mat-option>
-            <mat-option value="SUSPENDED">Suspended</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <p class="sd-section-label" style="margin-top: 8px">{{ 'ORGANIZATIONS.SECTION_INFO' | translate }}</p>
-
-      <div class="sd-row">
-        <span class="sd-row-label">{{ 'ORGANIZATIONS.DOMAIN' | translate }}</span>
-        <span class="sd-row-value">{{ data.org.domain || '—' }}</span>
-      </div>
-
-      <div class="sd-row">
-        <span class="sd-row-label">{{ 'ORGANIZATIONS.MEMBERS' | translate }}</span>
-        <span class="sd-row-value">{{ data.org.memberCount ?? 0 }}</span>
-      </div>
-
-      <div class="sd-row">
-        <span class="sd-row-label">{{ 'ORGANIZATIONS.CREATED_AT' | translate }}</span>
-        <span class="sd-row-value">{{ data.org.createdAt | date:'mediumDate' }}</span>
-      </div>
-
-      <div class="sd-row">
-        <span class="sd-row-label">{{ 'ORGANIZATIONS.UPDATED_AT' | translate }}</span>
-        <span class="sd-row-value">{{ data.org.updatedAt | date:'medium' }}</span>
-      </div>
-
-    </form>
-  </mat-tab>
 
   <!-- ── Security ─────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_SECURITY' | translate">

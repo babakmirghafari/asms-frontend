@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
-import { DatePipe, LowerCasePipe } from '@angular/common';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { LowerCasePipe } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,7 +35,7 @@ export interface OrgSecuritySettings {
   styleUrl: './org-settings-dialog.component.scss',
   standalone: true,
   imports: [
-    DatePipe, LowerCasePipe,
+    LowerCasePipe,
     ReactiveFormsModule,
     MatButtonModule, MatIconModule, MatTabsModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
@@ -61,14 +61,6 @@ export class OrgSettingsDialogComponent {
     { value: 'ap-southeast-1', label: 'AP Southeast (Singapore)' }
   ];
 
-  // ── Contract-backed form (UpdateOrganizationRequestDto) ──────────
-  readonly generalForm = this.fb.group({
-    name:        [this.data.org.name,        [Validators.required, Validators.minLength(2)]],
-    description: [this.data.org.description ?? ''],
-    status:      [this.data.org.status as UpdateOrganizationRequestDto.StatusEnum]
-  });
-
-  // ── Local-only forms (no contract backing) ────────────────────────
   readonly securityForm = this.fb.group({
     requireMfa:            [false],
     forceMfaOnSensitive:   [false],
@@ -114,18 +106,12 @@ export class OrgSettingsDialogComponent {
   }
 
   async save(): Promise<void> {
-    if (this.generalForm.invalid) {
-      this.generalForm.markAllAsTouched();
-      return;
-    }
     this.isSaving.set(true);
     try {
-      const g = this.generalForm.value;
       const dto: UpdateOrganizationRequestDto = {
-        name:        g.name!,
-        description: g.description?.trim() || undefined,
+        name:        this.data.org.name,
+        description: this.data.org.description,
         logoUrl:     this.logoPreviewUrl() ?? undefined,
-        status:      (g.status as UpdateOrganizationRequestDto.StatusEnum) || undefined,
       };
       await this.store.update(this.data.org.id, dto);
       this.snackBar.open(
@@ -153,7 +139,7 @@ export class OrgSettingsDialogComponent {
 
   async suspendOrg(): Promise<void> {
     await this.store.update(this.data.org.id, {
-      name:   this.generalForm.value.name ?? this.data.org.name,
+      name:   this.data.org.name,
       status: 'SUSPENDED'
     });
     this.snackBar.open(
@@ -166,7 +152,7 @@ export class OrgSettingsDialogComponent {
 
   async activateOrg(): Promise<void> {
     await this.store.update(this.data.org.id, {
-      name:   this.generalForm.value.name ?? this.data.org.name,
+      name:   this.data.org.name,
       status: 'ACTIVE'
     });
     this.snackBar.open(
