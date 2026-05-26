@@ -166,8 +166,8 @@
 }
 
 .sd-row-input {
-  align-items: flex-start;
-  padding: 12px 0;
+  align-items: center;
+  padding: 8px 0;
 }
 
 .sd-row-text {
@@ -256,20 +256,29 @@
 
 /* ── Form fields ─────────────────────────────────────────────────── */
 
+.sd-num-field,
+.sd-wide-field {
+  --mdc-outlined-text-field-container-height: 36px;
+
+  ::ng-deep {
+    .mat-mdc-form-field-infix {
+      padding-top: 6px !important;
+      padding-bottom: 6px !important;
+      min-height: unset !important;
+    }
+    .mat-mdc-text-field-wrapper { padding: 0 10px !important; }
+    .mdc-notched-outline__notch { max-width: calc(100% - 24px); }
+  }
+}
+
 .sd-num-field {
   width: 80px;
   flex-shrink: 0;
-
-  ::ng-deep .mat-mdc-form-field-infix { padding: 6px 0 !important; }
-  ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 10px !important; }
 }
 
 .sd-wide-field {
   width: 220px;
   flex-shrink: 0;
-
-  ::ng-deep .mat-mdc-form-field-infix { padding: 6px 0 !important; }
-  ::ng-deep .mat-mdc-text-field-wrapper { padding: 0 10px !important; }
 }
 
 .sd-color-input {
