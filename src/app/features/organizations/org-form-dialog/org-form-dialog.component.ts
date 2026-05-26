@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import {
-  OrganizationDto, CreateOrganizationRequestDto,
+  OrganizationDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto,
   UsersService, UserSummaryDto, PagedResponseDto,
   OrganizationsService
 } from '@babakmirghafari/asms-api-client';
@@ -55,9 +55,9 @@ export class OrgFormDialogComponent implements OnInit {
   readonly orgsLoading = signal(false);
 
   readonly plans = [
-    { value: 'STARTER',      label: 'Starter' },
-    { value: 'PROFESSIONAL', label: 'Professional' },
-    { value: 'ENTERPRISE',   label: 'Enterprise' }
+    { value: 'Starter',      label: 'Starter' },
+    { value: 'Professional', label: 'Professional' },
+    { value: 'Enterprise',   label: 'Enterprise' }
   ];
 
   readonly form = this.fb.group({
@@ -120,13 +120,27 @@ export class OrgFormDialogComponent implements OnInit {
       return;
     }
 
-    const dto: CreateOrganizationRequestDto = {
-      name:        this.form.value.name!,
-      description: this.form.value.description?.trim() || undefined,
-      logoUrl:     this.logoPreviewUrl ?? undefined,
-      ...(!this.data.isEdit && { parentOrganizationId: this.form.value.parentOrganizationId ?? undefined })
-    };
+    const v = this.form.value;
 
-    this.dialogRef.close(dto);
+    if (this.data.isEdit) {
+      const dto: UpdateOrganizationRequestDto = {
+        name:        v.name!,
+        description: v.description?.trim() || undefined,
+        logoUrl:     this.logoPreviewUrl ?? undefined,
+      };
+      this.dialogRef.close(dto);
+    } else {
+      const dto: CreateOrganizationRequestDto = {
+        name:                 v.name!,
+        domain:               v.domain?.trim() || undefined,
+        description:          v.description?.trim() || undefined,
+        plan:                 (v.plan as CreateOrganizationRequestDto.PlanEnum) || undefined,
+        country:              v.country?.trim() || undefined,
+        ownerUserId:          v.ownerUserId || undefined,
+        parentOrganizationId: v.parentOrganizationId || undefined,
+        logoUrl:              this.logoPreviewUrl ?? undefined,
+      };
+      this.dialogRef.close(dto);
+    }
   }
 }

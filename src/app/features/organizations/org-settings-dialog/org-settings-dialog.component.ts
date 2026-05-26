@@ -97,7 +97,6 @@ export class OrgSettingsDialogComponent {
       await this.store.update(this.data.org.id, {
         name:        this.data.org.name,
         description: this.data.org.description,
-        logoUrl
       });
       this.snackBar.open(
         this.translate.instant('ORGANIZATIONS.SETTINGS_SAVED'),
