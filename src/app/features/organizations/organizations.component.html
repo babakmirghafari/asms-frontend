@@ -69,12 +69,12 @@
               </span>
             </div>
             <div class="org-stat">
-              <span class="org-stat-label">{{ 'COMMON.CREATED_AT' | translate }}</span>
-              <span class="org-stat-value">{{ org.createdAt | date: 'dd MMM yyyy' }}</span>
+              <span class="org-stat-label">{{ 'ORGANIZATIONS.OWNER' | translate }}</span>
+              <span class="org-stat-value org-stat-empty">—</span>
             </div>
             <div class="org-stat">
-              <span class="org-stat-label">{{ 'COMMON.STATUS' | translate }}</span>
-              <span class="org-stat-value org-stat-status" [attr.data-status]="org.status">{{ org.status }}</span>
+              <span class="org-stat-label">{{ 'ORGANIZATIONS.COUNTRY' | translate }}</span>
+              <span class="org-stat-value org-stat-empty">—</span>
             </div>
           </div>
 
@@ -91,13 +91,13 @@
               <mat-icon>edit</mat-icon>
               {{ 'COMMON.EDIT' | translate }}
             </button>
-            <button mat-stroked-button class="org-action-btn">
+            <button mat-stroked-button class="org-action-btn" (click)="openMembersDialog(org)">
               <mat-icon>group</mat-icon>
               {{ 'ORGANIZATIONS.MEMBERS' | translate }}
             </button>
-            <button mat-stroked-button class="org-action-btn org-action-delete" (click)="confirmDelete(org)">
-              <mat-icon>delete_outline</mat-icon>
-              {{ 'COMMON.DELETE' | translate }}
+            <button mat-stroked-button class="org-action-btn" (click)="openSettings(org)">
+              <mat-icon>settings</mat-icon>
+              {{ 'COMMON.SETTINGS' | translate }}
             </button>
           </div>
         </div>

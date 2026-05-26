@@ -78,7 +78,8 @@
     "SUCCESS_SAVED": "Changes saved successfully",
     "CREATE": "Create",
     "STEP": "Step",
-    "OF": "of"
+    "OF": "of",
+    "SETTINGS": "Settings"
   },
   "MODAL": {
     "STEP_COUNTER": "Step {{current}} of {{total}}"

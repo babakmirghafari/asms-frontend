@@ -130,6 +130,10 @@ export class OrganizationsComponent implements OnInit {
     // Navigate to memberships filtered by this org — wired when memberships page is ready
   }
 
+  openSettings(_org: OrganizationDto): void {
+    // Opens org-level settings — sub-pages to be defined by user
+  }
+
   confirmDelete(org: OrganizationDto): void {
     const data: ConfirmDialogData = {
       titleKey: 'ORGANIZATIONS.DELETE_TITLE',

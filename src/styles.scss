@@ -7,11 +7,11 @@
 
 // CSS custom properties — DESIGN_SYSTEM tokens
 :root {
-  // Backgrounds — warm light tint matches orange brand
-  --asms-bg: #fff8f5;
+  // Backgrounds — cool blue-gray content area, white cards
+  --asms-bg: #eef1f6;
   --asms-surface: #ffffff;
-  --asms-surface-variant: #fff3ec;
-  --asms-surface-hover: #ffe8d6;
+  --asms-surface-variant: #f4f6f9;
+  --asms-surface-hover: #eaeff5;
 
   // Sidebar — dark warm (matches login right panel feel)
   --asms-sidebar: #1c1007;
@@ -24,9 +24,9 @@
   // Top bar — white
   --asms-topbar: #ffffff;
 
-  // Borders
-  --asms-border: #ffe0cc;
-  --asms-border-light: #fff3ec;
+  // Borders — neutral gray, keeps orange primary distinct
+  --asms-border: #dde3ec;
+  --asms-border-light: #eef1f6;
 
   // Brand colors — orange, matching login CTA exactly
   --asms-primary: #F97316;

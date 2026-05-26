@@ -78,7 +78,8 @@
     "SUCCESS_SAVED": "تغییرات با موفقیت ذخیره شد",
     "CREATE": "ایجاد",
     "STEP": "مرحله",
-    "OF": "از"
+    "OF": "از",
+    "SETTINGS": "تنظیمات"
   },
   "MODAL": {
     "STEP_COUNTER": "مرحله {{current}} از {{total}}"
