@@ -83,39 +83,41 @@
       </mat-form-field>
     }
 
-    <!-- Plan + Country -->
-    <div class="org-form-row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'ORGANIZATIONS.PLAN' | translate }}</mat-label>
-        <mat-select formControlName="plan">
-          @for (p of plans; track p.value) {
-            <mat-option [value]="p.value">{{ p.label }}</mat-option>
+    @if (!data.isEdit) {
+      <!-- Plan + Country -->
+      <div class="org-form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ORGANIZATIONS.PLAN' | translate }}</mat-label>
+          <mat-select formControlName="plan">
+            @for (p of plans; track p.value) {
+              <mat-option [value]="p.value">{{ p.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ORGANIZATIONS.COUNTRY' | translate }}</mat-label>
+          <input matInput formControlName="country" placeholder="USA" />
+        </mat-form-field>
+      </div>
+
+      <!-- Owner / Admin -->
+      <mat-form-field appearance="outline" class="org-form-field-full">
+        <mat-label>{{ 'ORGANIZATIONS.OWNER' | translate }}</mat-label>
+        <mat-select formControlName="ownerUserId">
+          @if (usersLoading()) {
+            <mat-option [value]="null" disabled>Loading users…</mat-option>
+          } @else {
+            <mat-option value="">Select owner</mat-option>
+            @for (u of users(); track u.id) {
+              <mat-option [value]="u.id">
+                {{ u.displayName || u.username }} — {{ u.email }}
+              </mat-option>
+            }
           }
         </mat-select>
       </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'ORGANIZATIONS.COUNTRY' | translate }}</mat-label>
-        <input matInput formControlName="country" placeholder="USA" />
-      </mat-form-field>
-    </div>
-
-    <!-- Owner / Admin -->
-    <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'ORGANIZATIONS.OWNER' | translate }}</mat-label>
-      <mat-select formControlName="ownerUserId">
-        @if (usersLoading()) {
-          <mat-option [value]="null" disabled>Loading users…</mat-option>
-        } @else {
-          <mat-option value="">Select owner</mat-option>
-          @for (u of users(); track u.id) {
-            <mat-option [value]="u.id">
-              {{ u.displayName || u.username }} — {{ u.email }}
-            </mat-option>
-          }
-        }
-      </mat-select>
-    </mat-form-field>
+    }
 
   </form>
 

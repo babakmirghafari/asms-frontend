@@ -33,9 +33,15 @@
 
           <!-- Header: avatar + name + status chip -->
           <div class="org-card-header">
-            <div class="org-avatar" [style.background-color]="getAvatarColor(org.name)">
-              {{ getInitials(org.name) }}
-            </div>
+            @if (org.logoUrl) {
+              <div class="org-avatar org-avatar--logo">
+                <img [src]="org.logoUrl" [alt]="org.name" class="org-avatar-img" />
+              </div>
+            } @else {
+              <div class="org-avatar" [style.background-color]="getAvatarColor(org.name)">
+                {{ getInitials(org.name) }}
+              </div>
+            }
             <div class="org-card-meta">
               <div class="org-card-name">{{ org.name }}</div>
               @if (org.parentOrganizationId && store.orgById()[org.parentOrganizationId]) {
