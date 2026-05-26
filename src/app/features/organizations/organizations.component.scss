@@ -3,65 +3,179 @@
   height: 100%;
 }
 
-.full-width {
-  width: 100%;
+/* ── Card grid ─────────────────────────────────────────────────── */
+
+.org-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 4px;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 680px)  { grid-template-columns: 1fr; }
 }
 
-.org-name-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* ── Individual card ────────────────────────────────────────────── */
 
-.org-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--asms-primary-light);
+.org-card {
+  background: var(--asms-surface);
+  border: 1px solid var(--asms-border);
+  border-radius: 12px;
+  padding: 20px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+  transition: box-shadow 0.15s ease;
 
-  mat-icon {
-    color: var(--asms-primary);
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
 }
 
-.org-name {
-  font-weight: 500;
-  color: var(--asms-text-primary);
-  font-size: 14px;
+/* ── Card header ────────────────────────────────────────────────── */
+
+.org-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
 
-.org-parent {
-  font-size: 11px;
-  color: var(--asms-text-secondary);
-}
-
-.member-count {
+.org-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: var(--asms-text-secondary);
-  font-size: 14px;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
 
-.member-icon {
-  font-size: 16px;
-  height: 16px;
-  width: 16px;
+.org-card-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.org-card-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--asms-text-primary);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.org-card-parent {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+  margin-top: 2px;
+}
+
+.org-parent-icon {
+  font-size: 12px;
+  height: 12px;
+  width: 12px;
   color: var(--asms-text-disabled);
 }
 
-.text-secondary {
-  color: var(--asms-text-secondary);
-  font-size: 13px;
+/* ── Stats grid ─────────────────────────────────────────────────── */
+
+.org-card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
 }
 
-.text-sm {
+.org-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.org-stat-label {
+  font-size: 11px;
+  color: var(--asms-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 500;
+}
+
+.org-stat-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--asms-text-primary);
+}
+
+.org-stat-empty {
+  color: var(--asms-text-disabled);
+  font-weight: 400;
+}
+
+.org-stat-status {
+  text-transform: capitalize;
   font-size: 12px;
+
+  &[data-status="ACTIVE"]    { color: var(--asms-success); }
+  &[data-status="INACTIVE"]  { color: var(--asms-text-secondary); }
+  &[data-status="SUSPENDED"] { color: var(--asms-danger); }
+}
+
+/* ── Description ────────────────────────────────────────────────── */
+
+.org-card-description {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Footer actions ─────────────────────────────────────────────── */
+
+.org-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.org-action-btn {
+  font-size: 12px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  padding: 0 10px !important;
+  border-color: var(--asms-border) !important;
+  color: var(--asms-text-primary) !important;
+
+  mat-icon {
+    font-size: 14px !important;
+    height: 14px !important;
+    width: 14px !important;
+    margin-inline-end: 4px;
+  }
+
+  &:hover {
+    background: var(--asms-surface-variant) !important;
+  }
+}
+
+.org-action-delete {
+  color: var(--asms-danger) !important;
+  border-color: rgba(198, 40, 40, 0.3) !important;
+
+  &:hover {
+    background: var(--asms-danger-bg) !important;
+  }
+}
+
+/* ── Paginator ──────────────────────────────────────────────────── */
+
+.org-paginator {
+  margin-top: 8px;
 }

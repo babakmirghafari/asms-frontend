@@ -214,6 +214,7 @@
   },
   "ORGANIZATIONS": {
     "TITLE": "Organizations",
+    "SUBTITLE": "Manage tenants, members, and compliance settings",
     "ADD": "Create Organization",
     "EDIT": "Edit Organization",
     "DELETE": "Delete Organization",

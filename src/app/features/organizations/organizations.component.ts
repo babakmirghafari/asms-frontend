@@ -1,10 +1,8 @@
 import { Component, OnInit, inject, computed, signal } from '@angular/core';
-import { DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
+import { DatePipe, SlicePipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,7 +10,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -29,11 +26,11 @@ import { OrganizationDto, CreateOrganizationRequestDto } from '@babakmirghafari/
   styleUrl: './organizations.component.scss',
   standalone: true,
   imports: [
-    DatePipe, DecimalPipe, SlicePipe,
+    DatePipe, SlicePipe,
     ReactiveFormsModule,
-    MatTableModule, MatButtonModule, MatIconModule, MatMenuModule,
+    MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatPaginatorModule,
-    MatDividerModule, MatTooltipModule,
+    MatDividerModule,
     TranslateModule,
     PageHeaderComponent, StatusChipComponent
   ]
@@ -45,7 +42,11 @@ export class OrganizationsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly fb = inject(FormBuilder);
 
-  readonly displayedColumns = ['name', 'parentOrg', 'description', 'status', 'createdAt', 'actions'];
+  private static readonly AVATAR_COLORS = [
+    '#4CAF50', '#FF9800', '#9C27B0', '#00BCD4',
+    '#3F51B5', '#F44336', '#009688', '#FF5722', '#795548', '#607D8B'
+  ];
+
   readonly searchCtrl = this.fb.control('');
   readonly searchTerm = signal('');
 
@@ -114,6 +115,19 @@ export class OrganizationsComponent implements OnInit {
             { duration: 4000, panelClass: 'snackbar-error' }
           ));
       });
+  }
+
+  getInitials(name: string): string {
+    return (name ?? '').split(' ').slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase();
+  }
+
+  getAvatarColor(name: string): string {
+    const idx = (name?.charCodeAt(0) ?? 0) % OrganizationsComponent.AVATAR_COLORS.length;
+    return OrganizationsComponent.AVATAR_COLORS[idx];
+  }
+
+  openMembersDialog(_org: OrganizationDto): void {
+    // Navigate to memberships filtered by this org — wired when memberships page is ready
   }
 
   confirmDelete(org: OrganizationDto): void {
