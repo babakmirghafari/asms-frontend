@@ -153,8 +153,8 @@ export class OrganizationsComponent implements OnInit {
         exitAnimationDuration:  '150ms'
       })
       .afterClosed()
-      .subscribe((result: OrgSecuritySettings | 'deleted' | 'suspended' | null) => {
-        if (result === 'deleted' || result === 'suspended') {
+      .subscribe((result: OrgSecuritySettings | 'deleted' | 'suspended' | 'activated' | null) => {
+        if (result === 'deleted' || result === 'suspended' || result === 'activated') {
           this.store.loadAll(this.store.pageIndex(), this.store.pageSize());
         } else if (result && typeof result === 'object') {
           this.orgSettingsMap.update(map => {

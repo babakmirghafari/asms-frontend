@@ -8,13 +8,21 @@
 
 <!-- Org banner -->
 <div class="sd-org-banner">
-  <div class="sd-org-avatar" [style.background-color]="data.avatarColor">
-    {{ data.initials }}
-  </div>
+  @if (logoPreviewUrl()) {
+    <img [src]="logoPreviewUrl()" [alt]="data.org.name" class="sd-org-logo" />
+  } @else {
+    <div class="sd-org-avatar" [style.background-color]="data.avatarColor">
+      {{ data.initials }}
+    </div>
+  }
   <div class="sd-org-info">
-    <div class="sd-org-name">{{ data.org.name }}</div>
+    <div class="sd-org-name">{{ generalForm.value.name || data.org.name }}</div>
     <div class="sd-org-meta">
       {{ data.org.memberCount ?? 0 }} {{ 'ORGANIZATIONS.MEMBERS' | translate | lowercase }}
+      &nbsp;·&nbsp;
+      <span [class]="'sd-status sd-status--' + (generalForm.value.status ?? data.org.status | lowercase)">
+        {{ generalForm.value.status ?? data.org.status }}
+      </span>
     </div>
   </div>
 </div>
@@ -22,9 +30,76 @@
 <!-- Tab group -->
 <mat-tab-group class="sd-tabs" animationDuration="150ms">
 
-  <!-- ── Security ─────────────────────────────────── -->
+  <!-- ── General ──────────────────────────────────────── -->
+  <mat-tab [label]="'ORGANIZATIONS.TAB_GENERAL' | translate">
+    <form [formGroup]="generalForm" class="sd-tab-content">
+
+      <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_GENERAL' | translate }}</p>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.NAME' | translate }}</span>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <input matInput formControlName="name" />
+          @if (generalForm.get('name')?.hasError('required') && generalForm.get('name')?.touched) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <span class="sd-row-label">{{ 'COMMON.DESCRIPTION' | translate }}</span>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <textarea matInput formControlName="description" rows="3" placeholder="Brief description of this org"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="sd-row sd-row-input">
+        <div class="sd-row-text">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.STATUS' | translate }}</span>
+          <span class="sd-row-hint">{{ 'ORGANIZATIONS.STATUS_HINT' | translate }}</span>
+        </div>
+        <mat-form-field appearance="outline" class="sd-wide-field">
+          <mat-select formControlName="status">
+            <mat-option value="ACTIVE">Active</mat-option>
+            <mat-option value="INACTIVE">Inactive</mat-option>
+            <mat-option value="SUSPENDED">Suspended</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <p class="sd-section-label" style="margin-top: 8px">{{ 'ORGANIZATIONS.SECTION_INFO' | translate }}</p>
+
+      <div class="sd-row">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.DOMAIN' | translate }}</span>
+        <span class="sd-row-value">{{ data.org.domain || '—' }}</span>
+      </div>
+
+      <div class="sd-row">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.MEMBERS' | translate }}</span>
+        <span class="sd-row-value">{{ data.org.memberCount ?? 0 }}</span>
+      </div>
+
+      <div class="sd-row">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.CREATED_AT' | translate }}</span>
+        <span class="sd-row-value">{{ data.org.createdAt | date:'mediumDate' }}</span>
+      </div>
+
+      <div class="sd-row">
+        <span class="sd-row-label">{{ 'ORGANIZATIONS.UPDATED_AT' | translate }}</span>
+        <span class="sd-row-value">{{ data.org.updatedAt | date:'medium' }}</span>
+      </div>
+
+    </form>
+  </mat-tab>
+
+  <!-- ── Security ─────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_SECURITY' | translate">
     <form [formGroup]="securityForm" class="sd-tab-content">
+
+      <div class="sd-api-notice">
+        <mat-icon>info</mat-icon>
+        <span>{{ 'ORGANIZATIONS.API_NOTICE' | translate }}</span>
+      </div>
 
       <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_AUTHENTICATION' | translate }}</p>
 
@@ -68,9 +143,14 @@
     </form>
   </mat-tab>
 
-  <!-- ── SSO ──────────────────────────────────────── -->
+  <!-- ── SSO ──────────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_SSO' | translate">
     <form [formGroup]="ssoForm" class="sd-tab-content">
+
+      <div class="sd-api-notice">
+        <mat-icon>info</mat-icon>
+        <span>{{ 'ORGANIZATIONS.API_NOTICE' | translate }}</span>
+      </div>
 
       <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_SSO_PROVIDER' | translate }}</p>
 
@@ -117,49 +197,72 @@
     </form>
   </mat-tab>
 
-  <!-- ── Branding ──────────────────────────────────── -->
+  <!-- ── Branding ──────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_BRANDING' | translate">
-    <form [formGroup]="brandingForm" class="sd-tab-content">
+    <div class="sd-tab-content">
 
       <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_BRANDING' | translate }}</p>
 
+      <!-- Logo upload — contract-backed via logoUrl -->
       <div class="sd-row sd-row-input">
         <span class="sd-row-label">{{ 'ORGANIZATIONS.CUSTOM_LOGO' | translate }}</span>
-        <label class="sd-upload-btn" for="sd-logo-input">
-          <mat-icon>upload</mat-icon>
-          {{ 'ORGANIZATIONS.UPLOAD' | translate }}
-        </label>
-        <input id="sd-logo-input" type="file" accept="image/*" class="sd-file-hidden" />
-      </div>
-
-      <div class="sd-row sd-row-input">
-        <span class="sd-row-label">{{ 'ORGANIZATIONS.PRIMARY_COLOR' | translate }}</span>
-        <input type="color" formControlName="primaryColor" class="sd-color-input" />
-      </div>
-
-      <div class="sd-row sd-row-input">
-        <div class="sd-row-text">
-          <span class="sd-row-label">{{ 'ORGANIZATIONS.CUSTOM_LOGIN_URL' | translate }}</span>
-          <span class="sd-row-hint">{{ 'ORGANIZATIONS.CUSTOM_LOGIN_URL_HINT' | translate }}</span>
+        <div class="sd-logo-area">
+          @if (logoPreviewUrl()) {
+            <img [src]="logoPreviewUrl()!" alt="Logo" class="sd-logo-preview" />
+          } @else {
+            <div class="sd-logo-placeholder">
+              <mat-icon>image</mat-icon>
+            </div>
+          }
+          <label class="sd-upload-btn" for="sd-logo-input">
+            <mat-icon>upload</mat-icon>
+            {{ 'ORGANIZATIONS.UPLOAD' | translate }}
+          </label>
+          <input id="sd-logo-input" type="file" accept="image/png,image/jpeg"
+                 class="sd-file-hidden" (change)="onLogoSelected($event)" />
         </div>
-        <mat-form-field appearance="outline" class="sd-wide-field">
-          <input matInput formControlName="customLoginUrl" [placeholder]="'ORGANIZATIONS.LOGIN_URL_PLACEHOLDER' | translate" />
-        </mat-form-field>
       </div>
 
-      <div class="sd-row sd-row-input">
-        <span class="sd-row-label">{{ 'ORGANIZATIONS.WELCOME_MESSAGE' | translate }}</span>
-        <mat-form-field appearance="outline" class="sd-wide-field">
-          <input matInput formControlName="welcomeMessage" [placeholder]="'ORGANIZATIONS.WELCOME_PLACEHOLDER' | translate" />
-        </mat-form-field>
+      <div class="sd-api-notice" style="margin-top: 8px">
+        <mat-icon>info</mat-icon>
+        <span>{{ 'ORGANIZATIONS.BRANDING_NOTICE' | translate }}</span>
       </div>
 
-    </form>
+      <form [formGroup]="brandingForm">
+        <div class="sd-row sd-row-input">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.PRIMARY_COLOR' | translate }}</span>
+          <input type="color" formControlName="primaryColor" class="sd-color-input" />
+        </div>
+
+        <div class="sd-row sd-row-input">
+          <div class="sd-row-text">
+            <span class="sd-row-label">{{ 'ORGANIZATIONS.CUSTOM_LOGIN_URL' | translate }}</span>
+            <span class="sd-row-hint">{{ 'ORGANIZATIONS.CUSTOM_LOGIN_URL_HINT' | translate }}</span>
+          </div>
+          <mat-form-field appearance="outline" class="sd-wide-field">
+            <input matInput formControlName="customLoginUrl" [placeholder]="'ORGANIZATIONS.LOGIN_URL_PLACEHOLDER' | translate" />
+          </mat-form-field>
+        </div>
+
+        <div class="sd-row sd-row-input">
+          <span class="sd-row-label">{{ 'ORGANIZATIONS.WELCOME_MESSAGE' | translate }}</span>
+          <mat-form-field appearance="outline" class="sd-wide-field">
+            <input matInput formControlName="welcomeMessage" [placeholder]="'ORGANIZATIONS.WELCOME_PLACEHOLDER' | translate" />
+          </mat-form-field>
+        </div>
+      </form>
+
+    </div>
   </mat-tab>
 
-  <!-- ── Compliance ────────────────────────────────── -->
+  <!-- ── Compliance ────────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_COMPLIANCE' | translate">
     <form [formGroup]="complianceForm" class="sd-tab-content">
+
+      <div class="sd-api-notice">
+        <mat-icon>info</mat-icon>
+        <span>{{ 'ORGANIZATIONS.API_NOTICE' | translate }}</span>
+      </div>
 
       <p class="sd-section-label">{{ 'ORGANIZATIONS.SECTION_ACTIVE_FRAMEWORKS' | translate }}</p>
 
@@ -202,7 +305,7 @@
     </form>
   </mat-tab>
 
-  <!-- ── Danger Zone ───────────────────────────────── -->
+  <!-- ── Danger Zone ───────────────────────────────────── -->
   <mat-tab [label]="'ORGANIZATIONS.TAB_DANGER_ZONE' | translate">
     <div class="sd-tab-content">
 
@@ -211,16 +314,29 @@
         <span>{{ 'ORGANIZATIONS.DANGER_WARNING' | translate }}</span>
       </div>
 
-      <div class="sd-danger-row">
-        <div class="sd-danger-row-text">
-          <span class="sd-danger-row-label">{{ 'ORGANIZATIONS.SUSPEND_ORG' | translate }}</span>
-          <span class="sd-danger-row-desc">{{ 'ORGANIZATIONS.SUSPEND_DESC' | translate }}</span>
+      @if (data.org.status === 'SUSPENDED') {
+        <div class="sd-danger-row">
+          <div class="sd-danger-row-text">
+            <span class="sd-danger-row-label">{{ 'ORGANIZATIONS.ACTIVATE_ORG' | translate }}</span>
+            <span class="sd-danger-row-desc">{{ 'ORGANIZATIONS.ACTIVATE_DESC' | translate }}</span>
+          </div>
+          <button mat-raised-button class="sd-danger-btn-activate" (click)="activateOrg()">
+            <mat-icon>check_circle</mat-icon>
+            {{ 'ORGANIZATIONS.ACTIVATE' | translate }}
+          </button>
         </div>
-        <button mat-stroked-button class="sd-danger-btn-suspend" (click)="suspendOrg()">
-          <mat-icon>pause</mat-icon>
-          {{ 'ORGANIZATIONS.SUSPEND' | translate }}
-        </button>
-      </div>
+      } @else {
+        <div class="sd-danger-row">
+          <div class="sd-danger-row-text">
+            <span class="sd-danger-row-label">{{ 'ORGANIZATIONS.SUSPEND_ORG' | translate }}</span>
+            <span class="sd-danger-row-desc">{{ 'ORGANIZATIONS.SUSPEND_DESC' | translate }}</span>
+          </div>
+          <button mat-stroked-button class="sd-danger-btn-suspend" (click)="suspendOrg()">
+            <mat-icon>pause</mat-icon>
+            {{ 'ORGANIZATIONS.SUSPEND' | translate }}
+          </button>
+        </div>
+      }
 
       <div class="sd-danger-row">
         <div class="sd-danger-row-text">
@@ -254,8 +370,12 @@
 <!-- Footer -->
 <div class="sd-footer">
   <button mat-stroked-button (click)="close()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-raised-button color="primary" [disabled]="isSaving()" (click)="save()">
-    <mat-icon>save</mat-icon>
+  <button mat-raised-button color="primary" [disabled]="isSaving() || generalForm.invalid" (click)="save()">
+    @if (isSaving()) {
+      <mat-spinner diameter="16" class="sd-save-spinner" />
+    } @else {
+      <mat-icon>save</mat-icon>
+    }
     {{ 'COMMON.SAVE' | translate }}
   </button>
 </div>

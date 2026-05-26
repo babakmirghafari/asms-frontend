@@ -54,6 +54,15 @@
   flex-shrink: 0;
 }
 
+.sd-org-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
+  border: 1px solid var(--asms-border);
+  flex-shrink: 0;
+}
+
 .sd-org-name {
   font-weight: 600;
   font-size: 14px;
@@ -63,6 +72,17 @@
 .sd-org-meta {
   font-size: 12px;
   color: var(--asms-text-secondary);
+}
+
+.sd-status {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+
+  &--active    { color: var(--asms-success); }
+  &--inactive  { color: var(--asms-text-secondary); }
+  &--suspended { color: var(--asms-danger); }
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────── */
@@ -153,6 +173,73 @@
 .sd-row-hint {
   font-size: 12px;
   color: var(--asms-text-secondary);
+}
+
+.sd-row-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--asms-text-primary);
+  text-align: right;
+}
+
+/* ── API notice banner ───────────────────────────────────────────── */
+
+.sd-api-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--asms-info-bg);
+  border: 1px solid rgba(21, 101, 192, 0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--asms-info);
+  margin-bottom: 16px;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+}
+
+/* ── Logo area (Branding tab) ────────────────────────────────────── */
+
+.sd-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sd-logo-preview {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--asms-border);
+  background: var(--asms-surface-variant);
+}
+
+.sd-logo-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid var(--asms-border);
+  background: var(--asms-surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon { color: var(--asms-text-secondary); font-size: 20px; }
+}
+
+/* ── Save spinner ────────────────────────────────────────────────── */
+
+.sd-save-spinner {
+  display: inline-block;
+  margin-inline-end: 4px;
 }
 
 /* ── Form fields ─────────────────────────────────────────────────── */
@@ -309,6 +396,15 @@
   font-size: 13px !important;
   border-color: var(--asms-border) !important;
   color: var(--asms-text-primary) !important;
+
+  mat-icon { font-size: 16px; height: 16px; width: 16px; }
+}
+
+.sd-danger-btn-activate {
+  flex-shrink: 0;
+  font-size: 13px !important;
+  background: var(--asms-success) !important;
+  color: #fff !important;
 
   mat-icon { font-size: 16px; height: 16px; width: 16px; }
 }

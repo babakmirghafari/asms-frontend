@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { LowerCasePipe } from '@angular/common';
+import { DatePipe, LowerCasePipe } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,8 +11,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { OrganizationDto } from '@babakmirghafari/asms-api-client';
+import { OrganizationDto, UpdateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
 import { OrganizationsStore } from '../organizations.store';
 
 export interface OrgSettingsDialogData {
@@ -34,11 +35,11 @@ export interface OrgSecuritySettings {
   styleUrl: './org-settings-dialog.component.scss',
   standalone: true,
   imports: [
-    LowerCasePipe,
+    DatePipe, LowerCasePipe,
     ReactiveFormsModule,
     MatButtonModule, MatIconModule, MatTabsModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatSlideToggleModule, MatDividerModule,
+    MatSlideToggleModule, MatDividerModule, MatProgressSpinnerModule,
     TranslateModule
   ]
 })
@@ -51,20 +52,29 @@ export class OrgSettingsDialogComponent {
   private readonly translate = inject(TranslateService);
 
   isSaving = signal(false);
+  readonly logoPreviewUrl = signal<string | null>(this.data.org.logoUrl ?? null);
 
   readonly identityProviders = ['Okta', 'Azure AD', 'Google Workspace', 'Auth0', 'OneLogin', 'Ping Identity'];
   readonly dataResidencyRegions = [
-    { value: 'us-east-1',     label: 'US East (N. Virginia)' },
-    { value: 'eu-central-1',  label: 'EU Central (Frankfurt)' },
+    { value: 'us-east-1',      label: 'US East (N. Virginia)' },
+    { value: 'eu-central-1',   label: 'EU Central (Frankfurt)' },
     { value: 'ap-southeast-1', label: 'AP Southeast (Singapore)' }
   ];
 
+  // ── Contract-backed form (UpdateOrganizationRequestDto) ──────────
+  readonly generalForm = this.fb.group({
+    name:        [this.data.org.name,        [Validators.required, Validators.minLength(2)]],
+    description: [this.data.org.description ?? ''],
+    status:      [this.data.org.status as UpdateOrganizationRequestDto.StatusEnum]
+  });
+
+  // ── Local-only forms (no contract backing) ────────────────────────
   readonly securityForm = this.fb.group({
-    requireMfa:              [false],
-    forceMfaOnSensitive:     [false],
-    sessionTimeout:          [30, [Validators.min(5), Validators.max(1440)]],
-    maxConcurrentSessions:   [3,  [Validators.min(1), Validators.max(20)]],
-    allowedIpCidrs:          ['']
+    requireMfa:            [false],
+    forceMfaOnSensitive:   [false],
+    sessionTimeout:        [30, [Validators.min(5), Validators.max(1440)]],
+    maxConcurrentSessions: [3,  [Validators.min(1), Validators.max(20)]],
+    allowedIpCidrs:        ['']
   });
 
   readonly ssoForm = this.fb.group({
@@ -75,10 +85,9 @@ export class OrgSettingsDialogComponent {
   });
 
   readonly brandingForm = this.fb.group({
-    logoUrl:          [this.data.org.logoUrl ?? ''],
-    primaryColor:     ['#3B82F6'],
-    customLoginUrl:   [''],
-    welcomeMessage:   ['Welcome back']
+    primaryColor:    ['#2563EB'],
+    customLoginUrl:  [''],
+    welcomeMessage:  ['Welcome back']
   });
 
   readonly complianceForm = this.fb.group({
@@ -92,19 +101,33 @@ export class OrgSettingsDialogComponent {
     return (this.data.org.name ?? '').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
   }
 
+  onLogoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => this.logoPreviewUrl.set(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
   close(): void {
     this.dialogRef.close();
   }
 
   async save(): Promise<void> {
+    if (this.generalForm.invalid) {
+      this.generalForm.markAllAsTouched();
+      return;
+    }
     this.isSaving.set(true);
     try {
-      const logoUrl = this.brandingForm.value.logoUrl?.trim() || undefined;
-      await this.store.update(this.data.org.id, {
-        name:        this.data.org.name,
-        description: this.data.org.description,
-        logoUrl,
-      });
+      const g = this.generalForm.value;
+      const dto: UpdateOrganizationRequestDto = {
+        name:        g.name!,
+        description: g.description?.trim() || undefined,
+        logoUrl:     this.logoPreviewUrl() ?? undefined,
+        status:      (g.status as UpdateOrganizationRequestDto.StatusEnum) || undefined,
+      };
+      await this.store.update(this.data.org.id, dto);
       this.snackBar.open(
         this.translate.instant('ORGANIZATIONS.SETTINGS_SAVED'),
         this.translate.instant('COMMON.CLOSE'),
@@ -130,7 +153,7 @@ export class OrgSettingsDialogComponent {
 
   async suspendOrg(): Promise<void> {
     await this.store.update(this.data.org.id, {
-      name:   this.data.org.name,
+      name:   this.generalForm.value.name ?? this.data.org.name,
       status: 'SUSPENDED'
     });
     this.snackBar.open(
@@ -139,6 +162,19 @@ export class OrgSettingsDialogComponent {
       { duration: 3000, panelClass: 'snackbar-success' }
     );
     this.dialogRef.close('suspended');
+  }
+
+  async activateOrg(): Promise<void> {
+    await this.store.update(this.data.org.id, {
+      name:   this.generalForm.value.name ?? this.data.org.name,
+      status: 'ACTIVE'
+    });
+    this.snackBar.open(
+      this.translate.instant('ORGANIZATIONS.ACTIVATED_SUCCESS'),
+      this.translate.instant('COMMON.CLOSE'),
+      { duration: 3000, panelClass: 'snackbar-success' }
+    );
+    this.dialogRef.close('activated');
   }
 
   async deleteOrg(): Promise<void> {
