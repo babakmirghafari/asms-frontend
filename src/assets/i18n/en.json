@@ -319,7 +319,11 @@
     "DELETED_SUCCESS": "Membership removed successfully",
     "JOIN_DATE": "Join Date",
     "ADDED_BY": "Added By",
-    "PRIMARY": "Primary"
+    "PRIMARY": "Primary",
+    "ADD_TO_ORG": "Add Members to",
+    "SEARCH_USERS": "Search users by name, username, or email",
+    "ELIGIBLE_USERS": "eligible users not yet in this organization",
+    "ADD_MEMBER": "Add Member"
   },
   "PERMISSION_GROUPS": {
     "TITLE": "Permission Groups",

@@ -19,6 +19,7 @@ import { StatusChipComponent } from '../../shared/components/status-chip/status-
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { OrgFormDialogComponent, OrgFormDialogData } from './org-form-dialog/org-form-dialog.component';
 import { OrgSettingsDialogComponent, OrgSettingsDialogData } from './org-settings-dialog/org-settings-dialog.component';
+import { OrgMembersPanelComponent, OrgMembersPanelData } from './org-members-panel/org-members-panel.component';
 import { OrganizationDto, OrganizationSettingsDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
 
 @Component({
@@ -33,7 +34,8 @@ import { OrganizationDto, OrganizationSettingsDto, CreateOrganizationRequestDto,
     MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatPaginatorModule,
     MatDividerModule,
     TranslateModule,
-    PageHeaderComponent, StatusChipComponent
+    PageHeaderComponent, StatusChipComponent,
+    OrgMembersPanelComponent
   ]
 })
 export class OrganizationsComponent implements OnInit {
@@ -139,8 +141,25 @@ export class OrganizationsComponent implements OnInit {
     return idp ? (OrganizationsComponent.IDP_LABELS[idp] ?? idp) : undefined;
   }
 
-  openMembersDialog(_org: OrganizationDto): void {
-    // Navigate to memberships filtered by this org — wired when memberships page is ready
+  openMembersDialog(org: OrganizationDto): void {
+    const data: OrgMembersPanelData = {
+      org,
+      avatarColor: this.getAvatarColor(org.name),
+      initials: this.getInitials(org.name)
+    };
+    this.dialog
+      .open(OrgMembersPanelComponent, {
+        data,
+        position: { right: '0', top: '0' },
+        height: '100vh',
+        width: '580px',
+        maxWidth: '95vw',
+        panelClass: 'settings-sidebar-panel',
+        enterAnimationDuration: '200ms',
+        exitAnimationDuration: '150ms'
+      })
+      .afterClosed()
+      .subscribe(() => this.store.loadAll(this.store.pageIndex(), this.store.pageSize()));
   }
 
   openSettings(org: OrganizationDto): void {

@@ -1,0 +1,158 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+
+.mp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--asms-border);
+  flex-shrink: 0;
+}
+
+.mp-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--asms-text-primary);
+  margin: 0;
+}
+
+/* ── Stats bar ───────────────────────────────────────────────────── */
+
+.mp-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--asms-border);
+  flex-shrink: 0;
+}
+
+.mp-stat-text {
+  font-size: 13px;
+  color: var(--asms-text-secondary);
+}
+
+.mp-add-btn {
+  font-size: 13px;
+}
+
+/* ── Loading ─────────────────────────────────────────────────────── */
+
+.mp-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Member list ─────────────────────────────────────────────────── */
+
+.mp-member-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.mp-member-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--asms-border-light);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ── Avatar ──────────────────────────────────────────────────────── */
+
+.mp-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* ── Member info ─────────────────────────────────────────────────── */
+
+.mp-member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mp-member-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--asms-text-primary);
+}
+
+.mp-member-sub {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+}
+
+/* ── Chips ───────────────────────────────────────────────────────── */
+
+.mp-member-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-role-chip {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+
+  &--member {
+    background: var(--asms-primary-light, #e3f2fd);
+    color: var(--asms-primary);
+  }
+}
+
+.mp-status-chip {
+  font-size: 11px;
+
+  &--active {
+    color: var(--asms-success);
+  }
+
+  &--inactive {
+    color: var(--asms-text-secondary);
+  }
+
+  &--suspended {
+    color: var(--asms-danger);
+  }
+}
+
+/* ── More button ─────────────────────────────────────────────────── */
+
+.mp-more-btn {
+  flex-shrink: 0;
+  color: var(--asms-text-secondary) !important;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────── */
+
+.mp-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--asms-text-secondary);
+}

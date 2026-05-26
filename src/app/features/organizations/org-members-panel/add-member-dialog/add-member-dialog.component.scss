@@ -1,0 +1,145 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+
+.am-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 12px;
+}
+
+.am-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--asms-text-primary);
+  margin: 0;
+}
+
+/* ── Body ────────────────────────────────────────────────────────── */
+
+.am-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 24px;
+}
+
+.am-search {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.am-subtitle {
+  font-size: 13px;
+  color: var(--asms-text-secondary);
+  margin: 0 0 12px;
+}
+
+/* ── User list ───────────────────────────────────────────────────── */
+
+.am-user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.am-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--asms-surface-variant);
+  }
+
+  &--selected {
+    background: var(--asms-primary-bg, rgba(var(--asms-primary-rgb, 33, 150, 243), 0.08));
+  }
+}
+
+/* ── Avatar ──────────────────────────────────────────────────────── */
+
+.am-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* ── User info ───────────────────────────────────────────────────── */
+
+.am-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.am-user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--asms-text-primary);
+}
+
+.am-user-sub {
+  font-size: 12px;
+  color: var(--asms-text-secondary);
+}
+
+/* ── Status ──────────────────────────────────────────────────────── */
+
+.am-status {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &--active {
+    color: var(--asms-success);
+  }
+
+  &--inactive {
+    color: var(--asms-text-secondary);
+  }
+
+  &--suspended,
+  &--locked {
+    color: var(--asms-danger);
+  }
+
+  &--temp_password,
+  &--pending_mfa_enrollment {
+    color: var(--asms-warning);
+  }
+}
+
+/* ── Empty state ─────────────────────────────────────────────────── */
+
+.am-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--asms-text-secondary);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────── */
+
+.am-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--asms-border);
+  flex-shrink: 0;
+}

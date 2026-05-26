@@ -1,0 +1,61 @@
+<div class="am-header">
+  <h2 class="am-title">{{ 'MEMBERSHIPS.ADD_TO_ORG' | translate }} {{ data.org.name }}</h2>
+  <button mat-icon-button (click)="cancel()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="am-body">
+  <mat-form-field appearance="outline" class="am-search">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      [placeholder]="'MEMBERSHIPS.SEARCH_USERS' | translate"
+      [value]="searchTerm()"
+      (input)="searchTerm.set($any($event.target).value)" />
+  </mat-form-field>
+
+  <p class="am-subtitle">
+    {{ eligibleCount() }} {{ 'MEMBERSHIPS.ELIGIBLE_USERS' | translate }}
+  </p>
+
+  <div class="am-user-list">
+    @for (u of filtered(); track u.id) {
+      <div
+        class="am-user-row"
+        [class.am-user-row--selected]="selected().has(u.id)"
+        (click)="toggle(u.id)">
+        <mat-checkbox
+          [checked]="selected().has(u.id)"
+          (change)="toggle(u.id)"
+          (click)="$event.stopPropagation()"
+          color="primary" />
+        <div
+          class="am-avatar"
+          [style.background-color]="getAvatarColor(u.displayName ?? u.username)">
+          {{ getInitials(u.displayName ?? u.username) }}
+        </div>
+        <div class="am-user-info">
+          <div class="am-user-name">{{ u.displayName ?? u.username }}</div>
+          <div class="am-user-sub">&#64;{{ u.username }} &middot; {{ u.email }}</div>
+        </div>
+        <span class="am-status am-status--{{ u.status | lowercase }}">
+          &#9679; {{ u.status | lowercase }}
+        </span>
+      </div>
+    }
+    @empty {
+      <div class="am-empty">{{ 'COMMON.NO_DATA' | translate }}</div>
+    }
+  </div>
+</div>
+
+<div class="am-footer">
+  <button mat-stroked-button (click)="cancel()">
+    {{ 'COMMON.CANCEL' | translate }}
+  </button>
+  <button mat-raised-button color="primary" [disabled]="!canAdd()" (click)="confirm()">
+    <mat-icon>person_add</mat-icon>
+    {{ 'MEMBERSHIPS.ADD_MEMBER' | translate }}
+  </button>
+</div>

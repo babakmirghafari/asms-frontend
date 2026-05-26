@@ -1,0 +1,55 @@
+<!-- Header -->
+<div class="mp-header">
+  <h2 class="mp-title">{{ 'ORGANIZATIONS.MEMBERS' | translate }} — {{ data.org.name }}</h2>
+  <button mat-icon-button (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- Stats bar -->
+<div class="mp-stats-bar">
+  <span class="mp-stat-text">{{ memberCount() }} {{ 'ORGANIZATIONS.MEMBERS' | translate | lowercase }}</span>
+  <button
+    mat-raised-button
+    color="primary"
+    class="mp-add-btn"
+    (click)="openAddMemberDialog()"
+    [disabled]="isAdding()">
+    <mat-icon>person_add</mat-icon>
+    {{ 'MEMBERSHIPS.ADD' | translate }}
+  </button>
+</div>
+
+@if (isLoading()) {
+  <div class="mp-loading">
+    <mat-spinner diameter="40" />
+  </div>
+} @else {
+  <div class="mp-member-list">
+    @for (m of members(); track m.id) {
+      <div class="mp-member-row">
+        <div
+          class="mp-avatar"
+          [style.background-color]="getAvatarColor(getDisplayName(m))">
+          {{ getInitials(getDisplayName(m)) }}
+        </div>
+        <div class="mp-member-info">
+          <div class="mp-member-name">{{ getDisplayName(m) }}</div>
+          <div class="mp-member-sub">&#64;{{ m.username ?? m.userId }}</div>
+        </div>
+        <div class="mp-member-chips">
+          <span class="mp-role-chip mp-role-chip--member">{{ 'MEMBERSHIPS.PRIMARY' | translate }}</span>
+          <span class="mp-status-chip mp-status-chip--{{ m.status | lowercase }}">
+            &#9679; {{ m.status | lowercase }}
+          </span>
+        </div>
+        <button mat-icon-button class="mp-more-btn">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
+    }
+    @empty {
+      <div class="mp-empty">{{ 'COMMON.NO_DATA' | translate }}</div>
+    }
+  </div>
+}
