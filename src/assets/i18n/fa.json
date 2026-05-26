@@ -233,6 +233,7 @@
     "UPDATED_SUCCESS": "سازمان با موفقیت به‌روزرسانی شد",
     "DELETED_SUCCESS": "سازمان با موفقیت حذف شد",
     "OWNER": "مالک",
+    "SELECT_OWNER": "انتخاب مالک",
     "COMPLIANCE": "انطباق",
     "DATA_RESIDENCY": "محل نگهداری داده",
     "DOMAIN": "دامنه",

@@ -233,6 +233,7 @@
     "UPDATED_SUCCESS": "Organization updated successfully",
     "DELETED_SUCCESS": "Organization deleted successfully",
     "OWNER": "Owner",
+    "SELECT_OWNER": "Select owner",
     "COMPLIANCE": "Compliance",
     "DATA_RESIDENCY": "Data Residency",
     "DOMAIN": "Domain",
