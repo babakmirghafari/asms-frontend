@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   AlertsService, AlertDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface AlertsState {
   items: AlertDto[];
@@ -45,8 +46,8 @@ export const AlertsStore = signalStore(
         try {
           const res: PagedResponseDto = await firstValueFrom(svc.listAlerts(page, size, undefined, severity, status));
           patchState(store, { items: res.content as AlertDto[], totalElements: res.totalElements, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async acknowledge(alertId: string, note = 'Acknowledged by admin'): Promise<void> {
@@ -54,8 +55,10 @@ export const AlertsStore = signalStore(
         try {
           const updated: AlertDto = await firstValueFrom(svc.acknowledgeAlert(alertId, { note }));
           patchState(store, { items: store.items().map(a => a.id === alertId ? updated : a), loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async resolve(alertId: string, note = 'Resolved by admin'): Promise<void> {
@@ -63,8 +66,10 @@ export const AlertsStore = signalStore(
         try {
           const updated: AlertDto = await firstValueFrom(svc.resolveAlert(alertId, { note }));
           patchState(store, { items: store.items().map(a => a.id === alertId ? updated : a), loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       }
     };

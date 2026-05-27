@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   MembershipsService, MembershipDto, CreateMembershipRequestDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface MembershipsState {
   items: MembershipDto[];
@@ -36,8 +37,8 @@ export const MembershipsStore = signalStore(
         try {
           const res: PagedResponseDto = await firstValueFrom(svc.listMemberships(page, size, userId, organizationId));
           patchState(store, { items: res.content as MembershipDto[], totalElements: res.totalElements, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async create(dto: CreateMembershipRequestDto): Promise<MembershipDto> {
@@ -46,9 +47,10 @@ export const MembershipsStore = signalStore(
           const created = await firstValueFrom(svc.createMembership(dto));
           patchState(store, { items: [created, ...store.items()], totalElements: store.totalElements() + 1, loading: false });
           return created;
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
-          throw new Error('Create failed');
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async delete(id: string): Promise<void> {
@@ -56,8 +58,10 @@ export const MembershipsStore = signalStore(
         try {
           await firstValueFrom(svc.deleteMembership(id));
           patchState(store, { items: store.items().filter(m => m.id !== id), totalElements: store.totalElements() - 1, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       }
     };

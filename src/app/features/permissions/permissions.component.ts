@@ -71,13 +71,9 @@ export class PermissionsComponent implements OnInit {
       .afterClosed()
       .subscribe((result: CreatePermissionRequestDto | null) => {
         if (!result) return;
-        this.store.create(result).then(() => {
-          this.snackBar.open(
-            this.translate.instant('PERMISSIONS.CREATED_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 4000, panelClass: 'snackbar-success' }
-          );
-        });
+        this.store.create(result)
+          .then(() => this.snackBar.open(this.translate.instant('PERMISSIONS.CREATED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-success' }))
+          .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
       });
   }
 
@@ -90,13 +86,9 @@ export class PermissionsComponent implements OnInit {
     };
     this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.store.delete(permission.id).then(() => {
-          this.snackBar.open(
-            this.translate.instant('PERMISSIONS.DELETED_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000, panelClass: 'snackbar-success' }
-          );
-        });
+        this.store.delete(permission.id)
+          .then(() => this.snackBar.open(this.translate.instant('PERMISSIONS.DELETED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000, panelClass: 'snackbar-success' }))
+          .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
       }
     });
   }

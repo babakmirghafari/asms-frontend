@@ -3,6 +3,7 @@ import { signalStore, withState, withComputed, withMethods, patchState } from '@
 import { firstValueFrom } from 'rxjs';
 import { DashboardService, DashboardSummaryDto } from '@babakmirghafari/asms-api-client';
 import { AuthStore } from '../../core/store/auth.store';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface DashboardState {
   summary: DashboardSummaryDto | null;
@@ -42,8 +43,8 @@ export const DashboardStore = signalStore(
         try {
           const summary = await firstValueFrom(dashboardService.getDashboardSummary(orgId));
           patchState(store, { summary, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       }
     };

@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   SessionsService, SessionDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface SessionsState {
   items: SessionDto[];
@@ -36,8 +37,8 @@ export const SessionsStore = signalStore(
         try {
           const res: PagedResponseDto = await firstValueFrom(svc.listSessions(page, size, undefined, undefined, status));
           patchState(store, { items: res.content as SessionDto[], totalElements: res.totalElements, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async revoke(sessionId: string): Promise<void> {
@@ -45,8 +46,10 @@ export const SessionsStore = signalStore(
         try {
           const updated = await firstValueFrom(svc.revokeSession(sessionId, { reason: 'Admin revoke' }));
           patchState(store, { items: store.items().map(s => s.id === sessionId ? updated : s), loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async revokeAll(organizationId: string): Promise<void> {
@@ -57,8 +60,10 @@ export const SessionsStore = signalStore(
             items: store.items().map(s => ({ ...s, status: SessionDto.StatusEnum.Revoked })),
             loading: false
           });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       }
     };

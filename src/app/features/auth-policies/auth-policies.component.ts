@@ -78,12 +78,8 @@ export class AuthPoliciesComponent implements OnInit {
       maxFailedLoginAttempts: this.form.value.maxFailedLoginAttempts ?? 5,
       sessionTimeoutMinutes: this.form.value.sessionTimeoutMinutes ?? 60
     };
-    this.store.update(orgId, dto).then(() => {
-      this.snackBar.open(
-        this.translate.instant('COMMON.SAVE') + ' OK',
-        this.translate.instant('COMMON.CLOSE'),
-        { duration: 3000 }
-      );
-    });
+    this.store.update(orgId, dto)
+      .then(() => this.snackBar.open(this.translate.instant('COMMON.SAVE') + ' OK', this.translate.instant('COMMON.CLOSE'), { duration: 3000 }))
+      .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
   }
 }

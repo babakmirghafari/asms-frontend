@@ -5,6 +5,7 @@ import {
   AuthPoliciesService, AuthPolicyDto, UpdateAuthPolicyRequestDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
 import { AuthStore } from '../../core/store/auth.store';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface AuthPoliciesState {
   items: AuthPolicyDto[];
@@ -40,8 +41,8 @@ export const AuthPoliciesStore = signalStore(
         try {
           const res: PagedResponseDto = await firstValueFrom(svc.listAuthPolicies(page, size));
           patchState(store, { items: res.content as AuthPolicyDto[], totalElements: res.totalElements, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async loadCurrent(): Promise<void> {
@@ -51,8 +52,8 @@ export const AuthPoliciesStore = signalStore(
         try {
           const policy = await firstValueFrom(svc.getAuthPolicyByOrganization(orgId));
           patchState(store, { current: policy, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async update(organizationId: string, dto: UpdateAuthPolicyRequestDto): Promise<void> {
@@ -64,8 +65,10 @@ export const AuthPoliciesStore = signalStore(
             items: store.items().map(p => p.id === updated.id ? updated : p),
             loading: false
           });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       }
     };

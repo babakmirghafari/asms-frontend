@@ -2,8 +2,9 @@ import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 import {
-  UsersService, UserDto, CreateUserRequestDto, UpdateUserRequestDto, OrganizationDto
+  UsersService, UserDto, CreateUserRequestDto, UpdateUserRequestDto
 } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface UsersState {
   items: UserDto[];
@@ -31,7 +32,7 @@ export const UsersStore = signalStore(
     isEmpty: computed(() => store.items().length === 0 && !store.loading()),
     ownerById: computed(() => {
       const map: Record<string, UserDto> = {};
-      for (const o of store.items()) { map[o.id!] = o; }
+      for (const o of store.items()) { if (o.id) map[o.id] = o; }
       return map;
     })
   })),
@@ -50,8 +51,8 @@ export const UsersStore = signalStore(
             totalElements: response.totalElements,
             loading: false
           });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
 
@@ -65,9 +66,10 @@ export const UsersStore = signalStore(
             loading: false
           });
           return created;
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
-          throw new Error('Create failed');
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
 
@@ -79,8 +81,10 @@ export const UsersStore = signalStore(
             items: store.items().map(u => u.id === id ? updated : u),
             loading: false
           });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
 
@@ -93,8 +97,10 @@ export const UsersStore = signalStore(
             totalElements: store.totalElements() - 1,
             loading: false
           });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
 

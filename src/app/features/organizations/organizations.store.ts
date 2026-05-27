@@ -2,6 +2,7 @@ import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { firstValueFrom, Observable } from 'rxjs';
 import { OrganizationsService, OrganizationDto, OrganizationSettingsDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto, UpdateOrganizationSettingsRequestDto, PagedResponseDto } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface OrganizationsState {
   items: OrganizationDto[];
@@ -34,7 +35,7 @@ export const OrganizationsStore = signalStore(
           const obs: Observable<PagedResponseDto> = svc.listOrganizations(page, size);
           const res = await firstValueFrom(obs);
           patchState(store, { items: res.content as OrganizationDto[], totalElements: res.totalElements, loading: false });
-        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); }
+        } catch (err) { patchState(store, { loading: false, error: extractApiError(err) }); }
       },
       async create(dto: CreateOrganizationRequestDto): Promise<OrganizationDto> {
         patchState(store, { loading: true, error: null });
@@ -43,7 +44,11 @@ export const OrganizationsStore = signalStore(
           const created = await firstValueFrom(obs);
           patchState(store, { items: [created, ...store.items()], totalElements: store.totalElements() + 1, loading: false });
           return created;
-        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); throw new Error('Create failed'); }
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
+        }
       },
       async update(id: string, dto: UpdateOrganizationRequestDto): Promise<void> {
         patchState(store, { loading: true, error: null });
@@ -51,14 +56,22 @@ export const OrganizationsStore = signalStore(
           const obs: Observable<OrganizationDto> = svc.updateOrganization(id, dto);
           const updated = await firstValueFrom(obs);
           patchState(store, { items: store.items().map(o => o.id === id ? updated : o), loading: false });
-        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); }
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
+        }
       },
       async delete(id: string): Promise<void> {
         patchState(store, { loading: true, error: null });
         try {
           await firstValueFrom(svc.deleteOrganization(id));
           patchState(store, { items: store.items().filter(o => o.id !== id), totalElements: store.totalElements() - 1, loading: false });
-        } catch { patchState(store, { loading: false, error: 'COMMON.ERROR' }); }
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
+        }
       },
       async loadSettings(orgId: string): Promise<OrganizationSettingsDto> {
         const obs: Observable<OrganizationSettingsDto> = svc.getOrganizationSettings(orgId);
@@ -67,10 +80,15 @@ export const OrganizationsStore = signalStore(
         return settings;
       },
       async saveSettings(orgId: string, dto: UpdateOrganizationSettingsRequestDto): Promise<OrganizationSettingsDto> {
-        const obs: Observable<OrganizationSettingsDto> = svc.updateOrganizationSettings(orgId, dto);
-        const updated = await firstValueFrom(obs);
-        patchState(store, { settingsMap: { ...store.settingsMap(), [orgId]: updated } });
-        return updated;
+        try {
+          const obs: Observable<OrganizationSettingsDto> = svc.updateOrganizationSettings(orgId, dto);
+          const updated = await firstValueFrom(obs);
+          patchState(store, { settingsMap: { ...store.settingsMap(), [orgId]: updated } });
+          return updated;
+        } catch (err) {
+          const msg = extractApiError(err);
+          throw new Error(msg);
+        }
       }
     };
   })

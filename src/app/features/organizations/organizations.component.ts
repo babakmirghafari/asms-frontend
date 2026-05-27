@@ -29,14 +29,13 @@ import {UsersStore} from "../users/users.store";
   styleUrl: './organizations.component.scss',
   standalone: true,
   imports: [
-    DatePipe, SlicePipe,
+    SlicePipe,
     ReactiveFormsModule,
     MatButtonModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatPaginatorModule,
     MatDividerModule,
     TranslateModule,
-    PageHeaderComponent, StatusChipComponent,
-    OrgMembersPanelComponent
+    PageHeaderComponent, StatusChipComponent
   ]
 })
 export class OrganizationsComponent implements OnInit {
@@ -93,8 +92,8 @@ export class OrganizationsComponent implements OnInit {
             this.translate.instant('COMMON.CLOSE'),
             { duration: 4000, panelClass: 'snackbar-success' }
           ))
-          .catch(() => this.snackBar.open(
-            this.translate.instant('COMMON.ERROR'),
+          .catch((err: Error) => this.snackBar.open(
+            err.message,
             this.translate.instant('COMMON.CLOSE'),
             { duration: 4000, panelClass: 'snackbar-error' }
           ));
@@ -108,14 +107,14 @@ export class OrganizationsComponent implements OnInit {
       .afterClosed()
       .subscribe((dto: UpdateOrganizationRequestDto | null) => {
         if (!dto) return;
-        this.store.update(org.id, { name: dto.name, description: dto.description, logoUrl: dto.logoUrl })
+        this.store.update(org.id, { name: dto.name, description: dto.description, logoUrl: dto.logoUrl})
           .then(() => this.snackBar.open(
             this.translate.instant('ORGANIZATIONS.UPDATED_SUCCESS'),
             this.translate.instant('COMMON.CLOSE'),
             { duration: 4000, panelClass: 'snackbar-success' }
           ))
-          .catch(() => this.snackBar.open(
-            this.translate.instant('COMMON.ERROR'),
+          .catch((err: Error) => this.snackBar.open(
+            err.message,
             this.translate.instant('COMMON.CLOSE'),
             { duration: 4000, panelClass: 'snackbar-error' }
           ));

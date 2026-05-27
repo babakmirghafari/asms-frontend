@@ -52,13 +52,9 @@ export class AlertsComponent implements OnInit {
     };
     this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
-      this.store.acknowledge(alert.id).then(() => {
-        this.snackBar.open(
-          this.translate.instant('ALERTS.ACKNOWLEDGED_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: 'snackbar-success' }
-        );
-      });
+      this.store.acknowledge(alert.id)
+        .then(() => this.snackBar.open(this.translate.instant('ALERTS.ACKNOWLEDGED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000, panelClass: 'snackbar-success' }))
+        .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
     });
   }
 
@@ -70,13 +66,9 @@ export class AlertsComponent implements OnInit {
     };
     this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
-      this.store.resolve(alert.id).then(() => {
-        this.snackBar.open(
-          this.translate.instant('ALERTS.RESOLVED_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: 'snackbar-success' }
-        );
-      });
+      this.store.resolve(alert.id)
+        .then(() => this.snackBar.open(this.translate.instant('ALERTS.RESOLVED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000, panelClass: 'snackbar-success' }))
+        .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
     });
   }
 }

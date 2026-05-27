@@ -193,9 +193,10 @@ export class OrgSettingsDialogComponent implements OnInit {
         { duration: 3000, panelClass: 'snackbar-success' }
       );
       this.dialogRef.close('saved');
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred.';
       this.snackBar.open(
-        this.translate.instant('COMMON.ERROR'),
+        msg,
         this.translate.instant('COMMON.CLOSE'),
         { duration: 4000, panelClass: 'snackbar-error' }
       );

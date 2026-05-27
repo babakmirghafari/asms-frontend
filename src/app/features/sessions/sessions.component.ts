@@ -54,13 +54,9 @@ export class SessionsComponent implements OnInit {
     };
     this.dialog.open(ConfirmDialogComponent, { data }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.store.revoke(session.id).then(() => {
-          this.snackBar.open(
-            this.translate.instant('SESSIONS.REVOKE_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000, panelClass: 'snackbar-success' }
-          );
-        });
+        this.store.revoke(session.id)
+          .then(() => this.snackBar.open(this.translate.instant('SESSIONS.REVOKE_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000, panelClass: 'snackbar-success' }))
+          .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
       }
     });
   }
@@ -74,14 +70,9 @@ export class SessionsComponent implements OnInit {
     };
     this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.store.revokeAll('').then(() => {
-          this.snackBar.open(
-            this.translate.instant('SESSIONS.REVOKE_ALL_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 4000, panelClass: 'snackbar-success' }
-          );
-          this.store.loadAll();
-        });
+        this.store.revokeAll('')
+          .then(() => { this.snackBar.open(this.translate.instant('SESSIONS.REVOKE_ALL_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-success' }); this.store.loadAll(); })
+          .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
       }
     });
   }

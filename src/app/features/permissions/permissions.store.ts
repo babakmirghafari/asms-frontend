@@ -4,10 +4,10 @@ import { firstValueFrom } from 'rxjs';
 import {
   PermissionsService, PermissionDto, CreatePermissionRequestDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface PermissionsState {
   items: PermissionDto[];
-  /** Permissions filtered by selected org IDs — used in wizard step 4 */
   orgFilteredItems: PermissionDto[];
   totalElements: number;
   pageIndex: number;
@@ -39,8 +39,8 @@ export const PermissionsStore = signalStore(
         try {
           const res = await firstValueFrom(svc.listPermissions(page, size, undefined, undefined, resource)) as PagedResponseDto;
           patchState(store, { items: res.content as PermissionDto[], totalElements: res.totalElements, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async loadByOrganizationIds(organizationIds: string[], size = 100): Promise<void> {
@@ -52,8 +52,8 @@ export const PermissionsStore = signalStore(
         try {
           const res = await firstValueFrom(svc.listPermissions(0, size, undefined, organizationIds)) as PagedResponseDto;
           patchState(store, { orgFilteredItems: res.content as PermissionDto[], loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async create(dto: CreatePermissionRequestDto): Promise<PermissionDto> {
@@ -62,9 +62,10 @@ export const PermissionsStore = signalStore(
           const created = await firstValueFrom(svc.createPermission(dto));
           patchState(store, { items: [created, ...store.items()], totalElements: store.totalElements() + 1, loading: false });
           return created;
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
-          throw new Error('Create failed');
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async delete(id: string): Promise<void> {
@@ -72,8 +73,10 @@ export const PermissionsStore = signalStore(
         try {
           await firstValueFrom(svc.deletePermission(id));
           patchState(store, { items: store.items().filter(p => p.id !== id), totalElements: store.totalElements() - 1, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       }
     };

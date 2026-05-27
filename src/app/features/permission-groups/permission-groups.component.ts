@@ -70,13 +70,9 @@ export class PermissionGroupsComponent implements OnInit {
       .afterClosed()
       .subscribe((dto: CreatePermissionGroupRequestDto | null) => {
         if (!dto) return;
-        this.store.create(dto).then(() => {
-          this.snackBar.open(
-            this.translate.instant('PERMISSION_GROUPS.CREATED_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 4000, panelClass: 'snackbar-success' }
-          );
-        });
+        this.store.create(dto)
+          .then(() => this.snackBar.open(this.translate.instant('PERMISSION_GROUPS.CREATED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-success' }))
+          .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
       });
   }
 
@@ -91,13 +87,9 @@ export class PermissionGroupsComponent implements OnInit {
           name: dto.name,
           description: dto.description
         };
-        this.store.update(group.id, updateDto).then(() => {
-          this.snackBar.open(
-            this.translate.instant('PERMISSION_GROUPS.UPDATED_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 4000, panelClass: 'snackbar-success' }
-          );
-        });
+        this.store.update(group.id, updateDto)
+          .then(() => this.snackBar.open(this.translate.instant('PERMISSION_GROUPS.UPDATED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-success' }))
+          .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
       });
   }
 
@@ -111,13 +103,9 @@ export class PermissionGroupsComponent implements OnInit {
     };
     this.dialog.open(ConfirmDialogComponent, { data, width: 'min(440px, 95vw)', maxWidth: '95vw' }).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
-      this.store.delete(group.id).then(() => {
-        this.snackBar.open(
-          this.translate.instant('PERMISSION_GROUPS.DELETED_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 4000, panelClass: 'snackbar-success' }
-        );
-      });
+      this.store.delete(group.id)
+        .then(() => this.snackBar.open(this.translate.instant('PERMISSION_GROUPS.DELETED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-success' }))
+        .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
     });
   }
 }

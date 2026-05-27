@@ -5,6 +5,7 @@ import {
   StationPoliciesService, StationPolicyDto, CreateStationPolicyRequestDto,
   UpdateStationPolicyRequestDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface StationPoliciesState {
   items: StationPolicyDto[];
@@ -37,8 +38,8 @@ export const StationPoliciesStore = signalStore(
         try {
           const res: PagedResponseDto = await firstValueFrom(svc.listStationPolicies(page, size));
           patchState(store, { items: res.content as StationPolicyDto[], totalElements: res.totalElements, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async create(dto: CreateStationPolicyRequestDto): Promise<StationPolicyDto> {
@@ -47,9 +48,10 @@ export const StationPoliciesStore = signalStore(
           const created = await firstValueFrom(svc.createStationPolicy(dto));
           patchState(store, { items: [created, ...store.items()], totalElements: store.totalElements() + 1, loading: false });
           return created;
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
-          throw new Error('Create failed');
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async update(id: string, dto: UpdateStationPolicyRequestDto): Promise<void> {
@@ -57,8 +59,10 @@ export const StationPoliciesStore = signalStore(
         try {
           const updated = await firstValueFrom(svc.updateStationPolicy(id, dto));
           patchState(store, { items: store.items().map(p => p.id === id ? updated : p), loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async delete(id: string): Promise<void> {
@@ -66,8 +70,10 @@ export const StationPoliciesStore = signalStore(
         try {
           await firstValueFrom(svc.deleteStationPolicy(id));
           patchState(store, { items: store.items().filter(p => p.id !== id), totalElements: store.totalElements() - 1, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       }
     };

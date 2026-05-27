@@ -5,6 +5,7 @@ import {
   ApplicationsService, ApplicationDto, CreateApplicationRequestDto,
   UpdateApplicationRequestDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
+import { extractApiError } from '../../core/utils/api-error.util';
 
 export interface ApplicationsState {
   items: ApplicationDto[];
@@ -37,8 +38,8 @@ export const ApplicationsStore = signalStore(
         try {
           const res: PagedResponseDto = await firstValueFrom(svc.listApplications(page, size));
           patchState(store, { items: res.content as ApplicationDto[], totalElements: res.totalElements, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
       async create(dto: CreateApplicationRequestDto): Promise<ApplicationDto> {
@@ -47,9 +48,10 @@ export const ApplicationsStore = signalStore(
           const created = await firstValueFrom(svc.createApplication(dto));
           patchState(store, { items: [created, ...store.items()], totalElements: store.totalElements() + 1, loading: false });
           return created;
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
-          throw new Error('Create failed');
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async update(id: string, dto: UpdateApplicationRequestDto): Promise<void> {
@@ -57,8 +59,10 @@ export const ApplicationsStore = signalStore(
         try {
           const updated = await firstValueFrom(svc.updateApplication(id, dto));
           patchState(store, { items: store.items().map(a => a.id === id ? updated : a), loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       },
       async delete(id: string): Promise<void> {
@@ -66,8 +70,10 @@ export const ApplicationsStore = signalStore(
         try {
           await firstValueFrom(svc.deleteApplication(id));
           patchState(store, { items: store.items().filter(a => a.id !== id), totalElements: store.totalElements() - 1, loading: false });
-        } catch {
-          patchState(store, { loading: false, error: 'COMMON.ERROR' });
+        } catch (err) {
+          const msg = extractApiError(err);
+          patchState(store, { loading: false, error: msg });
+          throw new Error(msg);
         }
       }
     };
