@@ -72,11 +72,17 @@
             </div>
             <div class="org-stat">
               <span class="org-stat-label">{{ 'ORGANIZATIONS.OWNER' | translate }}</span>
-              <span class="org-stat-value org-stat-empty">—</span>
+              <span class="org-stat-value org-stat-empty">
+                  @if (org.ownerUserId && userStore.ownerById()[org.ownerUserId]) {
+                      {{ userStore.ownerById()[org.ownerUserId].fullName }}
+                  } @else {
+                      <span class="org-stat-empty">—</span>
+                  }
+              </span>
             </div>
             <div class="org-stat">
               <span class="org-stat-label">{{ 'ORGANIZATIONS.COUNTRY' | translate }}</span>
-              <span class="org-stat-value org-stat-empty">—</span>
+              <span class="org-stat-value org-stat-empty">{{org.country}}</span>
             </div>
           </div>
 

@@ -1,118 +1,118 @@
 <asms-modal
-  [title]="data.isEdit ? 'ORGANIZATIONS.EDIT' : 'ORGANIZATIONS.ADD'"
-  [steps]="[]"
-  [canProceed]="form.valid"
-  [isLoading]="isLoading"
-  [isFirstStep]="true"
-  [isLastStep]="true"
-  [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.CREATE'"
-  (cancelled)="cancel()"
-  (submitted)="submit()">
+        [title]="data.isEdit ? 'ORGANIZATIONS.EDIT' : 'ORGANIZATIONS.ADD'"
+        [steps]="[]"
+        [canProceed]="form.valid"
+        [isLoading]="isLoading"
+        [isFirstStep]="true"
+        [isLastStep]="true"
+        [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'ORGANIZATIONS.CREATE'"
+        (cancelled)="cancel()"
+        (submitted)="submit()">
 
-  <form [formGroup]="form" class="org-form" autocomplete="off">
+    <form [formGroup]="form" class="org-form" autocomplete="off">
 
-    <!-- Logo upload -->
-    <div class="org-logo-row">
-      <div class="org-logo-preview">
-        @if (logoPreviewUrl) {
-          <img [src]="logoPreviewUrl" alt="Logo preview" class="org-logo-img" />
-        } @else {
-          <mat-icon class="org-logo-placeholder-icon">image</mat-icon>
-        }
-      </div>
-      <div class="org-logo-meta">
-        <span class="org-logo-label">Organization Logo</span>
-        <label class="org-logo-upload-btn" for="org-logo-input">
-          <mat-icon>upload</mat-icon>
-          Upload Image
-        </label>
-        <input id="org-logo-input" type="file" accept="image/png,image/jpeg"
-               class="org-logo-file-input" (change)="onLogoSelected($event)" />
-        <span class="org-logo-hint">PNG, JPG up to 2MB. Used on login page.</span>
-      </div>
-    </div>
+        <!-- Logo upload -->
+        <div class="org-logo-row">
+            <div class="org-logo-preview">
+                @if (logoPreviewUrl) {
+                    <img [src]="logoPreviewUrl" alt="Logo preview" class="org-logo-img"/>
+                } @else {
+                    <mat-icon class="org-logo-placeholder-icon">image</mat-icon>
+                }
+            </div>
+            <div class="org-logo-meta">
+                <span class="org-logo-label">Organization Logo</span>
+                <label class="org-logo-upload-btn" for="org-logo-input">
+                    <mat-icon>upload</mat-icon>
+                    Upload Image
+                </label>
+                <input id="org-logo-input" type="file" accept="image/png,image/jpeg"
+                       class="org-logo-file-input" (change)="onLogoSelected($event)"/>
+                <span class="org-logo-hint">PNG, JPG up to 2MB. Used on login page.</span>
+            </div>
+        </div>
 
-    <!-- Name -->
-    <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }} </mat-label>
-      <input matInput formControlName="name" placeholder="e.g. Acme Corp" />
-      @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
-        <mat-error>Organization name is required</mat-error>
-      }
-      @if (form.get('name')?.hasError('minlength') && form.get('name')?.touched) {
-        <mat-error>Minimum 2 characters required</mat-error>
-      }
-    </mat-form-field>
+        <!-- Name -->
+        <mat-form-field appearance="outline" class="org-form-field-full">
+            <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }}</mat-label>
+            <input matInput formControlName="name" placeholder="e.g. Acme Corp"/>
+            @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+                <mat-error>Organization name is required</mat-error>
+            }
+            @if (form.get('name')?.hasError('minlength') && form.get('name')?.touched) {
+                <mat-error>Minimum 2 characters required</mat-error>
+            }
+        </mat-form-field>
 
-    <!-- Domain (readonly in edit mode — not part of UpdateOrganizationRequestDto) -->
-    <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'ORGANIZATIONS.DOMAIN' | translate }}</mat-label>
-      <mat-icon matPrefix>language</mat-icon>
-      <input matInput formControlName="domain" placeholder="acmecorp.com" [readonly]="data.isEdit" />
-      @if (form.get('domain')?.hasError('required') && form.get('domain')?.touched) {
-        <mat-error>Domain is required</mat-error>
-      }
-      @if (form.get('domain')?.hasError('pattern') && form.get('domain')?.touched) {
-        <mat-error>Enter a valid domain (e.g. acmecorp.com)</mat-error>
-      }
-    </mat-form-field>
+        <!-- Domain (readonly in edit mode — not part of UpdateOrganizationRequestDto) -->
+        <mat-form-field appearance="outline" class="org-form-field-full">
+            <mat-label>{{ 'ORGANIZATIONS.DOMAIN' | translate }}</mat-label>
+            <mat-icon matPrefix>language</mat-icon>
+            <input matInput formControlName="domain" placeholder="acmecorp.com" [readonly]="data.isEdit"/>
+            @if (form.get('domain')?.hasError('required') && form.get('domain')?.touched) {
+                <mat-error>Domain is required</mat-error>
+            }
+            @if (form.get('domain')?.hasError('pattern') && form.get('domain')?.touched) {
+                <mat-error>Enter a valid domain (e.g. acmecorp.com)</mat-error>
+            }
+        </mat-form-field>
 
-    <!-- Description -->
-    <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
-      <input matInput formControlName="description" placeholder="Short description" />
-    </mat-form-field>
+        <!-- Description -->
+        <mat-form-field appearance="outline" class="org-form-field-full">
+            <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
+            <input matInput formControlName="description" placeholder="Short description"/>
+        </mat-form-field>
 
-    <!-- Parent Organization -->
-    <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'ORGANIZATIONS.PARENT' | translate }}</mat-label>
-      <mat-icon matPrefix>account_tree</mat-icon>
-      <mat-select formControlName="parentOrganizationId">
-        <mat-option [value]="null">{{ 'ORGANIZATIONS.NO_PARENT' | translate }}</mat-option>
-        @if (orgsLoading()) {
-          <mat-option [value]="null" disabled>{{ 'COMMON.LOADING' | translate }}</mat-option>
-        } @else {
-          @for (o of organizations(); track o.id) {
-            <mat-option [value]="o.id">{{ o.name }}</mat-option>
-          }
-        }
-      </mat-select>
-    </mat-form-field>
+        <!-- Parent Organization -->
+        <mat-form-field appearance="outline" class="org-form-field-full">
+            <mat-label>{{ 'ORGANIZATIONS.PARENT' | translate }}</mat-label>
+            <mat-icon matPrefix>account_tree</mat-icon>
+            <mat-select formControlName="parentOrganizationId">
+                <mat-option [value]="null">{{ 'ORGANIZATIONS.NO_PARENT' | translate }}</mat-option>
+                @if (orgsLoading()) {
+                    <mat-option [value]="null" disabled>{{ 'COMMON.LOADING' | translate }}</mat-option>
+                } @else {
+                    @for (o of organizations(); track o.id) {
+                        <mat-option [value]="o.id">{{ o.name }}</mat-option>
+                    }
+                }
+            </mat-select>
+        </mat-form-field>
 
-    <!-- Plan + Country -->
-    <div class="org-form-row">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'ORGANIZATIONS.PLAN' | translate }}</mat-label>
-        <mat-select formControlName="plan">
-          @for (p of plans; track p.value) {
-            <mat-option [value]="p.value">{{ p.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+        <!-- Plan + Country -->
+        <div class="org-form-row">
+            <mat-form-field appearance="outline">
+                <mat-select formControlName="plan">
+                    <mat-option [value]="null">{{ 'ORGANIZATIONS.NO_PARENT' | translate }}</mat-option>
+                    @for (p of plans; track p.value) {
+                        <mat-option [value]="p.value">{{ p.label }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'ORGANIZATIONS.COUNTRY' | translate }}</mat-label>
-        <input matInput formControlName="country" placeholder="USA" />
-      </mat-form-field>
-    </div>
+            <mat-form-field appearance="outline">
+                <mat-label>{{ 'ORGANIZATIONS.COUNTRY' | translate }}</mat-label>
+                <input matInput formControlName="country" placeholder="USA"/>
+            </mat-form-field>
+        </div>
 
-    <!-- Owner -->
-    <mat-form-field appearance="outline" class="org-form-field-full">
-      <mat-label>{{ 'ORGANIZATIONS.OWNER' | translate }}</mat-label>
-      <mat-select formControlName="ownerUserId">
-        @if (usersLoading()) {
-          <mat-option [value]="null" disabled>{{ 'COMMON.LOADING' | translate }}</mat-option>
-        } @else {
-          <mat-option value="">{{ 'ORGANIZATIONS.SELECT_OWNER' | translate }}</mat-option>
-          @for (u of users(); track u.id) {
-            <mat-option [value]="u.id">
-              {{ u.displayName || u.username }} — {{ u.email }}
-            </mat-option>
-          }
-        }
-      </mat-select>
-    </mat-form-field>
+        <!-- Owner -->
+        <mat-form-field appearance="outline" class="org-form-field-full">
+            <mat-label>{{ 'ORGANIZATIONS.OWNER' | translate }}</mat-label>
+            <mat-select formControlName="ownerUserId">
+                @if (usersLoading()) {
+                    <mat-option [value]="null" disabled>{{ 'COMMON.LOADING' | translate }}</mat-option>
+                } @else {
+                    <mat-option value="">{{ 'ORGANIZATIONS.SELECT_OWNER' | translate }}</mat-option>
+                    @for (u of users(); track u.id) {
+                        <mat-option [value]="u.id">
+                            {{ u.displayName || u.username }} — {{ u.email }}
+                        </mat-option>
+                    }
+                }
+            </mat-select>
+        </mat-form-field>
 
-  </form>
+    </form>
 
 </asms-modal>

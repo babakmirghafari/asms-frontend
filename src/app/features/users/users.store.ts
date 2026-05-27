@@ -2,7 +2,7 @@ import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 import {
-  UsersService, UserDto, CreateUserRequestDto, UpdateUserRequestDto
+  UsersService, UserDto, CreateUserRequestDto, UpdateUserRequestDto, OrganizationDto
 } from '@babakmirghafari/asms-api-client';
 
 export interface UsersState {
@@ -28,7 +28,12 @@ export const UsersStore = signalStore(
   }),
   withComputed((store) => ({
     isLoading: computed(() => store.loading()),
-    isEmpty: computed(() => store.items().length === 0 && !store.loading())
+    isEmpty: computed(() => store.items().length === 0 && !store.loading()),
+    ownerById: computed(() => {
+      const map: Record<string, UserDto> = {};
+      for (const o of store.items()) { map[o.id!] = o; }
+      return map;
+    })
   })),
   withMethods((store) => {
     const usersService = inject(UsersService);

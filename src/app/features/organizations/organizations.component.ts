@@ -21,6 +21,7 @@ import { OrgFormDialogComponent, OrgFormDialogData } from './org-form-dialog/org
 import { OrgSettingsDialogComponent, OrgSettingsDialogData } from './org-settings-dialog/org-settings-dialog.component';
 import { OrgMembersPanelComponent, OrgMembersPanelData } from './org-members-panel/org-members-panel.component';
 import { OrganizationDto, OrganizationSettingsDto, CreateOrganizationRequestDto, UpdateOrganizationRequestDto } from '@babakmirghafari/asms-api-client';
+import {UsersStore} from "../users/users.store";
 
 @Component({
   selector: 'asms-organizations',
@@ -40,6 +41,7 @@ import { OrganizationDto, OrganizationSettingsDto, CreateOrganizationRequestDto,
 })
 export class OrganizationsComponent implements OnInit {
   protected readonly store = inject(OrganizationsStore);
+  protected readonly userStore = inject(UsersStore);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -71,6 +73,7 @@ export class OrganizationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.loadAll();
+    this.userStore.loadAll();
   }
 
   onPage(event: PageEvent): void {
