@@ -4,11 +4,14 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MembershipsService, UsersService, MembershipDto, UserSummaryDto, OrganizationDto } from '@babakmirghafari/asms-api-client';
 import { AddMemberDialogComponent, AddMemberDialogData } from './add-member-dialog/add-member-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 export interface OrgMembersPanelData {
   org: OrganizationDto;
@@ -27,7 +30,9 @@ export interface OrgMembersPanelData {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    TranslateModule
+    MatTooltipModule,
+    TranslateModule,
+    ConfirmDialogComponent
   ]
 })
 export class OrgMembersPanelComponent implements OnInit {
@@ -121,6 +126,60 @@ export class OrgMembersPanelComponent implements OnInit {
     } finally {
       this.isAdding.set(false);
     }
+  }
+
+  removeMember(m: MembershipDto): void {
+    const confirmData: ConfirmDialogData = {
+      titleKey: 'MEMBERSHIPS.REMOVE_CONFIRM_TITLE',
+      messageKey: 'MEMBERSHIPS.REMOVE_CONFIRM_MESSAGE',
+      dangerous: true,
+      confirmKey: 'COMMON.REMOVE'
+    };
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: confirmData,
+        width: 'min(440px, 95vw)',
+        maxWidth: '95vw'
+      })
+      .afterClosed()
+      .subscribe(confirmed => {
+        if (!confirmed) return;
+        firstValueFrom(this.membershipsService.deleteMembership(m.id!))
+          .then(() => {
+            this.members.update(list => list.filter(item => item.id !== m.id));
+            this.snackBar.open(
+              this.translate.instant('MEMBERSHIPS.REMOVED_SUCCESS'),
+              this.translate.instant('COMMON.CLOSE'),
+              { duration: 3000, panelClass: 'snackbar-success' }
+            );
+          })
+          .catch((err: unknown) => {
+            const is409 =
+              (err instanceof HttpErrorResponse && err.status === 409) ||
+              (err instanceof HttpErrorResponse && err.error?.code === 'LAST_ACTIVE_MEMBERSHIP');
+            if (is409) {
+              const infoData: ConfirmDialogData = {
+                titleKey: 'MEMBERSHIPS.LAST_ACTIVE_ERROR_TITLE',
+                messageKey: 'MEMBERSHIPS.LAST_ACTIVE_ERROR_MESSAGE',
+                dangerous: false,
+                confirmKey: 'COMMON.CLOSE',
+                cancelKey: 'COMMON.CLOSE'
+              };
+              this.dialog.open(ConfirmDialogComponent, {
+                data: infoData,
+                width: 'min(480px, 95vw)',
+                maxWidth: '95vw',
+                disableClose: false
+              });
+            } else {
+              const msg = err instanceof Error ? err.message : this.translate.instant('COMMON.ERROR');
+              this.snackBar.open(msg, this.translate.instant('COMMON.CLOSE'), {
+                duration: 5000,
+                panelClass: 'snackbar-error'
+              });
+            }
+          });
+      });
   }
 
   close(): void {

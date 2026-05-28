@@ -323,7 +323,12 @@
     "ADD_TO_ORG": "Add Members to",
     "SEARCH_USERS": "Search users by name, username, or email",
     "ELIGIBLE_USERS": "eligible users not yet in this organization",
-    "ADD_MEMBER": "Add Member"
+    "ADD_MEMBER": "Add Member",
+    "REMOVE_CONFIRM_TITLE": "Remove Member",
+    "REMOVE_CONFIRM_MESSAGE": "Are you sure you want to remove this member from the organization?",
+    "REMOVED_SUCCESS": "Member removed successfully",
+    "LAST_ACTIVE_ERROR_TITLE": "Cannot Remove Member",
+    "LAST_ACTIVE_ERROR_MESSAGE": "This user cannot be removed because it is their only active organization membership."
   },
   "PERMISSION_GROUPS": {
     "TITLE": "Permission Groups",

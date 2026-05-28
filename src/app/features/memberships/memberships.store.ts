@@ -1,10 +1,18 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   MembershipsService, MembershipDto, CreateMembershipRequestDto, PagedResponseDto
 } from '@babakmirghafari/asms-api-client';
 import { extractApiError } from '../../core/utils/api-error.util';
+
+export class LastActiveMembershipError extends Error {
+  override readonly name = 'LastActiveMembershipError';
+  constructor() {
+    super('LAST_ACTIVE_MEMBERSHIP');
+  }
+}
 
 export interface MembershipsState {
   items: MembershipDto[];
@@ -59,8 +67,15 @@ export const MembershipsStore = signalStore(
           await firstValueFrom(svc.deleteMembership(id));
           patchState(store, { items: store.items().filter(m => m.id !== id), totalElements: store.totalElements() - 1, loading: false });
         } catch (err) {
+          patchState(store, { loading: false });
+          if (
+            err instanceof HttpErrorResponse &&
+            (err.status === 409 || err.error?.code === 'LAST_ACTIVE_MEMBERSHIP')
+          ) {
+            throw new LastActiveMembershipError();
+          }
           const msg = extractApiError(err);
-          patchState(store, { loading: false, error: msg });
+          patchState(store, { error: msg });
           throw new Error(msg);
         }
       }

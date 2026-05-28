@@ -107,6 +107,26 @@
             </span>
           </div>
 
+          <!-- Compliance summary -->
+          <div class="org-card-security">
+            <span class="org-sec-badge org-sec-badge--on">
+              <mat-icon>location_on</mat-icon>
+              {{ getDataResidencyLabel(getOrgSettings(org.id)?.dataResidency) }}
+            </span>
+            <span class="org-sec-badge" [class.org-sec-badge--on]="getOrgSettings(org.id)?.enforceDataResidencyOnExports">
+              <mat-icon>lock_outline</mat-icon>
+              Exports {{ getOrgSettings(org.id)?.enforceDataResidencyOnExports ? 'Restricted' : 'Open' }}
+            </span>
+            <span class="org-sec-badge" [class.org-sec-badge--on]="getOrgSettings(org.id)?.longTermAuditRetention">
+              <mat-icon>history</mat-icon>
+              Audit {{ getOrgSettings(org.id)?.longTermAuditRetention ? 'Long-term' : 'Standard' }}
+            </span>
+            <span class="org-sec-badge" [class.org-sec-badge--on]="getOrgSettings(org.id)?.gdprDataExportEndpoint">
+              <mat-icon>policy</mat-icon>
+              GDPR {{ getOrgSettings(org.id)?.gdprDataExportEndpoint ? 'On' : 'Off' }}
+            </span>
+          </div>
+
           <mat-divider />
 
           <!-- Footer actions -->

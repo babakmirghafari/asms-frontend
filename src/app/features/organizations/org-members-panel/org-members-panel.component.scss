@@ -142,11 +142,11 @@
   }
 }
 
-/* ── More button ─────────────────────────────────────────────────── */
+/* ── Remove button ───────────────────────────────────────────────── */
 
-.mp-more-btn {
+.mp-remove-btn {
   flex-shrink: 0;
-  color: var(--asms-text-secondary) !important;
+  color: var(--asms-danger) !important;
 }
 
 /* ── Empty state ─────────────────────────────────────────────────── */

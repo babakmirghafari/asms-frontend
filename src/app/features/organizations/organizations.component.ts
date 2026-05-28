@@ -139,8 +139,18 @@ export class OrganizationsComponent implements OnInit {
     AUTH0: 'Auth0', ONE_LOGIN: 'OneLogin', PING_IDENTITY: 'Ping Identity',
   };
 
+  private static readonly RESIDENCY_LABELS: Record<string, string> = {
+    'us-east-1':      'US East',
+    'eu-central-1':   'EU Central',
+    'ap-southeast-1': 'AP Southeast',
+  };
+
   getIdpLabel(idp: string | undefined): string | undefined {
     return idp ? (OrganizationsComponent.IDP_LABELS[idp] ?? idp) : undefined;
+  }
+
+  getDataResidencyLabel(region: string | undefined): string {
+    return region ? (OrganizationsComponent.RESIDENCY_LABELS[region] ?? region) : 'Default';
   }
 
   openMembersDialog(org: OrganizationDto): void {

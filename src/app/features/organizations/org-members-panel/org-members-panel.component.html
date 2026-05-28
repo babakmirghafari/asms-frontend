@@ -43,8 +43,8 @@
             &#9679; {{ m.status | lowercase }}
           </span>
         </div>
-        <button mat-icon-button class="mp-more-btn">
-          <mat-icon>more_vert</mat-icon>
+        <button mat-icon-button class="mp-remove-btn" [matTooltip]="'MEMBERSHIPS.REMOVE' | translate" (click)="removeMember(m)">
+          <mat-icon>person_remove</mat-icon>
         </button>
       </div>
     }

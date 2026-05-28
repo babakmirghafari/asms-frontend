@@ -322,7 +322,12 @@
     "ADD_TO_ORG": "افزودن اعضا به",
     "SEARCH_USERS": "جستجوی کاربران بر اساس نام، نام کاربری یا ایمیل",
     "ELIGIBLE_USERS": "کاربر واجد شرایط که هنوز در این سازمان نیستند",
-    "ADD_MEMBER": "افزودن عضو"
+    "ADD_MEMBER": "افزودن عضو",
+    "REMOVE_CONFIRM_TITLE": "حذف عضو",
+    "REMOVE_CONFIRM_MESSAGE": "آیا از حذف این عضو از سازمان مطمئن هستید؟",
+    "REMOVED_SUCCESS": "عضو با موفقیت حذف شد",
+    "LAST_ACTIVE_ERROR_TITLE": "امکان حذف عضو وجود ندارد",
+    "LAST_ACTIVE_ERROR_MESSAGE": "این کاربر قابل حذف نیست زیرا این تنها عضویت فعال سازمانی اوست."
   },
   "PERMISSION_GROUPS": {
     "TITLE": "گروه‌های دسترسی",
