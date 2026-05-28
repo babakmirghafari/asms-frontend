@@ -34,7 +34,17 @@ export const OrganizationsStore = signalStore(
         try {
           const obs: Observable<PagedResponseDto> = svc.listOrganizations(page, size);
           const res = await firstValueFrom(obs);
-          patchState(store, { items: res.content as OrganizationDto[], totalElements: res.totalElements, loading: false });
+          const orgs = res.content as OrganizationDto[];
+          patchState(store, { items: orgs, totalElements: res.totalElements, loading: false });
+          const results = await Promise.allSettled(
+            orgs.map(o => firstValueFrom(svc.getOrganizationSettings(o.id!) as Observable<OrganizationSettingsDto>))
+          );
+          const newMap: Record<string, OrganizationSettingsDto> = { ...store.settingsMap() };
+          orgs.forEach((o, i) => {
+            const r = results[i];
+            if (r.status === 'fulfilled') newMap[o.id!] = r.value;
+          });
+          patchState(store, { settingsMap: newMap });
         } catch (err) { patchState(store, { loading: false, error: extractApiError(err) }); }
       },
       async create(dto: CreateOrganizationRequestDto): Promise<OrganizationDto> {
