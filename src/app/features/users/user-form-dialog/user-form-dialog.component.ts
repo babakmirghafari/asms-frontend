@@ -1,6 +1,4 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { startWith } from 'rxjs/operators';
 import { FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -79,14 +77,14 @@ export class UserFormDialogComponent implements OnInit {
   readonly isLastStep  = computed(() => this.currentStep() === this.wizardSteps.length - 1);
 
   /** Returns true if the user can proceed from the current step. */
-  readonly canProceedAtCurrentStep = computed(() => {
+  get canProceedAtCurrentStep(): boolean {
     switch (this.currentStep()) {
-      case 0: return this.identityFormValid()  === 'VALID';
-      case 1: return this.passwordFormValid()  === 'VALID';
-      case 4: return this.securityFormValid()  === 'VALID';
+      case 0: return this.identityForm.valid;
+      case 1: return this.passwordForm.valid;
+      case 4: return this.securityForm.valid;
       default: return true;
     }
-  });
+  }
 
   // ──────────────────────────────────────────
   // Step 1 — Identity
@@ -103,11 +101,6 @@ export class UserFormDialogComponent implements OnInit {
     jobTitle:    [''],
     manager:     ['']
   });
-  readonly identityFormValid = toSignal(
-    this.identityForm.statusChanges.pipe(startWith(this.identityForm.status)),
-    { initialValue: this.identityForm.status }
-  );
-
   // ──────────────────────────────────────────
   // Step 2 — Password delivery
   // ──────────────────────────────────────────
@@ -121,10 +114,6 @@ export class UserFormDialogComponent implements OnInit {
     passwordExpiry:      ['24h'],
     forcePasswordChange: [true]
   });
-  readonly passwordFormValid = toSignal(
-    this.passwordForm.statusChanges.pipe(startWith(this.passwordForm.status)),
-    { initialValue: this.passwordForm.status }
-  );
 
   // ──────────────────────────────────────────
   // Step 3 — Organization assignment (real data)
@@ -207,10 +196,6 @@ export class UserFormDialogComponent implements OnInit {
     failedLoginThreshold:   [3, [Validators.required, Validators.min(1), Validators.max(10)]],
     lockDuration:           ['30m']
   });
-  readonly securityFormValid = toSignal(
-    this.securityForm.statusChanges.pipe(startWith(this.securityForm.status)),
-    { initialValue: this.securityForm.status }
-  );
 
   // ──────────────────────────────────────────
   // Step 6 — Station policy
