@@ -182,23 +182,23 @@ export class AuthComponent implements OnInit {
   });
 
   // ── Password strength ─────────────────────────────────────────
-  readonly passwordStrengthClass = computed(() => {
+  get passwordStrengthClass(): string {
     const pw: string = this.changePasswordForm.get('newPassword')?.value ?? '';
     const score = this.calcPasswordScore(pw);
     if (score <= 1) return 'strength-weak';
     if (score === 2) return 'strength-fair';
     if (score === 3) return 'strength-good';
     return 'strength-strong';
-  });
+  }
 
-  readonly passwordStrengthLabel = computed(() => {
+  get passwordStrengthLabel(): string {
     const pw: string = this.changePasswordForm.get('newPassword')?.value ?? '';
     const score = this.calcPasswordScore(pw);
     if (score <= 1) return 'AUTH.STRENGTH_WEAK';
     if (score === 2) return 'AUTH.STRENGTH_FAIR';
     if (score === 3) return 'AUTH.STRENGTH_GOOD';
     return 'AUTH.STRENGTH_STRONG';
-  });
+  }
 
   private calcPasswordScore(pw: string): number {
     let score = 0;

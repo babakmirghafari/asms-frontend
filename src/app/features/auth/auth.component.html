@@ -331,9 +331,9 @@
                 </div>
                 @if (changePasswordForm.get('newPassword')?.value) {
                   <div class="auth-strength-bar">
-                    <div class="auth-strength-fill" [class]="passwordStrengthClass()"></div>
+                    <div class="auth-strength-fill" [class]="passwordStrengthClass"></div>
                   </div>
-                  <span class="auth-strength-label">{{ 'AUTH.PASSWORD_STRENGTH' | translate }}: {{ passwordStrengthLabel() | translate }}</span>
+                  <span class="auth-strength-label">{{ 'AUTH.PASSWORD_STRENGTH' | translate }}: {{ passwordStrengthLabel | translate }}</span>
                 }
               </div>
 
