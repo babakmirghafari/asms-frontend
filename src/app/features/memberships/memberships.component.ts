@@ -1,5 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { LowerCasePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +11,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MembershipsStore, LastActiveMembershipError } from './memberships.store';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { StatusChipComponent } from '../../shared/components/status-chip/status-chip.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import {
   MembershipFormDialogComponent,
@@ -25,11 +24,11 @@ import { MembershipDto, CreateMembershipRequestDto } from '@babakmirghafari/asms
   styleUrl: './memberships.component.scss',
   standalone: true,
   imports: [
-    DatePipe,
+    LowerCasePipe,
     MatTableModule, MatButtonModule, MatIconModule, MatTooltipModule,
     MatProgressSpinnerModule, MatPaginatorModule,
     TranslateModule,
-    PageHeaderComponent, StatusChipComponent
+    PageHeaderComponent, ConfirmDialogComponent
   ]
 })
 export class MembershipsComponent implements OnInit {
@@ -38,14 +37,31 @@ export class MembershipsComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
 
-  readonly displayedColumns = ['username', 'organizationName', 'status', 'createdAt', 'actions'];
+  readonly displayedColumns = ['user', 'organizations', 'status', 'actions'];
+
+  readonly pageIndex = signal(0);
+  readonly pageSize  = signal(10);
+
+  readonly pagedRows = computed(() => {
+    const start = this.pageIndex() * this.pageSize();
+    return this.store.userRows().slice(start, start + this.pageSize());
+  });
+
+  private static readonly AVATAR_COLORS = [
+    '#4CAF50', '#FF9800', '#9C27B0', '#00BCD4',
+    '#3F51B5', '#F44336', '#009688', '#FF5722'
+  ];
 
   ngOnInit(): void {
     this.store.loadAll();
   }
 
-  onPage(event: PageEvent): void {
-    this.store.loadAll(event.pageIndex, event.pageSize);
+  avatarColor(name: string): string {
+    return MembershipsComponent.AVATAR_COLORS[(name?.charCodeAt(0) ?? 0) % MembershipsComponent.AVATAR_COLORS.length];
+  }
+
+  initials(name: string): string {
+    return (name ?? '').split(' ').slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase() || '?';
   }
 
   openCreateDialog(): void {
@@ -65,7 +81,12 @@ export class MembershipsComponent implements OnInit {
       });
   }
 
-  confirmDelete(membership: MembershipDto): void {
+  onPage(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
+
+  confirmRemoveFromOrg(membership: MembershipDto): void {
     const confirmData: ConfirmDialogData = {
       titleKey: 'MEMBERSHIPS.REMOVE_CONFIRM_TITLE',
       messageKey: 'MEMBERSHIPS.REMOVE_CONFIRM_MESSAGE',

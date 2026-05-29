@@ -7,6 +7,13 @@ import {
 } from '@babakmirghafari/asms-api-client';
 import { extractApiError } from '../../core/utils/api-error.util';
 
+export interface UserMembershipRow {
+  userId:      string;
+  username:    string;
+  memberships: MembershipDto[];
+  status:      string;  // ACTIVE if any membership is active, else first status
+}
+
 export class LastActiveMembershipError extends Error {
   override readonly name = 'LastActiveMembershipError';
   constructor() {
@@ -35,12 +42,27 @@ export const MembershipsStore = signalStore(
   }),
   withComputed((store) => ({
     isLoading: computed(() => store.loading()),
-    isEmpty: computed(() => store.items().length === 0 && !store.loading())
+    isEmpty:   computed(() => store.items().length === 0 && !store.loading()),
+    userRows:  computed((): UserMembershipRow[] => {
+      const map = new Map<string, UserMembershipRow>();
+      for (const m of store.items()) {
+        const uid = m.userId ?? m.id!;
+        if (!map.has(uid)) {
+          map.set(uid, { userId: uid, username: m.username ?? uid, memberships: [], status: '' });
+        }
+        map.get(uid)!.memberships.push(m);
+      }
+      for (const row of map.values()) {
+        row.status = row.memberships.some(m => m.status === 'ACTIVE') ? 'ACTIVE'
+          : (row.memberships[0]?.status ?? 'INACTIVE');
+      }
+      return Array.from(map.values());
+    })
   })),
   withMethods((store) => {
     const svc = inject(MembershipsService);
     return {
-      async loadAll(page = 0, size = 20, userId?: string, organizationId?: string): Promise<void> {
+      async loadAll(page = 0, size = 200, userId?: string, organizationId?: string): Promise<void> {
         patchState(store, { loading: true, error: null, pageIndex: page, pageSize: size });
         try {
           const res: PagedResponseDto = await firstValueFrom(svc.listMemberships(page, size, userId, organizationId));
