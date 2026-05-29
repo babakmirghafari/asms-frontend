@@ -1,4 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { startWith } from 'rxjs/operators';
 import { FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -79,8 +81,9 @@ export class UserFormDialogComponent implements OnInit {
   /** Returns true if the user can proceed from the current step. */
   readonly canProceedAtCurrentStep = computed(() => {
     switch (this.currentStep()) {
-      case 0: return this.identityForm.valid;
-      case 1: return this.passwordForm.valid;
+      case 0: return this.identityFormValid()  === 'VALID';
+      case 1: return this.passwordFormValid()  === 'VALID';
+      case 4: return this.securityFormValid()  === 'VALID';
       default: return true;
     }
   });
@@ -100,6 +103,10 @@ export class UserFormDialogComponent implements OnInit {
     jobTitle:    [''],
     manager:     ['']
   });
+  readonly identityFormValid = toSignal(
+    this.identityForm.statusChanges.pipe(startWith(this.identityForm.status)),
+    { initialValue: this.identityForm.status }
+  );
 
   // ──────────────────────────────────────────
   // Step 2 — Password delivery
@@ -114,6 +121,10 @@ export class UserFormDialogComponent implements OnInit {
     passwordExpiry:      ['24h'],
     forcePasswordChange: [true]
   });
+  readonly passwordFormValid = toSignal(
+    this.passwordForm.statusChanges.pipe(startWith(this.passwordForm.status)),
+    { initialValue: this.passwordForm.status }
+  );
 
   // ──────────────────────────────────────────
   // Step 3 — Organization assignment (real data)
@@ -196,6 +207,10 @@ export class UserFormDialogComponent implements OnInit {
     failedLoginThreshold:   [3, [Validators.required, Validators.min(1), Validators.max(10)]],
     lockDuration:           ['30m']
   });
+  readonly securityFormValid = toSignal(
+    this.securityForm.statusChanges.pipe(startWith(this.securityForm.status)),
+    { initialValue: this.securityForm.status }
+  );
 
   // ──────────────────────────────────────────
   // Step 6 — Station policy
@@ -277,11 +292,20 @@ export class UserFormDialogComponent implements OnInit {
   // ──────────────────────────────────────────
 
   goNext(): void {
-    if (this.currentStep() === 0 && this.identityForm.invalid) {
+    const step = this.currentStep();
+    if (step === 0 && this.identityForm.invalid) {
       this.identityForm.markAllAsTouched();
       return;
     }
-    if (this.currentStep() < this.wizardSteps.length - 1) {
+    if (step === 1 && this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
+    if (step === 4 && this.securityForm.invalid) {
+      this.securityForm.markAllAsTouched();
+      return;
+    }
+    if (step < this.wizardSteps.length - 1) {
       this.currentStep.update(s => s + 1);
     }
   }
@@ -350,6 +374,9 @@ export class UserFormDialogComponent implements OnInit {
         .filter((_, i) => this.selectedWorkdays[i])
         .map(d => d.value as CreateUserRequestDto.WorkdaysEnum);
 
+      const rawDeliveryMethod = (this.passwordForm.get('deliveryMethod')?.value ?? 'email').toUpperCase();
+      const deliveryMethod = rawDeliveryMethod as CreateUserRequestDto.DeliveryMethodEnum;
+
       const dto: CreateUserRequestDto = {
         username:             this.identityForm.value.username!,
         email:                this.identityForm.value.email!,
@@ -368,7 +395,15 @@ export class UserFormDialogComponent implements OnInit {
                                 ? { start: this.stationForm.value.workStartTime ?? '09:00',
                                     end:   this.stationForm.value.workEndTime   ?? '18:00' }
                                 : undefined,
-        sendTempPassword:     this.statusForm.value.sendTempPassword ?? true
+        sendTempPassword:     this.statusForm.value.sendTempPassword ?? true,
+        // Step 2 — password delivery
+        deliveryMethod,
+        forcePasswordChange:  this.passwordForm.get('forcePasswordChange')?.value ?? true,
+        // Step 5 — security & MFA
+        mfaEnabled:           this.securityForm.get('mfaEnabled')?.value ?? false,
+        failedLoginThreshold: this.securityForm.get('failedLoginThreshold')?.value ?? 3,
+        // Step 7 — initial status
+        initialStatus:        (this.statusForm.get('status')?.value ?? 'ACTIVE') as CreateUserRequestDto.InitialStatusEnum
       };
       this.dialogRef.close(dto);
     }
