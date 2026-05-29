@@ -1,6 +1,7 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
 import {
   AuthService,
@@ -13,12 +14,22 @@ import { AuthStore } from '../../core/store/auth.store';
 
 export type AuthStep = 'login' | 'mfa' | 'select-org' | 'change-password';
 
+export interface OrgSelectionItem {
+  id: string;
+  name: string;
+  slug: string;
+  domain: string;
+  memberCount: number;
+  plan: string;
+}
+
 export interface AuthFeatureState {
   step: AuthStep;
   loading: boolean;
   error: string | null;
   sessionToken: string | null;
   availableOrgs: OrgSummaryForSelectionDto[];
+  orgsForSelection: OrgSelectionItem[];
 }
 
 export const AuthFeatureStore = signalStore(
@@ -28,7 +39,8 @@ export const AuthFeatureStore = signalStore(
     loading: false,
     error: null,
     sessionToken: null,
-    availableOrgs: []
+    availableOrgs: [],
+    orgsForSelection: []
   }),
   withComputed((store) => ({
     isLoading: computed(() => store.loading()),
@@ -39,6 +51,18 @@ export const AuthFeatureStore = signalStore(
     const authService = inject(AuthService);
     const authStore = inject(AuthStore);
     const router = inject(Router);
+    const http = inject(HttpClient);
+
+    async function loadOrgsForSession(sessionToken: string): Promise<void> {
+      try {
+        const orgs = await firstValueFrom(
+          http.get<OrgSelectionItem[]>(`/asms/v1/auth/orgs?sessionToken=${sessionToken}`)
+        );
+        patchState(store, { orgsForSelection: orgs ?? [] });
+      } catch {
+        patchState(store, { orgsForSelection: [] });
+      }
+    }
 
     function handleLoginResponse(response: LoginResponseDto): void {
       switch (response.status) {
@@ -50,9 +74,12 @@ export const AuthFeatureStore = signalStore(
         case LoginResponseDto.StatusEnum.MfaRequired:
           patchState(store, { step: 'mfa', sessionToken: response.sessionToken ?? null, loading: false });
           break;
-        case LoginResponseDto.StatusEnum.OrgSelectionRequired:
-          patchState(store, { step: 'select-org', sessionToken: response.sessionToken ?? null, loading: false });
+        case LoginResponseDto.StatusEnum.OrgSelectionRequired: {
+          const token = response.sessionToken ?? null;
+          patchState(store, { step: 'select-org', sessionToken: token, loading: false });
+          if (token) loadOrgsForSession(token);
           break;
+        }
         case LoginResponseDto.StatusEnum.TempPasswordRequired:
           patchState(store, { step: 'change-password', sessionToken: response.sessionToken ?? null, loading: false });
           break;
@@ -120,7 +147,7 @@ export const AuthFeatureStore = signalStore(
       },
 
       resetToLogin(): void {
-        patchState(store, { step: 'login', error: null, sessionToken: null });
+        patchState(store, { step: 'login', error: null, sessionToken: null, orgsForSelection: [] });
       }
     };
   })

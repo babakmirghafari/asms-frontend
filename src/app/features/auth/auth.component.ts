@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, computed, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -129,57 +129,46 @@ export class AuthComponent implements OnInit {
   selectedOrgId: string | null = null;
   orgSearchQuery = '';
 
-  readonly sampleOrgs: OrgItem[] = [
-    {
-      id: 'org-acme',
-      name: 'Acme Corp',
-      initials: 'AC',
-      domain: 'acmecorp.com',
-      badge: 'Primary',
-      color: '#10B981',
-      members: 6,
-      plan: 'Enterprise',
-      region: 'USA',
-      lastAccess: 'Active now',
-      complianceTags: ['SOC2', 'ISO27001', 'GDPR']
-    },
-    {
-      id: 'org-beta',
-      name: 'Beta LLC',
-      initials: 'BL',
-      domain: 'betallc.com',
-      badge: 'Sandbox',
-      color: '#F97316',
-      members: 3,
-      plan: 'Business',
-      region: 'UK',
-      lastAccess: '2 hours ago',
-      complianceTags: ['GDPR']
-    },
-    {
-      id: 'org-gamma',
-      name: 'Gamma Inc',
-      initials: 'GI',
-      domain: 'gammainc.com',
-      badge: '',
-      color: '#8B5CF6',
-      members: 2,
-      plan: 'Business',
-      region: 'Japan',
-      lastAccess: 'Yesterday',
-      complianceTags: ['ISO27001']
-    }
+  private static readonly ORG_COLORS = [
+    '#10B981', '#F97316', '#8B5CF6', '#3B82F6',
+    '#EF4444', '#06B6D4', '#F59E0B', '#84CC16'
   ];
 
-  readonly filteredOrgs = computed(() => {
+  private toOrgItem(raw: { id: string; name: string; slug: string; domain: string; memberCount: number; plan: string }): OrgItem {
+    const name = raw.name ?? '';
+    const words = name.trim().split(/\s+/);
+    const initials = words.length >= 2
+      ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
+      : name.slice(0, 2).toUpperCase();
+    const colorIdx = name.charCodeAt(0) % AuthComponent.ORG_COLORS.length;
+    return {
+      id: raw.id,
+      name,
+      initials,
+      domain: raw.domain ?? raw.slug ?? '',
+      badge: '',
+      color: AuthComponent.ORG_COLORS[colorIdx],
+      members: raw.memberCount ?? 0,
+      plan: raw.plan ?? '',
+      region: '',
+      lastAccess: '',
+      complianceTags: []
+    };
+  }
+
+  get realOrgs(): OrgItem[] {
+    return this.store.orgsForSelection().map(o => this.toOrgItem(o));
+  }
+
+  get filteredOrgs(): OrgItem[] {
     const q = this.orgSearchQuery.toLowerCase();
-    if (!q) return this.sampleOrgs;
-    return this.sampleOrgs.filter(o =>
+    const orgs = this.realOrgs;
+    if (!q) return orgs;
+    return orgs.filter(o =>
       o.name.toLowerCase().includes(q) ||
-      o.domain.toLowerCase().includes(q) ||
-      o.region.toLowerCase().includes(q)
+      o.domain.toLowerCase().includes(q)
     );
-  });
+  }
 
   // ── Password strength ─────────────────────────────────────────
   get passwordStrengthClass(): string {
