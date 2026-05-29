@@ -1,4 +1,4 @@
-<!-- Edit mode: simple flat form using asms-modal (no steps) -->
+<!-- Edit mode: single-step form, same visual style as create wizard -->
 @if (data.isEdit) {
   <asms-modal
     [title]="'USERS.EDIT'"
@@ -11,49 +11,69 @@
     (cancelled)="cancel()"
     (submitted)="submit()">
 
-    <form [formGroup]="identityForm" class="dialog-form-col" autocomplete="off">
+    <form [formGroup]="identityForm" class="wizard-step-content" autocomplete="off">
 
-      <div class="dialog-form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'USERS.FULL_NAME' | translate }}</mat-label>
-          <mat-icon matPrefix>badge</mat-icon>
-          <input matInput formControlName="fullName" placeholder="Sarah Keller" />
+      <div class="wf-row">
+        <div class="wf-field">
+          <label class="wf-label" for="ef-fullName">{{ 'USERS.FULL_NAME' | translate }} <span class="wf-required">*</span></label>
+          <div class="wf-input-wrap wf-input-wrap--prefix">
+            <mat-icon class="wf-prefix-icon">badge</mat-icon>
+            <input id="ef-fullName" class="wf-input" formControlName="fullName" placeholder="Sarah Keller" />
+          </div>
           @if (identityForm.get('fullName')?.hasError('required') && identityForm.get('fullName')?.touched) {
-            <mat-error>{{ 'USERS.FULL_NAME' | translate }} {{ 'COMMON.ERROR' | translate }}</mat-error>
+            <span class="wf-error">Full name is required</span>
           }
-        </mat-form-field>
+        </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'USERS.USERNAME' | translate }}</mat-label>
-          <mat-icon matPrefix>alternate_email</mat-icon>
-          <input matInput formControlName="username" readonly />
-        </mat-form-field>
+        <div class="wf-field">
+          <label class="wf-label" for="ef-username">{{ 'USERS.USERNAME' | translate }}</label>
+          <div class="wf-input-wrap wf-input-wrap--prefix">
+            <mat-icon class="wf-prefix-icon">alternate_email</mat-icon>
+            <input id="ef-username" class="wf-input" formControlName="username" readonly />
+          </div>
+        </div>
       </div>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'USERS.EMAIL' | translate }}</mat-label>
-        <mat-icon matPrefix>email</mat-icon>
-        <input matInput formControlName="email" type="email" />
+      <div class="wf-field-full">
+        <label class="wf-label" for="ef-email">{{ 'USERS.EMAIL' | translate }} <span class="wf-required">*</span></label>
+        <div class="wf-input-wrap wf-input-wrap--prefix">
+          <mat-icon class="wf-prefix-icon">email</mat-icon>
+          <input id="ef-email" class="wf-input" formControlName="email" type="email" placeholder="sarah.keller@company.com" />
+        </div>
         @if (identityForm.get('email')?.hasError('required') && identityForm.get('email')?.touched) {
-          <mat-error>{{ 'USERS.EMAIL' | translate }} {{ 'COMMON.ERROR' | translate }}</mat-error>
+          <span class="wf-error">Email is required</span>
         }
         @if (identityForm.get('email')?.hasError('email') && identityForm.get('email')?.touched) {
-          <mat-error>Enter a valid email address</mat-error>
+          <span class="wf-error">Enter a valid email address</span>
         }
-      </mat-form-field>
+      </div>
 
-      <div class="dialog-form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'USERS.PHONE' | translate }}</mat-label>
-          <mat-icon matPrefix>phone</mat-icon>
-          <input matInput formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
-        </mat-form-field>
+      <div class="wf-row">
+        <div class="wf-field">
+          <label class="wf-label" for="ef-phone">{{ 'USERS.PHONE' | translate }}</label>
+          <div class="wf-input-wrap wf-input-wrap--prefix">
+            <mat-icon class="wf-prefix-icon">phone</mat-icon>
+            <input id="ef-phone" class="wf-input" formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
+          </div>
+          @if (identityForm.get('phoneNumber')?.hasError('pattern') && identityForm.get('phoneNumber')?.touched) {
+            <span class="wf-error">Enter a valid international phone number</span>
+          }
+        </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'USERS.DEPARTMENT' | translate }}</mat-label>
-          <mat-icon matPrefix>corporate_fare</mat-icon>
-          <input matInput formControlName="department" placeholder="Finance" />
-        </mat-form-field>
+        <div class="wf-field">
+          <label class="wf-label" for="ef-department">{{ 'USERS.DEPARTMENT' | translate }}</label>
+          <div class="wf-input-wrap wf-input-wrap--select">
+            <select id="ef-department" class="wf-select" formControlName="department">
+              <option value="">Select department</option>
+              <option value="Finance">Finance</option>
+              <option value="IT">IT</option>
+              <option value="Operations">Operations</option>
+              <option value="HR">HR</option>
+              <option value="Legal">Legal</option>
+              <option value="Product">Product</option>
+            </select>
+          </div>
+        </div>
       </div>
 
     </form>
