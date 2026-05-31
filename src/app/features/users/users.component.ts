@@ -159,13 +159,21 @@ export class UsersComponent implements OnInit {
       .afterClosed()
       .subscribe((result: UserFormResult | null) => {
         if (!result) return;
-        this.store.update(user.id, result as UpdateUserRequestDto).then(() => {
-          this.snackBar.open(
-            this.translate.instant('USERS.UPDATED_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 4000, panelClass: 'snackbar-success' }
-          );
-        });
+        this.store.update(user.id, result as UpdateUserRequestDto)
+          .then(() => {
+            this.snackBar.open(
+              this.translate.instant('USERS.UPDATED_SUCCESS'),
+              this.translate.instant('COMMON.CLOSE'),
+              { duration: 4000, panelClass: 'snackbar-success' }
+            );
+          })
+          .catch((err: Error) => {
+            this.snackBar.open(
+              err.message,
+              this.translate.instant('COMMON.CLOSE'),
+              { duration: 5000, panelClass: 'snackbar-error' }
+            );
+          });
       });
   }
 

@@ -7,6 +7,7 @@
   [canProceed]="canProceedAtCurrentStep"
   [isLoading]="isLoading"
   [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'USERS.CONFIRM_CREATE'"
+  [alwaysShowSubmit]="data.isEdit"
   (cancelled)="cancel()"
   (backed)="goBack()"
   (nexted)="goNext()"
