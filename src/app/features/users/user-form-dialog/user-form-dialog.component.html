@@ -8,6 +8,7 @@
   [isLoading]="isLoading"
   [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'USERS.CONFIRM_CREATE'"
   [alwaysShowSubmit]="data.isEdit"
+  [saveEnabled]="!(data.isEdit && currentStep() === 1)"
   (cancelled)="cancel()"
   (backed)="goBack()"
   (nexted)="goNext()"

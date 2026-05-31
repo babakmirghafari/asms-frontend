@@ -12,7 +12,6 @@
   @if (steps.length > 0) {
     <div class="asms-modal-steps">
       @for (step of steps; track step.icon; let i = $index) {
-        <!-- Connector before each step except the first -->
         @if (i > 0) {
           <div class="asms-modal-connector" [class.asms-modal-connector--done]="i <= currentStep"></div>
         }
@@ -43,14 +42,15 @@
       {{ 'COMMON.CANCEL' | translate }}
     </button>
 
-    <div class="asms-modal-footer-right">
-      @if (steps.length > 0 && !isFirstStep) {
-        <button mat-stroked-button type="button" class="asms-modal-back-btn" (click)="backed.emit()">
-          <mat-icon>arrow_back</mat-icon>
-          {{ 'COMMON.BACK' | translate }}
-        </button>
-      }
+    <!-- Back lives on the LEFT, next to Cancel, so it never overlaps the centred step counter -->
+    @if (steps.length > 0 && !isFirstStep) {
+      <button mat-stroked-button type="button" class="asms-modal-back-btn" (click)="backed.emit()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'COMMON.BACK' | translate }}
+      </button>
+    }
 
+    <div class="asms-modal-footer-right">
       @if (!isLastStep && steps.length > 0) {
         <button mat-raised-button type="button" class="asms-modal-next-btn"
                 [disabled]="!canProceed || isLoading"
@@ -65,7 +65,7 @@
 
       @if (isLastStep || steps.length === 0 || alwaysShowSubmit) {
         <button mat-raised-button type="button" class="asms-modal-submit-btn"
-                [disabled]="!canProceed || isLoading"
+                [disabled]="(alwaysShowSubmit && !isLastStep ? !saveEnabled : !canProceed) || isLoading"
                 (click)="submitted.emit()">
           @if (isLoading) {
             <mat-spinner diameter="18" />

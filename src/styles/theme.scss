@@ -1,22 +1,121 @@
-// ASMS Material Theme — light enterprise IAM platform
-// Theme: Blue primary (#2563EB)
+// ASMS Material Theme — Deep Blue + Teal, enterprise security 2026
+// Primary: #1E40AF  |  Accent: #0891B2  |  Warn: #DC2626
 
 @use '@angular/material' as mat;
 
 @include mat.core();
 
-// Primary: blue
-$asms-primary: mat.m2-define-palette(mat.$m2-blue-palette, 600, 400, 800);
-// Accent: light blue
-$asms-accent: mat.m2-define-palette(mat.$m2-blue-palette, 400, 200, 600);
-// Warn: red
-$asms-warn: mat.m2-define-palette(mat.$m2-red-palette, 600);
+// ── Primary palette: Deep Blue (Tailwind blue-800 family) ──
+$asms-primary-palette: (
+  50:  #EFF6FF,
+  100: #DBEAFE,
+  200: #BFDBFE,
+  300: #93C5FD,
+  400: #60A5FA,
+  500: #3B82F6,
+  600: #2563EB,
+  700: #1D4ED8,
+  800: #1E40AF,
+  900: #1E3A8A,
+  A100: #BFDBFE,
+  A200: #93C5FD,
+  A400: #60A5FA,
+  A700: #1D4ED8,
+  contrast: (
+    50:   rgba(0, 0, 0, 0.87),
+    100:  rgba(0, 0, 0, 0.87),
+    200:  rgba(0, 0, 0, 0.87),
+    300:  rgba(0, 0, 0, 0.87),
+    400:  rgba(0, 0, 0, 0.87),
+    500:  #ffffff,
+    600:  #ffffff,
+    700:  #ffffff,
+    800:  #ffffff,
+    900:  #ffffff,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: rgba(0, 0, 0, 0.87),
+    A400: rgba(0, 0, 0, 0.87),
+    A700: #ffffff,
+  )
+);
+
+// ── Accent palette: Teal / Cyan (#0891B2 family) ──
+$asms-accent-palette: (
+  50:  #ECFEFF,
+  100: #CFFAFE,
+  200: #A5F3FC,
+  300: #67E8F9,
+  400: #22D3EE,
+  500: #06B6D4,
+  600: #0891B2,
+  700: #0E7490,
+  800: #155E75,
+  900: #164E63,
+  A100: #CFFAFE,
+  A200: #A5F3FC,
+  A400: #22D3EE,
+  A700: #0E7490,
+  contrast: (
+    50:   rgba(0, 0, 0, 0.87),
+    100:  rgba(0, 0, 0, 0.87),
+    200:  rgba(0, 0, 0, 0.87),
+    300:  rgba(0, 0, 0, 0.87),
+    400:  rgba(0, 0, 0, 0.87),
+    500:  #ffffff,
+    600:  #ffffff,
+    700:  #ffffff,
+    800:  #ffffff,
+    900:  #ffffff,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: rgba(0, 0, 0, 0.87),
+    A400: rgba(0, 0, 0, 0.87),
+    A700: #ffffff,
+  )
+);
+
+// ── Warn palette: Critical Red ──
+$asms-warn-palette: (
+  50:  #FEF2F2,
+  100: #FEE2E2,
+  200: #FECACA,
+  300: #FCA5A5,
+  400: #F87171,
+  500: #EF4444,
+  600: #DC2626,
+  700: #B91C1C,
+  800: #991B1B,
+  900: #7F1D1D,
+  A100: #FEE2E2,
+  A200: #FECACA,
+  A400: #F87171,
+  A700: #B91C1C,
+  contrast: (
+    50:   rgba(0, 0, 0, 0.87),
+    100:  rgba(0, 0, 0, 0.87),
+    200:  rgba(0, 0, 0, 0.87),
+    300:  rgba(0, 0, 0, 0.87),
+    400:  rgba(0, 0, 0, 0.87),
+    500:  #ffffff,
+    600:  #ffffff,
+    700:  #ffffff,
+    800:  #ffffff,
+    900:  #ffffff,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: rgba(0, 0, 0, 0.87),
+    A400: rgba(0, 0, 0, 0.87),
+    A700: #ffffff,
+  )
+);
+
+$asms-primary: mat.m2-define-palette($asms-primary-palette, 800, 600, 900);
+$asms-accent:  mat.m2-define-palette($asms-accent-palette,  600, 400, 700);
+$asms-warn:    mat.m2-define-palette($asms-warn-palette,    600, 400, 700);
 
 $asms-theme: mat.m2-define-light-theme((
   color: (
     primary: $asms-primary,
-    accent: $asms-accent,
-    warn: $asms-warn,
+    accent:  $asms-accent,
+    warn:    $asms-warn,
   ),
   typography: mat.m2-define-typography-config(
     $font-family: "'Inter', 'Roboto', 'Helvetica Neue', sans-serif"

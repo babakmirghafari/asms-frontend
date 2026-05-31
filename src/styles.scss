@@ -8,7 +8,7 @@
 // CSS custom properties — DESIGN_SYSTEM tokens
 :root {
   // Backgrounds — cool blue-gray content area, white cards
-  --asms-bg: #eef1f6;
+  --asms-bg: #F8FAFC;
   --asms-surface: #ffffff;
   --asms-surface-variant: #f4f6f9;
   --asms-surface-hover: #eaeff5;
@@ -16,7 +16,7 @@
   // Sidebar — dark navy
   --asms-sidebar: #0f172a;
   --asms-sidebar-hover: #1e293b;
-  --asms-sidebar-active: #2563EB;
+  --asms-sidebar-active: #1E40AF;
   --asms-sidebar-text: rgba(255, 255, 255, 0.87);
   --asms-sidebar-text-secondary: rgba(255, 255, 255, 0.54);
   --asms-sidebar-icon: rgba(255, 255, 255, 0.7);
@@ -28,29 +28,29 @@
   --asms-border: #dde3ec;
   --asms-border-light: #eef1f6;
 
-  // Brand colors — blue
-  --asms-primary: #2563EB;
-  --asms-primary-dark: #1D4ED8;
-  --asms-primary-hover: #1E40AF;
-  --asms-primary-light: #EFF6FF;
-  --asms-accent: #3B82F6;
-  --asms-accent-hover: #2563EB;
+  // Brand colors — Deep Blue + Teal
+  --asms-primary: #1E40AF;
+  --asms-primary-dark: #1E3A8A;
+  --asms-primary-hover: #1E3A8A;
+  --asms-primary-light: #DBEAFE;
+  --asms-accent: #0891B2;
+  --asms-accent-hover: #0E7490;
 
   // Semantic colors
-  --asms-success: #2e7d32;
-  --asms-success-bg: #e8f5e9;
-  --asms-warning: #D97706;
+  --asms-success: #16A34A;
+  --asms-success-bg: #F0FDF4;
+  --asms-warning: #F59E0B;
   --asms-warning-bg: #fffbeb;
-  --asms-danger: #c62828;
-  --asms-danger-bg: #ffebee;
-  --asms-info: #1565c0;
-  --asms-info-bg: #e3f2fd;
-  --asms-locked: #b71c1c;
-  --asms-pending: #2563EB;
-  --asms-pending-bg: #EFF6FF;
+  --asms-danger: #DC2626;
+  --asms-danger-bg: #FEF2F2;
+  --asms-info: #1E40AF;
+  --asms-info-bg: #DBEAFE;
+  --asms-locked: #B91C1C;
+  --asms-pending: #1E40AF;
+  --asms-pending-bg: #DBEAFE;
 
   // Text
-  --asms-text-primary: #1a1a2e;
+  --asms-text-primary: #1F2937;
   --asms-text-secondary: #6B7280;
   --asms-text-disabled: #9e9e9e;
   --asms-text-on-primary: #ffffff;
@@ -98,16 +98,16 @@
 }
 .mat-mdc-icon-button { border-radius: 50% !important; }
 
-// Primary raised buttons — blue gradient
+// Primary raised buttons — Deep Blue gradient
 .mat-mdc-raised-button.mat-primary {
-  background: linear-gradient(135deg, #3B82F6, #2563EB) !important;
+  background: linear-gradient(135deg, #1E40AF, #1E3A8A) !important;
   color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.35) !important;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #2563EB, #1D4ED8) !important;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45) !important;
+    background: linear-gradient(135deg, #1E3A8A, #1A2F7A) !important;
+    box-shadow: 0 6px 18px rgba(30, 64, 175, 0.45) !important;
   }
 
   &:disabled {
@@ -1274,8 +1274,8 @@ body {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &:focus-within {
-    border-color: #F97316;
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    border-color: #1E40AF;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
   }
 
   &--prefix {

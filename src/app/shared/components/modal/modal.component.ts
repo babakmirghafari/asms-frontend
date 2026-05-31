@@ -28,6 +28,7 @@ export class AsmsModalComponent {
   @Input() isLastStep = false;
   @Input() submitLabel = 'COMMON.SUBMIT';  // i18n key
   @Input() alwaysShowSubmit = false;       // show Save alongside Next on every step
+  @Input() saveEnabled = true;             // controls Save button when alwaysShowSubmit is on
 
   @Output() cancelled  = new EventEmitter<void>();
   @Output() backed     = new EventEmitter<void>();

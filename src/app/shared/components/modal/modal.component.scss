@@ -75,15 +75,15 @@
   }
 
   .asms-modal-step--active & {
-    background: #F97316;
+    background: var(--asms-primary);
 
     .asms-modal-step-icon { color: #fff; }
   }
 
   .asms-modal-step--done & {
-    background: #D1FAE5;
+    background: var(--asms-primary-light);
 
-    .asms-modal-step-check { color: #059669; }
+    .asms-modal-step-check { color: var(--asms-primary); }
   }
 }
 
@@ -94,7 +94,7 @@
   white-space: nowrap;
   text-align: center;
 
-  .asms-modal-step--active & { color: #F97316; font-weight: 600; }
+  .asms-modal-step--active & { color: var(--asms-primary); font-weight: 600; }
   .asms-modal-step--done &   { color: #374151; }
 }
 
@@ -104,7 +104,7 @@
   background: #E5E7EB;
   margin: 0 4px 18px;
 
-  &--done { background: #F97316; }
+  &--done { background: var(--asms-primary); }
 }
 
 // ── Content ──────────────────────────────────────────────────
@@ -171,11 +171,11 @@
 
 .asms-modal-next-btn,
 .asms-modal-submit-btn {
-  background: linear-gradient(135deg, #F97316, #EA580C) !important;
+  background: linear-gradient(135deg, var(--asms-primary), var(--asms-primary-dark)) !important;
   color: #fff !important;
   border: none !important;
   border-radius: 10px !important;
-  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3) !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--asms-primary) 30%, transparent) !important;
   display: flex;
   align-items: center;
   gap: 4px;
