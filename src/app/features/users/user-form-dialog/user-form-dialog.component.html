@@ -1,176 +1,93 @@
-<!-- Edit mode: single-step form, same visual style as create wizard -->
-@if (data.isEdit) {
-  <asms-modal
-    [title]="'USERS.EDIT'"
-    [steps]="[]"
-    [canProceed]="identityForm.valid"
-    [isLoading]="isLoading"
-    [isFirstStep]="true"
-    [isLastStep]="true"
-    [submitLabel]="'COMMON.SAVE'"
-    (cancelled)="cancel()"
-    (submitted)="submit()">
+<asms-modal
+  [title]="data.isEdit ? 'USERS.EDIT' : 'USERS.ADD'"
+  [steps]="wizardSteps"
+  [currentStep]="currentStep()"
+  [isFirstStep]="isFirstStep()"
+  [isLastStep]="isLastStep()"
+  [canProceed]="canProceedAtCurrentStep"
+  [isLoading]="isLoading"
+  [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'USERS.CONFIRM_CREATE'"
+  (cancelled)="cancel()"
+  (backed)="goBack()"
+  (nexted)="goNext()"
+  (submitted)="submit()">
 
-    <form [formGroup]="identityForm" class="wizard-step-content" autocomplete="off">
+  @switch (currentStep()) {
 
-      <div class="wf-row">
-        <div class="wf-field">
-          <label class="wf-label" for="ef-fullName">{{ 'USERS.FULL_NAME' | translate }} <span class="wf-required">*</span></label>
-          <div class="wf-input-wrap wf-input-wrap--prefix">
-            <mat-icon class="wf-prefix-icon">badge</mat-icon>
-            <input id="ef-fullName" class="wf-input" formControlName="fullName" placeholder="Sarah Keller" />
+    <!-- ══ STEP 1: IDENTITY ══ -->
+    @case (0) {
+      <form [formGroup]="identityForm" class="wizard-step-content" autocomplete="off">
+
+        <div class="wf-field-full">
+          <label class="wf-label" for="wf-fullName">Full Name <span class="wf-required">*</span></label>
+          <div class="wf-input-wrap">
+            <input id="wf-fullName" class="wf-input" formControlName="fullName" placeholder="e.g. Sarah Keller" />
           </div>
           @if (identityForm.get('fullName')?.hasError('required') && identityForm.get('fullName')?.touched) {
             <span class="wf-error">Full name is required</span>
           }
         </div>
 
-        <div class="wf-field">
-          <label class="wf-label" for="ef-username">{{ 'USERS.USERNAME' | translate }}</label>
-          <div class="wf-input-wrap wf-input-wrap--prefix">
-            <mat-icon class="wf-prefix-icon">alternate_email</mat-icon>
-            <input id="ef-username" class="wf-input" formControlName="username" readonly />
-          </div>
-        </div>
-      </div>
-
-      <div class="wf-field-full">
-        <label class="wf-label" for="ef-email">{{ 'USERS.EMAIL' | translate }} <span class="wf-required">*</span></label>
-        <div class="wf-input-wrap wf-input-wrap--prefix">
-          <mat-icon class="wf-prefix-icon">email</mat-icon>
-          <input id="ef-email" class="wf-input" formControlName="email" type="email" placeholder="sarah.keller@company.com" />
-        </div>
-        @if (identityForm.get('email')?.hasError('required') && identityForm.get('email')?.touched) {
-          <span class="wf-error">Email is required</span>
-        }
-        @if (identityForm.get('email')?.hasError('email') && identityForm.get('email')?.touched) {
-          <span class="wf-error">Enter a valid email address</span>
-        }
-      </div>
-
-      <div class="wf-row">
-        <div class="wf-field">
-          <label class="wf-label" for="ef-phone">{{ 'USERS.PHONE' | translate }}</label>
-          <div class="wf-input-wrap wf-input-wrap--prefix">
-            <mat-icon class="wf-prefix-icon">phone</mat-icon>
-            <input id="ef-phone" class="wf-input" formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
-          </div>
-          @if (identityForm.get('phoneNumber')?.hasError('pattern') && identityForm.get('phoneNumber')?.touched) {
-            <span class="wf-error">Enter a valid international phone number</span>
-          }
-        </div>
-
-        <div class="wf-field">
-          <label class="wf-label" for="ef-department">{{ 'USERS.DEPARTMENT' | translate }}</label>
-          <div class="wf-input-wrap wf-input-wrap--select">
-            <select id="ef-department" class="wf-select" formControlName="department">
-              <option value="">Select department</option>
-              <option value="Finance">Finance</option>
-              <option value="IT">IT</option>
-              <option value="Operations">Operations</option>
-              <option value="HR">HR</option>
-              <option value="Legal">Legal</option>
-              <option value="Product">Product</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-    </form>
-
-  </asms-modal>
-
-} @else {
-  <!-- Create mode: 8-step wizard using asms-modal -->
-  <asms-modal
-    [title]="'USERS.ADD'"
-    [steps]="wizardSteps"
-    [currentStep]="currentStep()"
-    [isFirstStep]="isFirstStep()"
-    [isLastStep]="isLastStep()"
-    [canProceed]="canProceedAtCurrentStep"
-    [isLoading]="isLoading"
-    [submitLabel]="'USERS.CONFIRM_CREATE'"
-    (cancelled)="cancel()"
-    (backed)="goBack()"
-    (nexted)="goNext()"
-    (submitted)="submit()">
-
-    <!-- Step content switched by currentStep() -->
-    @switch (currentStep()) {
-
-      <!-- ══ STEP 1: IDENTITY ══ -->
-      @case (0) {
-        <form [formGroup]="identityForm" class="wizard-step-content" autocomplete="off">
-
-          <div class="wf-field-full">
-            <label class="wf-label" for="wf-fullName">Full Name <span class="wf-required">*</span></label>
-            <div class="wf-input-wrap">
-              <input id="wf-fullName" class="wf-input" formControlName="fullName" placeholder="e.g. Sarah Keller" />
+        <div class="wf-row">
+          <div class="wf-field">
+            <label class="wf-label" for="wf-username">Username <span class="wf-required">*</span></label>
+            <div class="wf-input-wrap wf-input-wrap--prefix">
+              <mat-icon class="wf-prefix-icon">alternate_email</mat-icon>
+              <input id="wf-username" class="wf-input" formControlName="username"
+                     placeholder="sarah.keller" [readOnly]="data.isEdit" />
             </div>
-            @if (identityForm.get('fullName')?.hasError('required') && identityForm.get('fullName')?.touched) {
-              <span class="wf-error">Full name is required</span>
+            @if (identityForm.get('username')?.hasError('required') && identityForm.get('username')?.touched) {
+              <span class="wf-error">Username is required</span>
+            }
+            @if (identityForm.get('username')?.hasError('pattern') && identityForm.get('username')?.touched) {
+              <span class="wf-error">Lowercase, numbers, dots, dashes only</span>
             }
           </div>
 
-          <div class="wf-row">
-            <div class="wf-field">
-              <label class="wf-label" for="wf-username">Username <span class="wf-required">*</span></label>
-              <div class="wf-input-wrap wf-input-wrap--prefix">
-                <mat-icon class="wf-prefix-icon">alternate_email</mat-icon>
-                <input id="wf-username" class="wf-input" formControlName="username" placeholder="sarah.keller" />
-              </div>
-              @if (identityForm.get('username')?.hasError('required') && identityForm.get('username')?.touched) {
-                <span class="wf-error">Username is required</span>
-              }
-              @if (identityForm.get('username')?.hasError('pattern') && identityForm.get('username')?.touched) {
-                <span class="wf-error">Lowercase, numbers, dots, dashes only</span>
-              }
+          <div class="wf-field">
+            <label class="wf-label" for="wf-email">Email Address <span class="wf-required">*</span></label>
+            <div class="wf-input-wrap wf-input-wrap--prefix">
+              <mat-icon class="wf-prefix-icon">email</mat-icon>
+              <input id="wf-email" class="wf-input" formControlName="email" type="email" placeholder="sarah.keller@company.com" />
             </div>
+            @if (identityForm.get('email')?.hasError('required') && identityForm.get('email')?.touched) {
+              <span class="wf-error">Email is required</span>
+            }
+            @if (identityForm.get('email')?.hasError('email') && identityForm.get('email')?.touched) {
+              <span class="wf-error">Enter a valid email address</span>
+            }
+          </div>
+        </div>
 
-            <div class="wf-field">
-              <label class="wf-label" for="wf-email">Email Address <span class="wf-required">*</span></label>
-              <div class="wf-input-wrap wf-input-wrap--prefix">
-                <mat-icon class="wf-prefix-icon">email</mat-icon>
-                <input id="wf-email" class="wf-input" formControlName="email" type="email" placeholder="sarah.keller@company.com" />
-              </div>
-              @if (identityForm.get('email')?.hasError('required') && identityForm.get('email')?.touched) {
-                <span class="wf-error">Email is required</span>
-              }
-              @if (identityForm.get('email')?.hasError('email') && identityForm.get('email')?.touched) {
-                <span class="wf-error">Enter a valid email address</span>
-              }
+        <div class="wf-row">
+          <div class="wf-field">
+            <label class="wf-label" for="wf-phone">Phone Number</label>
+            <div class="wf-input-wrap wf-input-wrap--prefix">
+              <mat-icon class="wf-prefix-icon">phone</mat-icon>
+              <input id="wf-phone" class="wf-input" formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
             </div>
+            @if (identityForm.get('phoneNumber')?.hasError('pattern') && identityForm.get('phoneNumber')?.touched) {
+              <span class="wf-error">Enter a valid international phone number</span>
+            }
           </div>
 
-          <div class="wf-row">
-            <div class="wf-field">
-              <label class="wf-label" for="wf-phone">Phone Number</label>
-              <div class="wf-input-wrap wf-input-wrap--prefix">
-                <mat-icon class="wf-prefix-icon">phone</mat-icon>
-                <input id="wf-phone" class="wf-input" formControlName="phoneNumber" type="tel" placeholder="+49 151 2345 1098" />
-              </div>
-              @if (identityForm.get('phoneNumber')?.hasError('pattern') && identityForm.get('phoneNumber')?.touched) {
-                <span class="wf-error">Enter a valid international phone number</span>
-              }
-            </div>
-
-            <div class="wf-field">
-              <label class="wf-label" for="wf-department">Department</label>
-              <div class="wf-input-wrap wf-input-wrap--select">
-                <select id="wf-department" class="wf-select" formControlName="department">
-                  <option value="">Select department</option>
-                  <option value="Finance">Finance</option>
-                  <option value="IT">IT</option>
-                  <option value="Operations">Operations</option>
-                  <option value="HR">HR</option>
-                  <option value="Legal">Legal</option>
-                  <option value="Product">Product</option>
-                </select>
-              </div>
+          <div class="wf-field">
+            <label class="wf-label" for="wf-department">Department</label>
+            <div class="wf-input-wrap wf-input-wrap--select">
+              <select id="wf-department" class="wf-select" formControlName="department">
+                <option value="">Select department</option>
+                <option value="Finance">Finance</option>
+                <option value="IT">IT</option>
+                <option value="Operations">Operations</option>
+                <option value="HR">HR</option>
+                <option value="Legal">Legal</option>
+                <option value="Product">Product</option>
+              </select>
             </div>
           </div>
+        </div>
 
+        @if (!data.isEdit) {
           <div class="wf-row">
             <div class="wf-field">
               <label class="wf-label" for="wf-jobTitle">Job Title</label>
@@ -187,15 +104,23 @@
               </div>
             </div>
           </div>
+        }
 
-        </form>
-      }
+      </form>
+    }
 
-      <!-- ══ STEP 2: PASSWORD DELIVERY ══ -->
-      @case (1) {
+    <!-- ══ STEP 2: PASSWORD DELIVERY (create) / SKIP NOTICE (edit) ══ -->
+    @case (1) {
+      @if (data.isEdit) {
+        <div class="wizard-step-content dialog-form-col">
+          <div class="dialog-warning-banner dialog-warning-banner--blue">
+            <mat-icon>info</mat-icon>
+            <span>Password changes are managed separately via the user's security settings. Click <strong>Next</strong> to continue.</span>
+          </div>
+        </div>
+      } @else {
         <form [formGroup]="passwordForm" class="wizard-step-content dialog-form-col">
 
-          <!-- Auto-generated temp password box -->
           <div class="temp-password-box">
             <div class="temp-password-label">
               <mat-icon>vpn_key</mat-icon>
@@ -257,17 +182,18 @@
           </div>
         </form>
       }
+    }
 
-      <!-- ══ STEP 3: ORGANIZATION ASSIGNMENT ══ -->
-      @case (2) {
-        <div class="wizard-step-content dialog-form-col">
-          <div class="dialog-section-label">Select Organizations</div>
+    <!-- ══ STEP 3: ORGANIZATION ASSIGNMENT ══ -->
+    @case (2) {
+      <div class="wizard-step-content dialog-form-col">
+        <div class="dialog-section-label">Select Organizations</div>
 
-          @if (orgsLoading()) {
-            <div class="loading-spinner-wrap">
-              <mat-progress-spinner mode="indeterminate" diameter="32" />
-            </div>
-          } @else {
+        @if (orgsLoading()) {
+          <div class="loading-spinner-wrap">
+            <mat-progress-spinner mode="indeterminate" diameter="32" />
+          </div>
+        } @else {
           <div class="org-checkbox-list">
             @for (org of availableOrgs(); track org.id) {
               <label class="org-checkbox-item" [class.org-checkbox-item--selected]="isOrgSelected(org.id!)">
@@ -288,214 +214,215 @@
               </label>
             }
           </div>
-          }
+        }
 
-          @if (selectedOrgIds.length >= 2) {
-            <mat-form-field appearance="outline">
-              <mat-label>Primary Organization</mat-label>
-              <mat-icon matPrefix>star</mat-icon>
-              <mat-select [(ngModel)]="primaryOrgId">
-                @for (orgId of selectedOrgIds; track orgId) {
-                  <mat-option [value]="orgId">{{ getOrgName(orgId) }}</mat-option>
-                }
-              </mat-select>
-              <mat-hint>The primary org is shown first after login</mat-hint>
-            </mat-form-field>
-
-            <div class="dialog-settings-section">
-              <div class="dialog-toggle-row">
-                <div class="toggle-label">
-                  <span class="toggle-title">Show organization selection after login</span>
-                  <span class="toggle-hint">Auto-enabled when multiple organizations are assigned</span>
-                </div>
-                <mat-slide-toggle [(ngModel)]="showOrgSelectionAfterLogin" color="primary" />
-              </div>
-            </div>
-          }
-        </div>
-      }
-
-      <!-- ══ STEP 4: PERMISSION ASSIGNMENT ══ -->
-      @case (3) {
-        <div class="wizard-step-content dialog-form-col">
-
-          @if (selectedOrgIds.length === 0) {
-            <div class="dialog-warning-banner dialog-warning-banner--orange">
-              <mat-icon>info</mat-icon>
-              <span>Select at least one organization in the previous step to see available permissions.</span>
-            </div>
-          }
-
-          <div class="dialog-section-label">Direct Permissions</div>
-
-          @if (permissionsLoading()) {
-            <div class="loading-spinner-wrap">
-              <mat-progress-spinner mode="indeterminate" diameter="32" />
-            </div>
-          } @else {
-            <mat-form-field appearance="outline">
-              <mat-label>Add permission</mat-label>
-              <mat-icon matPrefix>security</mat-icon>
-              <mat-select [(ngModel)]="directPermissionToAdd" (ngModelChange)="addDirectPermission($event)">
-                @for (p of availablePermissions(); track p.id) {
-                  <mat-option [value]="p.id">{{ p.name }}</mat-option>
-                }
-              </mat-select>
-              <mat-hint>Permissions are filtered by selected organizations</mat-hint>
-            </mat-form-field>
-          }
-
-          @if (selectedDirectPermissions.length > 0) {
-            <div class="direct-perms-chips">
-              @for (perm of selectedDirectPermissions; track perm.id) {
-                <div class="direct-perm-chip" [class.direct-perm-chip--sensitive]="isSensitivePermission(perm)">
-                  <span>{{ perm.name }}</span>
-                  <button type="button" mat-icon-button class="perm-remove-btn" (click)="removeDirectPermission(perm.id!)">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </div>
+        @if (selectedOrgIds.length >= 2) {
+          <mat-form-field appearance="outline">
+            <mat-label>Primary Organization</mat-label>
+            <mat-icon matPrefix>star</mat-icon>
+            <mat-select [(ngModel)]="primaryOrgId">
+              @for (orgId of selectedOrgIds; track orgId) {
+                <mat-option [value]="orgId">{{ getOrgName(orgId) }}</mat-option>
               }
-            </div>
-          }
-
-          @if (hasSensitivePermissions()) {
-            <div class="dialog-warning-banner dialog-warning-banner--red">
-              <mat-icon>gpp_bad</mat-icon>
-              <span>One or more sensitive permissions are selected (ADMIN / DELETE). These require elevated approval and will be logged.</span>
-            </div>
-          }
-        </div>
-      }
-
-      <!-- ══ STEP 5: AUTHENTICATION & SECURITY ══ -->
-      @case (4) {
-        <form [formGroup]="securityForm" class="wizard-step-content dialog-form-col">
+            </mat-select>
+            <mat-hint>The primary org is shown first after login</mat-hint>
+          </mat-form-field>
 
           <div class="dialog-settings-section">
             <div class="dialog-toggle-row">
               <div class="toggle-label">
-                <span class="toggle-title">Enable MFA</span>
-                <span class="toggle-hint">Require two-factor authentication for this user</span>
+                <span class="toggle-title">Show organization selection after login</span>
+                <span class="toggle-hint">Auto-enabled when multiple organizations are assigned</span>
               </div>
-              <mat-slide-toggle formControlName="mfaEnabled" color="primary" />
+              <mat-slide-toggle [(ngModel)]="showOrgSelectionAfterLogin" color="primary" />
             </div>
+          </div>
+        }
+      </div>
+    }
 
-            @if (securityForm.get('mfaEnabled')?.value) {
-              <mat-divider />
-              <div class="dialog-toggle-row">
-                <div class="toggle-label">
-                  <span class="toggle-title">{{ 'USERS.MFA_REQUIRED' | translate }}</span>
-                  <span class="toggle-hint">Force MFA setup on first login</span>
-                </div>
-                <mat-slide-toggle formControlName="requireMfaEnrollment" color="primary" />
+    <!-- ══ STEP 4: PERMISSION ASSIGNMENT ══ -->
+    @case (3) {
+      <div class="wizard-step-content dialog-form-col">
+
+        @if (selectedOrgIds.length === 0) {
+          <div class="dialog-warning-banner dialog-warning-banner--orange">
+            <mat-icon>info</mat-icon>
+            <span>Select at least one organization in the previous step to see available permissions.</span>
+          </div>
+        }
+
+        <div class="dialog-section-label">Direct Permissions</div>
+
+        @if (permissionsLoading()) {
+          <div class="loading-spinner-wrap">
+            <mat-progress-spinner mode="indeterminate" diameter="32" />
+          </div>
+        } @else {
+          <mat-form-field appearance="outline">
+            <mat-label>Add permission</mat-label>
+            <mat-icon matPrefix>security</mat-icon>
+            <mat-select [(ngModel)]="directPermissionToAdd" (ngModelChange)="addDirectPermission($event)">
+              @for (p of availablePermissions(); track p.id) {
+                <mat-option [value]="p.id">{{ p.name }}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Permissions are filtered by selected organizations</mat-hint>
+          </mat-form-field>
+        }
+
+        @if (selectedDirectPermissions.length > 0) {
+          <div class="direct-perms-chips">
+            @for (perm of selectedDirectPermissions; track perm.id) {
+              <div class="direct-perm-chip" [class.direct-perm-chip--sensitive]="isSensitivePermission(perm)">
+                <span>{{ perm.name }}</span>
+                <button type="button" mat-icon-button class="perm-remove-btn" (click)="removeDirectPermission(perm.id!)">
+                  <mat-icon>close</mat-icon>
+                </button>
               </div>
+            }
+          </div>
+        }
+
+        @if (hasSensitivePermissions()) {
+          <div class="dialog-warning-banner dialog-warning-banner--red">
+            <mat-icon>gpp_bad</mat-icon>
+            <span>One or more sensitive permissions are selected (ADMIN / DELETE). These require elevated approval and will be logged.</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ══ STEP 5: AUTHENTICATION & SECURITY ══ -->
+    @case (4) {
+      <form [formGroup]="securityForm" class="wizard-step-content dialog-form-col">
+
+        <div class="dialog-settings-section">
+          <div class="dialog-toggle-row">
+            <div class="toggle-label">
+              <span class="toggle-title">Enable MFA</span>
+              <span class="toggle-hint">Require two-factor authentication for this user</span>
+            </div>
+            <mat-slide-toggle formControlName="mfaEnabled" color="primary" />
+          </div>
+
+          @if (securityForm.get('mfaEnabled')?.value) {
+            <mat-divider />
+            <div class="dialog-toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-title">{{ 'USERS.MFA_REQUIRED' | translate }}</span>
+                <span class="toggle-hint">Force MFA setup on first login</span>
+              </div>
+              <mat-slide-toggle formControlName="requireMfaEnrollment" color="primary" />
+            </div>
+          }
+        </div>
+
+        <div class="dialog-form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Failed Login Threshold</mat-label>
+            <mat-icon matPrefix>block</mat-icon>
+            <input matInput formControlName="failedLoginThreshold" type="number" min="1" max="10" />
+            <mat-hint>Number of failures before account lock (1–10)</mat-hint>
+            @if (securityForm.get('failedLoginThreshold')?.hasError('min') || securityForm.get('failedLoginThreshold')?.hasError('max')) {
+              <mat-error>Value must be between 1 and 10</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Lock Duration</mat-label>
+            <mat-icon matPrefix>lock_clock</mat-icon>
+            <mat-select formControlName="lockDuration">
+              <mat-option value="15m">15 minutes</mat-option>
+              <mat-option value="30m">30 minutes</mat-option>
+              <mat-option value="1h">1 hour</mat-option>
+              <mat-option value="manual">Manual unlock</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </form>
+    }
+
+    <!-- ══ STEP 6: STATION POLICY ══ -->
+    @case (5) {
+      <form [formGroup]="stationForm" class="wizard-step-content dialog-form-col">
+
+        <div class="dialog-settings-section">
+          <div class="dialog-toggle-row">
+            <div class="toggle-label">
+              <span class="toggle-title">Apply station policy to this user</span>
+              <span class="toggle-hint">Enforce IP, work day, and work hour restrictions</span>
+            </div>
+            <mat-slide-toggle formControlName="applyStationPolicy" color="primary" />
+          </div>
+        </div>
+
+        @if (stationForm.get('applyStationPolicy')?.value) {
+          <div class="dialog-section-label">Allowed IP Addresses</div>
+          <div class="ip-tag-input-wrapper">
+            <div class="ip-tags">
+              @for (ip of allowedIPs; track ip) {
+                <span class="ip-tag">
+                  {{ ip }}
+                  <button type="button" class="ip-tag-remove" (click)="removeIP(ip)">×</button>
+                </span>
+              }
+            </div>
+            <input class="ip-tag-input"
+                   type="text"
+                   placeholder="e.g. 192.168.1.0/24 — press Enter"
+                   (keydown.enter)="addIP($event)" />
+          </div>
+
+          <div class="dialog-section-label">Work Days</div>
+          <div class="day-checkboxes">
+            @for (day of weekdays; track day.value; let i = $index) {
+              <label class="day-chip" [class.day-chip--active]="selectedWorkdays[i]">
+                <input type="checkbox" [checked]="selectedWorkdays[i]" (change)="toggleWorkday(i)" hidden />
+                {{ day.label }}
+              </label>
             }
           </div>
 
           <div class="dialog-form-row">
             <mat-form-field appearance="outline">
-              <mat-label>Failed Login Threshold</mat-label>
-              <mat-icon matPrefix>block</mat-icon>
-              <input matInput formControlName="failedLoginThreshold" type="number" min="1" max="10" />
-              <mat-hint>Number of failures before account lock (1–10)</mat-hint>
-              @if (securityForm.get('failedLoginThreshold')?.hasError('min') || securityForm.get('failedLoginThreshold')?.hasError('max')) {
-                <mat-error>Value must be between 1 and 10</mat-error>
-              }
+              <mat-label>Work Start Time</mat-label>
+              <mat-icon matPrefix>schedule</mat-icon>
+              <input matInput formControlName="workStartTime" type="time" />
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Lock Duration</mat-label>
-              <mat-icon matPrefix>lock_clock</mat-icon>
-              <mat-select formControlName="lockDuration">
-                <mat-option value="15m">15 minutes</mat-option>
-                <mat-option value="30m">30 minutes</mat-option>
-                <mat-option value="1h">1 hour</mat-option>
-                <mat-option value="manual">Manual unlock</mat-option>
-              </mat-select>
+              <mat-label>Work End Time</mat-label>
+              <mat-icon matPrefix>schedule</mat-icon>
+              <input matInput formControlName="workEndTime" type="time" />
             </mat-form-field>
           </div>
-        </form>
-      }
 
-      <!-- ══ STEP 6: STATION POLICY ══ -->
-      @case (5) {
-        <form [formGroup]="stationForm" class="wizard-step-content dialog-form-col">
-
-          <div class="dialog-settings-section">
-            <div class="dialog-toggle-row">
-              <div class="toggle-label">
-                <span class="toggle-title">Apply station policy to this user</span>
-                <span class="toggle-hint">Enforce IP, work day, and work hour restrictions</span>
-              </div>
-              <mat-slide-toggle formControlName="applyStationPolicy" color="primary" />
-            </div>
+          <div class="station-preview">
+            <mat-icon>info_outline</mat-icon>
+            <span>{{ stationPolicySummary }}</span>
           </div>
+        }
+      </form>
+    }
 
-          @if (stationForm.get('applyStationPolicy')?.value) {
-            <div class="dialog-section-label">Allowed IP Addresses</div>
-            <div class="ip-tag-input-wrapper">
-              <div class="ip-tags">
-                @for (ip of allowedIPs; track ip) {
-                  <span class="ip-tag">
-                    {{ ip }}
-                    <button type="button" class="ip-tag-remove" (click)="removeIP(ip)">×</button>
-                  </span>
-                }
-              </div>
-              <input class="ip-tag-input"
-                     type="text"
-                     placeholder="e.g. 192.168.1.0/24 — press Enter"
-                     (keydown.enter)="addIP($event)" />
-            </div>
+    <!-- ══ STEP 7: STATUS & INVITATION ══ -->
+    @case (6) {
+      <form [formGroup]="statusForm" class="wizard-step-content dialog-form-col">
 
-            <div class="dialog-section-label">Work Days</div>
-            <div class="day-checkboxes">
-              @for (day of weekdays; track day.value; let i = $index) {
-                <label class="day-chip" [class.day-chip--active]="selectedWorkdays[i]">
-                  <input type="checkbox" [checked]="selectedWorkdays[i]" (change)="toggleWorkday(i)" hidden />
-                  {{ day.label }}
-                </label>
-              }
-            </div>
+        <div class="dialog-section-label">User Status</div>
+        <mat-button-toggle-group formControlName="status" class="status-toggle-group">
+          <mat-button-toggle value="ACTIVE">
+            <mat-icon>check_circle</mat-icon>
+            {{ 'USERS.ACTIVE_STATUS' | translate }}
+          </mat-button-toggle>
+          <mat-button-toggle value="INACTIVE">
+            <mat-icon>cancel</mat-icon>
+            {{ 'USERS.INACTIVE_STATUS' | translate }}
+          </mat-button-toggle>
+        </mat-button-toggle-group>
 
-            <div class="dialog-form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Work Start Time</mat-label>
-                <mat-icon matPrefix>schedule</mat-icon>
-                <input matInput formControlName="workStartTime" type="time" />
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Work End Time</mat-label>
-                <mat-icon matPrefix>schedule</mat-icon>
-                <input matInput formControlName="workEndTime" type="time" />
-              </mat-form-field>
-            </div>
-
-            <div class="station-preview">
-              <mat-icon>info_outline</mat-icon>
-              <span>{{ stationPolicySummary }}</span>
-            </div>
-          }
-        </form>
-      }
-
-      <!-- ══ STEP 7: STATUS & INVITATION ══ -->
-      @case (6) {
-        <form [formGroup]="statusForm" class="wizard-step-content dialog-form-col">
-
-          <div class="dialog-section-label">User Status</div>
-          <mat-button-toggle-group formControlName="status" class="status-toggle-group">
-            <mat-button-toggle value="ACTIVE">
-              <mat-icon>check_circle</mat-icon>
-              {{ 'USERS.ACTIVE_STATUS' | translate }}
-            </mat-button-toggle>
-            <mat-button-toggle value="INACTIVE">
-              <mat-icon>cancel</mat-icon>
-              {{ 'USERS.INACTIVE_STATUS' | translate }}
-            </mat-button-toggle>
-          </mat-button-toggle-group>
-
+        @if (!data.isEdit) {
           <div class="dialog-settings-section">
             <div class="dialog-toggle-row">
               <div class="toggle-label">
@@ -533,42 +460,44 @@
               </p>
             </div>
           }
-        </form>
-      }
+        }
+      </form>
+    }
 
-      <!-- ══ STEP 8: REVIEW & CONFIRM ══ -->
-      @case (7) {
-        <div class="wizard-step-content dialog-form-col">
+    <!-- ══ STEP 8: REVIEW & CONFIRM ══ -->
+    @case (7) {
+      <div class="wizard-step-content dialog-form-col">
 
-          <div class="review-grid">
+        <div class="review-grid">
 
-            <div class="review-card">
-              <div class="review-card-header">
-                <span>Identity</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(0)">Edit</button>
-              </div>
-              <div class="review-row">
-                <span class="review-label">Name</span>
-                <span class="review-value">{{ identityForm.get('fullName')?.value }}</span>
-              </div>
-              <div class="review-row">
-                <span class="review-label">Username</span>
-                <span class="review-value mono-text">{{ identityForm.get('username')?.value }}</span>
-              </div>
-              <div class="review-row">
-                <span class="review-label">Email</span>
-                <span class="review-value">{{ identityForm.get('email')?.value }}</span>
-              </div>
-              <div class="review-row">
-                <span class="review-label">Phone</span>
-                <span class="review-value">{{ identityForm.get('phoneNumber')?.value || '—' }}</span>
-              </div>
-              <div class="review-row">
-                <span class="review-label">Department / Title</span>
-                <span class="review-value">{{ identityForm.get('department')?.value || '—' }} / {{ identityForm.get('jobTitle')?.value || '—' }}</span>
-              </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span>Identity</span>
+              <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(0)">Edit</button>
             </div>
+            <div class="review-row">
+              <span class="review-label">Name</span>
+              <span class="review-value">{{ identityForm.get('fullName')?.value }}</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Username</span>
+              <span class="review-value mono-text">{{ identityForm.get('username')?.value }}</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Email</span>
+              <span class="review-value">{{ identityForm.get('email')?.value }}</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Phone</span>
+              <span class="review-value">{{ identityForm.get('phoneNumber')?.value || '—' }}</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Department</span>
+              <span class="review-value">{{ identityForm.get('department')?.value || '—' }}</span>
+            </div>
+          </div>
 
+          @if (!data.isEdit) {
             <div class="review-card">
               <div class="review-card-header">
                 <span>Organizations</span>
@@ -602,60 +531,62 @@
                 </div>
               }
             </div>
+          }
 
-            <div class="review-card">
-              <div class="review-card-header">
-                <span>Authentication</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(4)">Edit</button>
-              </div>
-              <div class="review-row">
-                <span class="review-label">MFA</span>
-                <span class="review-value">{{ securityForm.get('mfaEnabled')?.value ? 'Enabled' : 'Disabled' }}</span>
-              </div>
-              <div class="review-row">
-                <span class="review-label">Failed Threshold</span>
-                <span class="review-value">{{ securityForm.get('failedLoginThreshold')?.value }} attempts</span>
-              </div>
-              <div class="review-row">
-                <span class="review-label">Lock Duration</span>
-                <span class="review-value">{{ securityForm.get('lockDuration')?.value }}</span>
-              </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span>Authentication</span>
+              <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(4)">Edit</button>
             </div>
-
-            <div class="review-card">
-              <div class="review-card-header">
-                <span>Station Policy</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(5)">Edit</button>
-              </div>
-              @if (!stationForm.get('applyStationPolicy')?.value) {
-                <span class="review-empty">No station restrictions</span>
-              } @else {
-                <div class="review-row">
-                  <span class="review-label">Allowed IPs</span>
-                  <span class="review-value">{{ allowedIPs.length > 0 ? allowedIPs.join(', ') : 'Any' }}</span>
-                </div>
-                <div class="review-row">
-                  <span class="review-label">Work Days</span>
-                  <span class="review-value">{{ selectedWorkdayLabels }}</span>
-                </div>
-                <div class="review-row">
-                  <span class="review-label">Work Hours</span>
-                  <span class="review-value">{{ stationForm.get('workStartTime')?.value }} – {{ stationForm.get('workEndTime')?.value }}</span>
-                </div>
-              }
+            <div class="review-row">
+              <span class="review-label">MFA</span>
+              <span class="review-value">{{ securityForm.get('mfaEnabled')?.value ? 'Enabled' : 'Disabled' }}</span>
             </div>
+            <div class="review-row">
+              <span class="review-label">Failed Threshold</span>
+              <span class="review-value">{{ securityForm.get('failedLoginThreshold')?.value }} attempts</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Lock Duration</span>
+              <span class="review-value">{{ securityForm.get('lockDuration')?.value }}</span>
+            </div>
+          </div>
 
-            <div class="review-card">
-              <div class="review-card-header">
-                <span>Status &amp; Invitation</span>
-                <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(6)">Edit</button>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span>Station Policy</span>
+              <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(5)">Edit</button>
+            </div>
+            @if (!stationForm.get('applyStationPolicy')?.value) {
+              <span class="review-empty">No station restrictions</span>
+            } @else {
+              <div class="review-row">
+                <span class="review-label">Allowed IPs</span>
+                <span class="review-value">{{ allowedIPs.length > 0 ? allowedIPs.join(', ') : 'Any' }}</span>
               </div>
               <div class="review-row">
-                <span class="review-label">Status</span>
-                <span class="asms-chip" [class]="statusForm.get('status')?.value === 'ACTIVE' ? 'chip-active' : 'chip-inactive'">
-                  {{ statusForm.get('status')?.value }}
-                </span>
+                <span class="review-label">Work Days</span>
+                <span class="review-value">{{ selectedWorkdayLabels }}</span>
               </div>
+              <div class="review-row">
+                <span class="review-label">Work Hours</span>
+                <span class="review-value">{{ stationForm.get('workStartTime')?.value }} – {{ stationForm.get('workEndTime')?.value }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="review-card">
+            <div class="review-card-header">
+              <span>Status</span>
+              <button type="button" mat-button color="primary" class="review-edit-btn" (click)="jumpToStep(6)">Edit</button>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Status</span>
+              <span class="asms-chip" [class]="statusForm.get('status')?.value === 'ACTIVE' ? 'chip-active' : 'chip-inactive'">
+                {{ statusForm.get('status')?.value }}
+              </span>
+            </div>
+            @if (!data.isEdit) {
               <div class="review-row">
                 <span class="review-label">Delivery</span>
                 <span class="review-value">{{ passwordForm.get('deliveryMethod')?.value }}</span>
@@ -664,12 +595,12 @@
                 <span class="review-label">Force password change</span>
                 <span class="review-value">{{ passwordForm.get('forcePasswordChange')?.value ? 'Yes' : 'No' }}</span>
               </div>
-            </div>
-
+            }
           </div>
-        </div>
-      }
 
+        </div>
+      </div>
     }
-  </asms-modal>
-}
+
+  }
+</asms-modal>

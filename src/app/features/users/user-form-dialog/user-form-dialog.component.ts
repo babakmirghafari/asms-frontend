@@ -76,11 +76,10 @@ export class UserFormDialogComponent implements OnInit {
   readonly isFirstStep = computed(() => this.currentStep() === 0);
   readonly isLastStep  = computed(() => this.currentStep() === this.wizardSteps.length - 1);
 
-  /** Returns true if the user can proceed from the current step. */
   get canProceedAtCurrentStep(): boolean {
     switch (this.currentStep()) {
       case 0: return this.identityForm.valid;
-      case 1: return this.passwordForm.valid;
+      case 1: return this.data.isEdit || this.passwordForm.valid;
       case 4: return this.securityForm.valid;
       default: return true;
     }
@@ -282,7 +281,7 @@ export class UserFormDialogComponent implements OnInit {
       this.identityForm.markAllAsTouched();
       return;
     }
-    if (step === 1 && this.passwordForm.invalid) {
+    if (step === 1 && !this.data.isEdit && this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
       return;
     }
@@ -338,13 +337,14 @@ export class UserFormDialogComponent implements OnInit {
         this.identityForm.markAllAsTouched();
         return;
       }
-      const fn = this.identityForm.value.firstName?.trim() ?? '';
-      const ln = this.identityForm.value.lastName?.trim() ?? '';
+      const nameParts = (this.identityForm.value.fullName ?? '').trim().split(/\s+/);
+      const firstName = nameParts[0] ?? '';
+      const lastName  = nameParts.slice(1).join(' ') || firstName;
       const dto: UpdateUserRequestDto = {
         email:       this.identityForm.value.email!,
-        firstName:   fn,
-        lastName:    ln || fn,
-        phoneNumber: this.identityForm.value.phoneNumber ?? undefined
+        firstName,
+        lastName,
+        phoneNumber: this.identityForm.value.phoneNumber?.trim() || undefined
       };
       this.dialogRef.close(dto);
     } else {

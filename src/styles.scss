@@ -603,6 +603,12 @@ body {
   color: var(--asms-danger) !important;
 }
 
+.dialog-warning-banner--blue {
+  background-color: color-mix(in srgb, var(--asms-primary, #3b82f6) 8%, transparent) !important;
+  border-color: color-mix(in srgb, var(--asms-primary, #3b82f6) 35%, transparent) !important;
+  color: var(--asms-primary, #3b82f6) !important;
+}
+
 // ============================================================
 // Wizard step 3 — Org selection
 // ============================================================
