@@ -2,7 +2,8 @@ import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 import {
-  PermissionsService, PermissionDto, CreatePermissionRequestDto, PagedResponseDto
+  PermissionsService, PermissionDto, CreatePermissionRequestDto, PagedResponseDto,
+  PermissionImportValidateResponseDto, PermissionImportCommitResponseDto
 } from '@babakmirghafari/asms-api-client';
 import { extractApiError } from '../../core/utils/api-error.util';
 
@@ -43,6 +44,7 @@ export const PermissionsStore = signalStore(
           patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
+
       async loadByOrganizationIds(organizationIds: string[], size = 100): Promise<void> {
         if (!organizationIds.length) {
           patchState(store, { orgFilteredItems: [] });
@@ -56,6 +58,7 @@ export const PermissionsStore = signalStore(
           patchState(store, { loading: false, error: extractApiError(err) });
         }
       },
+
       async create(dto: CreatePermissionRequestDto): Promise<PermissionDto> {
         patchState(store, { loading: true, error: null });
         try {
@@ -68,6 +71,7 @@ export const PermissionsStore = signalStore(
           throw new Error(msg);
         }
       },
+
       async delete(id: string): Promise<void> {
         patchState(store, { loading: true, error: null });
         try {
@@ -78,6 +82,28 @@ export const PermissionsStore = signalStore(
           patchState(store, { loading: false, error: msg });
           throw new Error(msg);
         }
+      },
+
+      async validateImport(file: File, organizationId: string): Promise<PermissionImportValidateResponseDto> {
+        const result = await firstValueFrom(svc.validatePermissionsImport(file, organizationId as any));
+        return result as PermissionImportValidateResponseDto;
+      },
+
+      async commitImport(importId: string): Promise<PermissionImportCommitResponseDto> {
+        const result = await firstValueFrom(svc.commitPermissionsImport({ importId: importId as any }));
+        return result as PermissionImportCommitResponseDto;
+      },
+
+      async exportAll(filters: { resource?: string; organizationId?: string; status?: string }): Promise<Blob> {
+        const result = await firstValueFrom(
+          (svc as any).exportPermissions(
+            filters.organizationId,
+            undefined,
+            filters.status,
+            filters.resource
+          )
+        );
+        return result as unknown as Blob;
       }
     };
   })
