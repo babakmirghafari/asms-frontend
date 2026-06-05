@@ -22,6 +22,7 @@ import {
   PermissionFormDialogComponent,
   PermissionFormDialogData
 } from './permission-form-dialog/permission-form-dialog.component';
+import { PermissionImportDialogComponent } from './permission-import-dialog/permission-import-dialog.component';
 import { PermissionDto, CreatePermissionRequestDto } from '@babakmirghafari/asms-api-client';
 
 @Component({
@@ -75,6 +76,32 @@ export class PermissionsComponent implements OnInit {
           .then(() => this.snackBar.open(this.translate.instant('PERMISSIONS.CREATED_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-success' }))
           .catch((err: Error) => this.snackBar.open(err.message, this.translate.instant('COMMON.CLOSE'), { duration: 4000, panelClass: 'snackbar-error' }));
       });
+  }
+
+  openImportDialog(): void {
+    this.dialog.open(PermissionImportDialogComponent, {
+      width: 'min(720px, 95vw)',
+      maxWidth: '95vw',
+      disableClose: false
+    });
+  }
+
+  async exportCsv(): Promise<void> {
+    try {
+      const blob = await this.store.exportAll({ resource: this.searchCtrl.value ?? undefined });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'permissions.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      this.snackBar.open(
+        this.translate.instant('PERMISSIONS.EXPORT_ERROR'),
+        this.translate.instant('COMMON.CLOSE'),
+        { duration: 4000, panelClass: 'snackbar-error' }
+      );
+    }
   }
 
   confirmDelete(permission: PermissionDto): void {

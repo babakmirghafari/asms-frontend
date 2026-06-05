@@ -11,11 +11,11 @@
       <mat-icon matPrefix>search</mat-icon>
       <input matInput [formControl]="searchCtrl" />
     </mat-form-field>
-    <button mat-stroked-button>
+    <button mat-stroked-button (click)="openImportDialog()">
       <mat-icon>upload_file</mat-icon>
       {{ 'PERMISSIONS.IMPORT_CSV' | translate }}
     </button>
-    <button mat-stroked-button>
+    <button mat-stroked-button (click)="exportCsv()">
       <mat-icon>file_download</mat-icon>
       {{ 'COMMON.EXPORT' | translate }}
     </button>
