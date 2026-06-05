@@ -7,11 +7,13 @@ import { provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PermissionImportDialogComponent } from './permission-import-dialog.component';
 import { PermissionsStore } from '../permissions.store';
+import { OrganizationsStore } from '../../organizations/organizations.store';
 
 describe('PermissionImportDialogComponent', () => {
   let fixture: ComponentFixture<PermissionImportDialogComponent>;
   let component: PermissionImportDialogComponent;
   let mockStore: jest.Mocked<InstanceType<typeof PermissionsStore>>;
+  let mockOrgsStore: jest.Mocked<InstanceType<typeof OrganizationsStore>>;
   let mockDialogRef: jest.Mocked<MatDialogRef<PermissionImportDialogComponent>>;
 
   beforeEach(async () => {
@@ -21,12 +23,22 @@ describe('PermissionImportDialogComponent', () => {
       loadAll: jest.fn(),
     } as any;
 
+    mockOrgsStore = {
+      loadAll: jest.fn(),
+      items: jest.fn().mockReturnValue([
+        { id: 'org-1', name: 'Acme Corp' },
+        { id: 'org-2', name: 'Beta Ltd' }
+      ]),
+      loading: jest.fn().mockReturnValue(false),
+    } as any;
+
     mockDialogRef = { close: jest.fn() } as any;
 
     await TestBed.configureTestingModule({
       imports: [PermissionImportDialogComponent, NoopAnimationsModule],
       providers: [
         { provide: PermissionsStore, useValue: mockStore },
+        { provide: OrganizationsStore, useValue: mockOrgsStore },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         provideRouter([]),
@@ -48,13 +60,20 @@ describe('PermissionImportDialogComponent', () => {
     expect(component.currentStep()).toBe(0);
   });
 
-  it('Validate button should be disabled when no file is selected', () => {
+  it('Validate button should be disabled when no file or org is selected', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const button = compiled.querySelector('[data-testid="validate-btn"]') as HTMLButtonElement;
     expect(button?.disabled).toBe(true);
   });
 
-  it('should advance to step 1 after successful validation', async () => {
+  it('Validate button should be disabled when file selected but no org selected', () => {
+    component.selectedFile.set(new File([''], 'test.csv'));
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('[data-testid="validate-btn"]') as HTMLButtonElement;
+    expect(button?.disabled).toBe(true);
+  });
+
+  it('should advance to step 1 after successful validation with org selected', async () => {
     mockStore.validateImport.mockResolvedValue({
       importId: 'import-id-1',
       totalRows: 3,
@@ -67,10 +86,12 @@ describe('PermissionImportDialogComponent', () => {
 
     const file = new File(['name,resource,action\ntest.r.read,test,READ'], 'test.csv');
     component.selectedFile.set(file);
+    component.selectedOrgId.set('org-1');
     await component.validate();
     fixture.detectChanges();
 
     expect(component.currentStep()).toBe(1);
+    expect(mockStore.validateImport).toHaveBeenCalledWith(file, 'org-1');
   });
 
   it('should set BLOCKED status when validation returns errors', async () => {
@@ -86,6 +107,7 @@ describe('PermissionImportDialogComponent', () => {
 
     const file = new File(['name,resource,action\nbad,,'], 'bad.csv');
     component.selectedFile.set(file);
+    component.selectedOrgId.set('org-1');
     await component.validate();
     fixture.detectChanges();
 

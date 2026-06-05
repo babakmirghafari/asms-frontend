@@ -11,6 +11,20 @@
           {{ 'PERMISSIONS.IMPORT_TEMPLATE_DOWNLOAD' | translate }}
         </button>
 
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'ORGANIZATIONS.NAME' | translate }}</mat-label>
+          <mat-icon matPrefix>business</mat-icon>
+          <mat-select [value]="selectedOrgId()" (selectionChange)="selectedOrgId.set($event.value)">
+            @if (orgsLoading()) {
+              <mat-option [value]="null" disabled>Loading organizations…</mat-option>
+            } @else {
+              @for (org of availableOrgs(); track org.id) {
+                <mat-option [value]="org.id">{{ org.name }}</mat-option>
+              }
+            }
+          </mat-select>
+        </mat-form-field>
+
         <div class="file-select-row">
           <input #fileInput type="file" accept=".csv" hidden (change)="onFileSelected($event)" />
           <button mat-stroked-button type="button" (click)="fileInput.click()">
@@ -31,7 +45,7 @@
             <mat-spinner diameter="24" />
           }
           <button mat-raised-button color="primary"
-                  [disabled]="!selectedFile() || loading()"
+                  [disabled]="!selectedFile() || !selectedOrgId() || loading()"
                   data-testid="validate-btn"
                   (click)="validate()">
             {{ 'PERMISSIONS.IMPORT_VALIDATE' | translate }}
