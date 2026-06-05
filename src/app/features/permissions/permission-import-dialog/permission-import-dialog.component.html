@@ -1,0 +1,151 @@
+<h2 mat-dialog-title>{{ 'PERMISSIONS.IMPORT_WIZARD_TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <mat-stepper [selectedIndex]="currentStep()" linear>
+
+    <!-- Step 1: Upload -->
+    <mat-step [label]="'PERMISSIONS.IMPORT_STEP_UPLOAD' | translate" [completed]="currentStep() > 0">
+      <div class="import-step">
+        <button mat-stroked-button type="button" (click)="downloadTemplate()">
+          <mat-icon>download</mat-icon>
+          {{ 'PERMISSIONS.IMPORT_TEMPLATE_DOWNLOAD' | translate }}
+        </button>
+
+        <div class="file-select-row">
+          <input #fileInput type="file" accept=".csv" hidden (change)="onFileSelected($event)" />
+          <button mat-stroked-button type="button" (click)="fileInput.click()">
+            <mat-icon>attach_file</mat-icon>
+            {{ 'PERMISSIONS.IMPORT_SELECT_FILE' | translate }}
+          </button>
+          @if (selectedFile()) {
+            <span class="filename text-secondary text-sm">{{ selectedFile()!.name }}</span>
+          }
+        </div>
+
+        @if (error()) {
+          <p class="import-error">{{ error()! | translate }}</p>
+        }
+
+        <div class="step-actions">
+          @if (loading()) {
+            <mat-spinner diameter="24" />
+          }
+          <button mat-raised-button color="primary"
+                  [disabled]="!selectedFile() || loading()"
+                  data-testid="validate-btn"
+                  (click)="validate()">
+            {{ 'PERMISSIONS.IMPORT_VALIDATE' | translate }}
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- Step 2: Preview -->
+    <mat-step [label]="'PERMISSIONS.IMPORT_STEP_PREVIEW' | translate" [completed]="currentStep() > 1">
+      @if (validateResponse(); as vr) {
+        <div class="import-step">
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="summary-label">Total</span>
+              <span class="summary-value">{{ vr.totalRows }}</span>
+            </div>
+            <div class="summary-item success">
+              <span class="summary-label">Valid</span>
+              <span class="summary-value">{{ vr.validRows }}</span>
+            </div>
+            <div class="summary-item error">
+              <span class="summary-label">Errors</span>
+              <span class="summary-value">{{ vr.errorRows }}</span>
+            </div>
+            <div class="summary-item warn">
+              <span class="summary-label">Warnings</span>
+              <span class="summary-value">{{ vr.warningRows }}</span>
+            </div>
+          </div>
+
+          <div class="status-row">
+            @if (isReady) {
+              <span class="status-chip status-chip--ready">{{ 'PERMISSIONS.IMPORT_READY' | translate }}</span>
+            } @else {
+              <span class="status-chip status-chip--blocked">{{ 'PERMISSIONS.IMPORT_BLOCKED' | translate }}</span>
+            }
+          </div>
+
+          @if (vr.issues && vr.issues.length > 0) {
+            <table mat-table [dataSource]="vr.issues" class="issues-table">
+              <ng-container matColumnDef="lineNumber">
+                <th mat-header-cell *matHeaderCellDef>Line</th>
+                <td mat-cell *matCellDef="let row">{{ row.lineNumber }}</td>
+              </ng-container>
+              <ng-container matColumnDef="severity">
+                <th mat-header-cell *matHeaderCellDef>Severity</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="severity-chip severity-chip--{{ row.severity?.toLowerCase() }}">{{ row.severity }}</span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="field">
+                <th mat-header-cell *matHeaderCellDef>Field</th>
+                <td mat-cell *matCellDef="let row">{{ row.field }}</td>
+              </ng-container>
+              <ng-container matColumnDef="message">
+                <th mat-header-cell *matHeaderCellDef>Message</th>
+                <td mat-cell *matCellDef="let row">{{ row.message }}</td>
+              </ng-container>
+              <ng-container matColumnDef="rawValue">
+                <th mat-header-cell *matHeaderCellDef>Raw Value</th>
+                <td mat-cell *matCellDef="let row">{{ row.rawValue }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="issueColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: issueColumns;"></tr>
+            </table>
+          }
+
+          <div class="step-actions">
+            <button mat-stroked-button (click)="back()">{{ 'COMMON.BACK' | translate }}</button>
+            @if (loading()) {
+              <mat-spinner diameter="24" />
+            }
+            <button mat-raised-button color="primary"
+                    [disabled]="!isReady || loading()"
+                    (click)="commit()">
+              {{ 'PERMISSIONS.IMPORT_COMMIT' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+    </mat-step>
+
+    <!-- Step 3: Result -->
+    <mat-step [label]="'PERMISSIONS.IMPORT_STEP_RESULT' | translate">
+      @if (commitResponse(); as cr) {
+        <div class="import-step import-result">
+          <div class="result-row success">
+            <mat-icon>check_circle</mat-icon>
+            <span>{{ 'PERMISSIONS.IMPORT_COMMITTED' | translate: { count: cr.committed } }}</span>
+          </div>
+          @if (cr.skipped > 0) {
+            <div class="result-row muted">
+              <mat-icon>skip_next</mat-icon>
+              <span>{{ 'PERMISSIONS.IMPORT_SKIPPED' | translate: { count: cr.skipped } }}</span>
+            </div>
+          }
+          @if (cr.failed > 0) {
+            <div class="result-row error">
+              <mat-icon>error</mat-icon>
+              <span>{{ 'PERMISSIONS.IMPORT_FAILED' | translate: { count: cr.failed } }}</span>
+            </div>
+          }
+        </div>
+      }
+    </mat-step>
+
+  </mat-stepper>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (currentStep() === 2) {
+    <button mat-raised-button color="primary" (click)="close()">
+      {{ 'COMMON.CLOSE' | translate }}
+    </button>
+  }
+</mat-dialog-actions>
