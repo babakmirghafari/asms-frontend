@@ -1,5 +1,31 @@
 .full-width { width: 100%; }
 
+.action-hint {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+
+  &__label {
+    opacity: 0.6;
+    margin-right: 2px;
+  }
+}
+
+.action-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: monospace;
+  background: var(--mat-sys-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 .import-step {
   padding: 16px 0;
   display: flex;

@@ -36,6 +36,13 @@
           }
         </div>
 
+        <div class="action-hint">
+          <span class="action-hint__label">{{ 'PERMISSIONS.IMPORT_ACTION_HINT' | translate }}</span>
+          @for (a of actions; track a) {
+            <span class="action-chip">{{ a }}</span>
+          }
+        </div>
+
         @if (error()) {
           <p class="import-error">{{ error()! | translate }}</p>
         }

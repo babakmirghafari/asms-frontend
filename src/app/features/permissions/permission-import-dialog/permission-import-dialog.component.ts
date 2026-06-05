@@ -58,9 +58,15 @@ export class PermissionImportDialogComponent implements OnInit {
     }
   }
 
+  readonly actions = ['READ', 'WRITE', 'DELETE', 'ADMIN'];
+
   downloadTemplate(): void {
-    const header = 'name,resource,action,description\n';
-    const blob = new Blob([header], { type: 'text/csv' });
+    const content = [
+      'name,resource,action,description',
+      'hr.employee.read,hr.employee,READ,Read access to HR employee records',
+      'hr.payroll.write,hr.payroll,WRITE,Create and update payroll records',
+    ].join('\n') + '\n';
+    const blob = new Blob([content], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

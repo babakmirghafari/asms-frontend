@@ -564,7 +564,8 @@
     "IMPORT_SUCCESS": "Import completed successfully",
     "IMPORT_ERROR": "Validation failed — please check your CSV",
     "EXPORT_SUCCESS": "Export downloaded",
-    "EXPORT_ERROR": "Export failed — please try again"
+    "EXPORT_ERROR": "Export failed — please try again",
+    "IMPORT_ACTION_HINT": "action must be one of:"
   },
   "ACTIVITY_LOGS": {
     "TITLE": "Activity Logs",
