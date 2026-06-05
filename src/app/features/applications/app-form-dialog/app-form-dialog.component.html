@@ -1,66 +1,82 @@
-<asms-modal
-  [title]="data.isEdit ? 'APPLICATIONS.EDIT' : 'APPLICATIONS.ADD'"
-  [steps]="[]"
-  [canProceed]="form.valid"
-  [isLoading]="isLoading"
-  [isFirstStep]="true"
-  [isLastStep]="true"
-  [submitLabel]="data.isEdit ? 'COMMON.SAVE' : 'APPLICATIONS.ADD'"
-  (cancelled)="cancel()"
-  (submitted)="submit()">
+<div class="app-form-dialog">
+  <div mat-dialog-title class="dialog-title">
+    <span>{{ data.isEdit ? ('APPLICATIONS.EDIT_PREFIX' | translate) + ' ' + data.app!.name : ('APPLICATIONS.NEW_APPLICATION' | translate) }}</span>
+    <button mat-icon-button (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
-  <form [formGroup]="form" class="dialog-form-col" autocomplete="off">
+  <mat-dialog-content>
+    <form [formGroup]="form" class="dialog-form" autocomplete="off">
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'APPLICATIONS.NAME' | translate }}</mat-label>
-      <mat-icon matPrefix>apps</mat-icon>
-      <input matInput formControlName="name" placeholder="Legacy Core Banking" />
-      @if (form.get('name')?.hasError('required')) {
-        <mat-error>{{ 'APPLICATIONS.NAME' | translate }} is required</mat-error>
-      }
-    </mat-form-field>
+      <!-- Logo upload placeholder -->
+      <div class="logo-upload-row">
+        <div class="logo-placeholder">
+          <mat-icon>image</mat-icon>
+        </div>
+        <button mat-stroked-button type="button" class="upload-btn">
+          <mat-icon>upload</mat-icon>
+          {{ 'ORGANIZATIONS.UPLOAD' | translate }}
+        </button>
+      </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'COMMON.DESCRIPTION' | translate }}</mat-label>
-      <mat-icon matPrefix>description</mat-icon>
-      <textarea matInput formControlName="description" rows="2"
-        placeholder="Describe the application and its integration purpose"></textarea>
-    </mat-form-field>
-
-    @if (!data.isEdit) {
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'APPLICATIONS.CONNECTOR_TYPE' | translate }}</mat-label>
-        <mat-icon matPrefix>cable</mat-icon>
-        <mat-select formControlName="connectorType">
-          @for (ct of connectorTypes; track ct.value) {
-            <mat-option [value]="ct.value">{{ ct.label }}</mat-option>
-          }
-        </mat-select>
-        @if (form.get('connectorType')?.hasError('required')) {
-          <mat-error>Connector type is required</mat-error>
+      <!-- Application Name -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'APPLICATIONS.NAME' | translate }} *</mat-label>
+        <input matInput formControlName="name" placeholder="My Portal" />
+        @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+          <mat-error>{{ 'APPLICATIONS.NAME' | translate }} is required</mat-error>
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'APPLICATIONS.OWNER' | translate }} (Organization ID)</mat-label>
-        <mat-icon matPrefix>business</mat-icon>
-        <input matInput formControlName="organizationId" placeholder="org-uuid" />
-        @if (form.get('organizationId')?.hasError('required')) {
-          <mat-error>Organization is required</mat-error>
+      <!-- Client ID -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'APPLICATIONS.CLIENT_ID' | translate }} *</mat-label>
+        <mat-icon matPrefix>fingerprint</mat-icon>
+        <input matInput formControlName="clientId" placeholder="my-portal" />
+        @if (form.get('clientId')?.hasError('required') && form.get('clientId')?.touched) {
+          <mat-error>Client ID is required</mat-error>
         }
       </mat-form-field>
 
-      @if (form.get('connectorType')?.value === 'OIDC') {
+      <!-- Type + Organization row -->
+      <div class="two-col-row">
         <mat-form-field appearance="outline">
-          <mat-label>Redirect URIs (one per line)</mat-label>
-          <mat-icon matPrefix>link</mat-icon>
-          <textarea matInput formControlName="redirectUris" rows="3"
-            placeholder="https://app.example.com/callback"></textarea>
-          <mat-hint>Enter one redirect URI per line</mat-hint>
+          <mat-label>{{ 'APPLICATIONS.TYPE' | translate }}</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="confidential">{{ 'APPLICATIONS.TYPE_CONFIDENTIAL' | translate }}</mat-option>
+            <mat-option value="public">{{ 'APPLICATIONS.TYPE_PUBLIC' | translate }}</mat-option>
+          </mat-select>
         </mat-form-field>
-      }
-    }
 
-  </form>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.NAME' | translate }} ({{ 'MEMBERSHIPS.ORGANIZATION' | translate }})</mat-label>
+          <mat-select formControlName="organizationId">
+            @for (org of orgsStore.items(); track org.id) {
+              <mat-option [value]="org.id">{{ org.name }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('organizationId')?.hasError('required') && form.get('organizationId')?.touched) {
+            <mat-error>Organization is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
 
-</asms-modal>
+      <!-- Redirect URIs -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'APPLICATIONS.REDIRECT_URIS' | translate }}</mat-label>
+        <textarea matInput formControlName="redirectUris" rows="3"
+          placeholder="https://myapp.com/callback"></textarea>
+        <mat-hint>{{ 'APPLICATIONS.REDIRECT_URIS_HINT' | translate }}</mat-hint>
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+    <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="submit()">
+      {{ data.isEdit ? ('COMMON.SAVE' | translate) : ('APPLICATIONS.CREATE_APPLICATION' | translate) }}
+    </button>
+  </mat-dialog-actions>
+</div>

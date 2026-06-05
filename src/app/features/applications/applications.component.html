@@ -1,121 +1,76 @@
 <div class="asms-page">
-  <asms-page-header
-    titleKey="APPLICATIONS.TITLE"
-    [showAdd]="true"
-    addLabelKey="APPLICATIONS.ADD"
-    (addClicked)="openCreateDialog()" />
-
-  <div class="asms-toolbar-row">
-    <mat-form-field appearance="outline" class="asms-search-field">
-      <mat-label>{{ 'APPLICATIONS.SEARCH_PLACEHOLDER' | translate }}</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput [formControl]="searchCtrl" />
-    </mat-form-field>
-    <button mat-stroked-button>
-      <mat-icon>filter_list</mat-icon>
-      {{ 'COMMON.FILTER' | translate }}
-    </button>
-    <button mat-stroked-button>
-      <mat-icon>file_download</mat-icon>
-      {{ 'COMMON.EXPORT' | translate }}
+  <!-- Page header -->
+  <div class="page-header-row">
+    <div class="page-header-text">
+      <h1 class="page-title">{{ 'APPLICATIONS.TITLE' | translate }}</h1>
+      <p class="page-subtitle">{{ 'APPLICATIONS.SUBTITLE' | translate }}</p>
+    </div>
+    <button mat-flat-button color="primary" class="new-app-btn" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      {{ 'APPLICATIONS.NEW_APPLICATION' | translate }}
     </button>
   </div>
 
-  @if (store.isLoading()) {
-    <div class="asms-loading-center">
-      <mat-spinner diameter="48" />
-    </div>
-  } @else {
-    <div class="asms-table-wrapper">
-      <table mat-table [dataSource]="store.items()" class="full-width">
-
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>{{ 'APPLICATIONS.NAME' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <div class="app-name-cell">
-              <div class="app-icon">
-                <mat-icon>apps</mat-icon>
-              </div>
-              <div>
-                <div class="app-name">{{ row.name }}</div>
-                <div class="text-secondary text-sm mono-text">{{ row.clientId }}</div>
-              </div>
-            </div>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="description">
-          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.DESCRIPTION' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="text-secondary">{{ row.description | slice:0:60 }}{{ (row.description?.length ?? 0) > 60 ? '...' : '' }}</span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="connectorType">
-          <th mat-header-cell *matHeaderCellDef>{{ 'APPLICATIONS.CONNECTOR_TYPE' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="connector-badge connector-badge--{{ row.connectorType?.toLowerCase() }}">
-              {{ row.connectorType }}
-            </span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <asms-status-chip [status]="row.status" />
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="createdAt">
-          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.CREATED_AT' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="text-secondary text-sm">{{ row.createdAt | date: 'dd MMM yyyy' }}</span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-icon-button [matMenuTriggerFor]="actionMenu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #actionMenu>
-              <button mat-menu-item (click)="openEditDialog(row)">
-                <mat-icon>edit</mat-icon>
-                <span>{{ 'COMMON.EDIT' | translate }}</span>
-              </button>
-              <button mat-menu-item>
-                <mat-icon>autorenew</mat-icon>
-                <span>{{ 'APPLICATIONS.REVOKE_SECRET' | translate }}</span>
-              </button>
-              <mat-divider />
-              <button mat-menu-item (click)="confirmDelete(row)" class="delete-action">
-                <mat-icon>delete</mat-icon>
-                <span>{{ 'COMMON.DELETE' | translate }}</span>
-              </button>
-            </mat-menu>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-
-      @if (store.isEmpty()) {
-        <div class="asms-empty-state">
-          <mat-icon>apps</mat-icon>
-          <p>{{ 'COMMON.NO_DATA' | translate }}</p>
+  <!-- Card grid -->
+  <div class="apps-grid">
+    @for (app of items(); track app.id) {
+      <div class="app-card">
+        <!-- Card header: logo + status badge -->
+        <div class="app-card-header">
+          <div class="app-logo">
+            <mat-icon>apps</mat-icon>
+          </div>
+          <span [class]="'status-badge status-badge--' + app.status.toLowerCase()">
+            ● {{ app.status.toLowerCase() }}
+          </span>
         </div>
-      }
 
-      <mat-paginator
-        [length]="store.totalElements()"
-        [pageSize]="store.pageSize()"
-        [pageIndex]="store.pageIndex()"
-        [pageSizeOptions]="[10, 20, 50]"
-        (page)="onPage($event)"
-        showFirstLastButtons />
-    </div>
-  }
+        <!-- App name + client ID -->
+        <div class="app-name">{{ app.name }}</div>
+        <div class="app-client-id">{{ app.clientId }}</div>
+
+        <!-- Metadata grid -->
+        <div class="app-meta-grid">
+          <div>
+            <div class="app-meta-label">{{ 'APPLICATIONS.TYPE' | translate }}</div>
+            <div class="app-meta-value">{{ app.type }}</div>
+          </div>
+          <div>
+            <div class="app-meta-label">{{ 'MEMBERSHIPS.ORGANIZATION' | translate }}</div>
+            <div class="app-meta-value">{{ app.organizationName }}</div>
+          </div>
+          <div>
+            <div class="app-meta-label">{{ 'COMMON.CREATED_AT' | translate }}</div>
+            <div class="app-meta-value">{{ app.createdAt | date: 'dd MMM yyyy' }}</div>
+          </div>
+          <div>
+            <div class="app-meta-label">{{ 'APPLICATIONS.CLIENT_SECRET' | translate }}</div>
+            <div class="app-meta-value app-secret-dots">••••••••••••</div>
+          </div>
+        </div>
+
+        <!-- Redirect URIs -->
+        <div class="app-redirects-label">{{ 'APPLICATIONS.REDIRECT_URIS' | translate }}</div>
+        <div class="app-redirects-value">{{ app.redirectUris[0] }}</div>
+
+        <mat-divider class="app-divider" />
+
+        <!-- Actions -->
+        <div class="app-card-actions">
+          <button mat-stroked-button class="action-btn" (click)="openEditDialog(app)">
+            <mat-icon>edit</mat-icon>
+            {{ 'COMMON.EDIT' | translate }}
+          </button>
+          <button mat-stroked-button class="action-btn" (click)="openRotateSecretDialog(app)">
+            <mat-icon>autorenew</mat-icon>
+            {{ 'APPLICATIONS.ROTATE_SECRET' | translate }}
+          </button>
+          <button mat-stroked-button class="action-btn" (click)="openCredentialsPanel(app)">
+            <mat-icon>vpn_key</mat-icon>
+            {{ 'APPLICATIONS.CREDENTIALS' | translate }}
+          </button>
+        </div>
+      </div>
+    }
+  </div>
 </div>

@@ -1,57 +1,187 @@
-.full-width { width: 100%; }
-
-.app-name-cell {
+.page-header-row {
   display: flex;
-  align-items: center;
-  gap: var(--asms-space-sm);
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
 }
 
-.app-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--asms-radius-md);
-  background-color: var(--asms-primary-light);
+.page-header-text {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--asms-text-primary, #111);
+  margin: 0 0 4px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--asms-text-secondary, #888);
+  margin: 0;
+}
+
+.new-app-btn {
+  flex-shrink: 0;
+  background-color: #e65100;
+  color: #fff;
+
+  mat-icon {
+    margin-right: 4px;
+  }
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.app-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.app-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.app-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 
   mat-icon {
-    color: var(--asms-primary);
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
+    color: #999;
+    font-size: 22px;
+    height: 22px;
+    width: 22px;
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &--active {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &--inactive {
+    background: #f5f5f5;
+    color: #888;
   }
 }
 
 .app-name {
-  font-weight: 500;
-  color: var(--asms-text-primary);
+  font-weight: 600;
+  font-size: 17px;
+  color: #111;
+  margin-bottom: 4px;
 }
 
-.connector-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: var(--asms-radius-sm);
-  font-size: 11px;
-  font-weight: 600;
+.app-client-id {
   font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 0;
+  margin-top: 2px;
+}
+
+.app-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.app-meta-label {
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.5px;
+  color: #aaa;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
 
-  &--oidc {
-    background: #e3f2fd;
-    color: #1565c0;
+.app-meta-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.app-secret-dots {
+  font-family: 'Roboto Mono', monospace;
+  letter-spacing: 2px;
+  color: #bbb;
+}
+
+.app-redirects-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #aaa;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.app-redirects-value {
+  font-size: 13px;
+  color: #555;
+  font-family: 'Roboto Mono', monospace;
+  word-break: break-all;
+}
+
+.app-divider {
+  margin: 16px 0;
+}
+
+.app-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 0;
+}
+
+.action-btn {
+  font-size: 12px;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 10px;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .apps-grid {
+    grid-template-columns: 1fr;
   }
 
-  &--saml {
-    background: #f3e5f5;
-    color: #6a1b9a;
-  }
-
-  &--api_token {
-    background: #e8f5e9;
-    color: #2e7d32;
+  .page-header-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

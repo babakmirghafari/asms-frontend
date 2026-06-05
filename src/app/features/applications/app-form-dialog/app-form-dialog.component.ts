@@ -1,69 +1,58 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
-import { AsmsModalComponent } from '../../../shared/components/modal/modal.component';
-import {
-  ApplicationDto,
-  CreateApplicationRequestDto,
-  UpdateApplicationRequestDto
-} from '@babakmirghafari/asms-api-client';
+import { OrganizationsStore } from '../../organizations/organizations.store';
+import { AppMock } from '../app-mock.model';
 
 export interface AppFormDialogData {
-  app?: ApplicationDto;
+  app?: AppMock;
   isEdit: boolean;
 }
 
-export type AppFormResult = CreateApplicationRequestDto | UpdateApplicationRequestDto;
+export type AppFormResult = Partial<AppMock>;
 
 @Component({
   selector: 'asms-app-form-dialog',
   templateUrl: './app-form-dialog.component.html',
+  styleUrl: './app-form-dialog.component.scss',
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatSelectModule,
-    MatProgressSpinnerModule,
-    TranslateModule,
-    AsmsModalComponent
+    TranslateModule
   ]
 })
-export class AppFormDialogComponent {
+export class AppFormDialogComponent implements OnInit {
   readonly data: AppFormDialogData = inject(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<AppFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
-
-  isLoading = false;
-
-  readonly connectorTypes = [
-    { value: 'OIDC', label: 'OIDC (OpenID Connect)' },
-    { value: 'SAML', label: 'SAML 2.0' },
-    { value: 'API_TOKEN', label: 'API Token' }
-  ];
+  readonly orgsStore = inject(OrganizationsStore);
 
   readonly form = this.fb.group({
     name: [this.data.app?.name ?? '', [Validators.required, Validators.minLength(2)]],
-    description: [this.data.app?.description ?? ''],
-    connectorType: [
-      this.data.app?.connectorType ?? 'OIDC',
-      Validators.required
+    clientId: [
+      { value: this.data.app?.clientId ?? '', disabled: this.data.isEdit },
+      [Validators.required, Validators.minLength(2)]
     ],
-    organizationId: [
-      '',
-      this.data.isEdit ? [] : [Validators.required]
-    ],
-    redirectUris: ['']
+    type: [this.data.app?.type ?? 'confidential', Validators.required],
+    organizationId: [this.data.app?.organizationId ?? '', Validators.required],
+    redirectUris: [this.data.app?.redirectUris?.join('\n') ?? '']
   });
+
+  ngOnInit(): void {
+    this.orgsStore.loadAll(0, 100);
+  }
 
   cancel(): void {
     this.dialogRef.close(null);
@@ -75,28 +64,24 @@ export class AppFormDialogComponent {
       return;
     }
 
-    const redirectUrisRaw = this.form.value.redirectUris?.trim();
+    const raw = this.form.getRawValue();
+    const redirectUrisRaw = raw.redirectUris?.trim() ?? '';
     const redirectUris = redirectUrisRaw
-      ? redirectUrisRaw.split('\n').map(u => u.trim()).filter(Boolean)
-      : undefined;
+      ? redirectUrisRaw.split('\n').map((u: string) => u.trim()).filter(Boolean)
+      : [];
 
-    if (this.data.isEdit) {
-      const dto: UpdateApplicationRequestDto = {
-        name: this.form.value.name!,
-        description: this.form.value.description ?? undefined,
-        connectorType: (this.data.app?.connectorType ?? 'OIDC') as UpdateApplicationRequestDto.ConnectorTypeEnum,
-        redirectUris
-      };
-      this.dialogRef.close(dto);
-    } else {
-      const dto: CreateApplicationRequestDto = {
-        name: this.form.value.name!,
-        description: this.form.value.description ?? undefined,
-        connectorType: this.form.value.connectorType as CreateApplicationRequestDto.ConnectorTypeEnum,
-        organizationId: this.form.value.organizationId!,
-        redirectUris
-      };
-      this.dialogRef.close(dto);
-    }
+    const selectedOrg = this.orgsStore.items().find(o => o.id === raw.organizationId);
+
+    const result: AppFormResult = {
+      name: raw.name!,
+      clientId: raw.clientId!,
+      type: raw.type as 'confidential' | 'public',
+      organizationId: raw.organizationId!,
+      organizationName: selectedOrg?.name ?? raw.organizationId!,
+      redirectUris,
+      status: this.data.app?.status ?? 'ACTIVE',
+      allowedScopes: this.data.app?.allowedScopes ?? ['openid', 'profile', 'email']
+    };
+    this.dialogRef.close(result);
   }
 }
